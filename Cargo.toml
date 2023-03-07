@@ -32,7 +32,7 @@ assert_cmd = "2.0.4"
 nix = { version = "0.26.1", features = ["signal"] }
 tempfile = "3.2.0"
 tokio = "1.24.2"
-substrate-rpc-client = { git = "https://github.com/paritytech/substrate", branch = "master" }
+substrate-rpc-client = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 polkadot-core-primitives = { path = "core-primitives" }
 
 [workspace]
@@ -116,7 +116,6 @@ members = [
 	"parachain/test-parachains/halt",
 	"parachain/test-parachains/undying",
 	"parachain/test-parachains/undying/collator",
-	"utils/staking-miner",
 	"utils/remote-ext-tests/bags-list",
 	"utils/generate-bags",
 ]
