@@ -117,7 +117,7 @@ check-no-default-features:
     - .test-refs
     - .compiler-info
   script:
-    # Check that polkadot-cli will compile no default features.
+    # Check that infrablockspace-cli will compile no default features.
     - pushd ./node/service && cargo check --no-default-features && popd
     - pushd ./cli && cargo check --no-default-features --features "service" && popd
     - exit 0

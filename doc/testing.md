@@ -224,7 +224,7 @@ fn main() -> eyre::Result<()> {
  color_eyre::install()?;
  let cli = Cli::from_args();
  assert_matches::assert_matches!(cli.subcommand, None);
- polkadot_cli::run_node(cli, BehaveMaleficient)?;
+ infrablockspace_cli::run_node(cli, BehaveMaleficient)?;
  Ok(())
 }
 ```

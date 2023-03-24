@@ -13,7 +13,7 @@ name = "malus"
 path = "src/malus.rs"
 
 [dependencies]
-polkadot-cli = { path = "../../cli", features = [ "malus", "rococo-native", "kusama-native", "westend-native", "polkadot-native" ] }
+infrablockspace-cli = { path = "../../cli", features = [ "malus", "rococo-native", "kusama-native", "westend-native", "polkadot-native" ] }
 infrablockspace-node-subsystem = { path = "../subsystem" }
 infrablockspace-node-subsystem-util = { path = "../subsystem-util" }
 infrablockspace-node-subsystem-types = { path = "../subsystem-types" }

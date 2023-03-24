@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-service"
+name = "infrablockspace-service"
 rust-version = "1.60"
 version.workspace = true
 authors.workspace = true

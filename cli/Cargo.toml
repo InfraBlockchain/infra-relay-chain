@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-cli"
+name = "infrablockspace-cli"
 description = "Polkadot Relay-chain Client Node"
 version.workspace = true
 authors.workspace = true
@@ -20,7 +20,7 @@ thiserror = "1.0.31"
 futures = "0.3.21"
 pyro = { package = "pyroscope", version = "0.3.1", optional = true }
 
-service = { package = "polkadot-service", path = "../node/service", default-features = false, optional = true }
+service = { package = "infrablockspace-service", path = "../node/service", default-features = false, optional = true }
 infrablockspace-client = { path = "../node/client", optional = true }
 infrablockspace-node-core-pvf = { path = "../node/core/pvf", optional = true }
 polkadot-performance-test = { path = "../node/test/performance-test", optional = true }

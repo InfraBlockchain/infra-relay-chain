@@ -16,7 +16,7 @@
 
 //! Collator for the adder test parachain.
 
-use polkadot_cli::{Error, Result};
+use infrablockspace_cli::{Error, Result};
 use infrablockspace_node_primitives::CollationGenerationConfig;
 use infrablockspace_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
 use infrablockspace_primitives::Id as ParaId;
@@ -56,15 +56,15 @@ fn main() -> Result<()> {
 			runner.run_node_until_exit(|config| async move {
 				let collator = Collator::new();
 
-				let full_node = polkadot_service::build_full(
+				let full_node = infrablockspace_service::build_full(
 					config,
-					polkadot_service::IsCollator::Yes(collator.collator_key()),
+					infrablockspace_service::IsCollator::Yes(collator.collator_key()),
 					None,
 					false,
 					None,
 					None,
 					false,
-					polkadot_service::RealOverseerGen,
+					infrablockspace_service::RealOverseerGen,
 					None,
 					None,
 					None,
