@@ -10,7 +10,7 @@ parity-scale-codec = { version = "3.3.0", default-features = false, features = [
 # Polkadot dependencies
 polkadot-test-runtime = { path = "../../../runtime/test-runtime" }
 polkadot-test-service = { path = "../service" }
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 
 # Substrate dependencies

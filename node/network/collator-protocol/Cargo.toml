@@ -15,7 +15,7 @@ sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch =
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-network-protocol = { path = "../../network/protocol" }
 polkadot-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
@@ -34,4 +34,4 @@ sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 parity-scale-codec = { version = "3.3.0", features = ["std"] }
 
 polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
-polkadot-primitives-test-helpers = { path = "../../../primitives/test-helpers" }
+infrablockspace-primitives-test-helpers = { path = "../../../primitives/test-helpers" }

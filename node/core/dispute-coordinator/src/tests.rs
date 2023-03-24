@@ -60,7 +60,7 @@ use polkadot_node_subsystem::{
 use polkadot_node_subsystem_test_helpers::{
 	make_buffered_subsystem_context, TestSubsystemContextHandle,
 };
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	ApprovalVote, BlockNumber, CandidateCommitments, CandidateEvent, CandidateHash,
 	CandidateReceipt, CoreIndex, DisputeStatement, GroupIndex, Hash, HeadData, Header, IndexedVec,
 	MultiDisputeStatementSet, ScrapedOnChainVotes, SessionIndex, SessionInfo, SigningContext,
@@ -85,7 +85,7 @@ fn make_keystore(seeds: impl Iterator<Item = String>) -> LocalKeystore {
 
 	for s in seeds {
 		store
-			.sr25519_generate_new(polkadot_primitives::PARACHAIN_KEY_TYPE_ID, Some(&s))
+			.sr25519_generate_new(infrablockspace-primitives::PARACHAIN_KEY_TYPE_ID, Some(&s))
 			.unwrap();
 	}
 
@@ -1803,7 +1803,7 @@ fn supermajority_valid_dispute_may_be_finalized() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,
@@ -1942,7 +1942,7 @@ fn concluded_supermajority_for_non_active_after_time() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,
@@ -2059,7 +2059,7 @@ fn concluded_supermajority_against_non_active_after_time() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,
@@ -3339,7 +3339,7 @@ fn informs_chain_selection_when_dispute_concluded_against() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,

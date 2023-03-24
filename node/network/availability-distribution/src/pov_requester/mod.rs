@@ -30,7 +30,7 @@ use polkadot_node_subsystem::{
 	overseer,
 };
 use polkadot_node_subsystem_util::runtime::RuntimeInfo;
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateHash, Hash, Id as ParaId, ValidatorIndex,
 };
 
@@ -141,7 +141,7 @@ mod tests {
 		AllMessages, AvailabilityDistributionMessage, RuntimeApiMessage, RuntimeApiRequest,
 	};
 	use polkadot_node_subsystem_test_helpers as test_helpers;
-	use polkadot_primitives::{CandidateHash, Hash, ValidatorIndex};
+	use infrablockspace_primitives::{CandidateHash, Hash, ValidatorIndex};
 	use test_helpers::mock::make_ferdie_keystore;
 
 	use super::*;

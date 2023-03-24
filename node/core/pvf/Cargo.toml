@@ -30,7 +30,7 @@ infrablockspace-core-primitives = { path = "../../../core-primitives" }
 polkadot-node-metrics = { path = "../../metrics" }
 polkadot-node-primitives = { path = "../../primitives" }
 
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 sc-executor = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-executor-wasmtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-executor-common = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

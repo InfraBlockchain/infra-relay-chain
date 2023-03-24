@@ -29,7 +29,7 @@ use polkadot_node_network_protocol::{
 	},
 	PeerId, UnifiedReputationChange as Rep,
 };
-use polkadot_primitives::{CandidateHash, CommittedCandidateReceipt, Hash};
+use infrablockspace_primitives::{CandidateHash, CommittedCandidateReceipt, Hash};
 
 use crate::LOG_TARGET;
 

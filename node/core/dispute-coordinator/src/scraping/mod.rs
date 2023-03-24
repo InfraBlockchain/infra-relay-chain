@@ -28,7 +28,7 @@ use polkadot_node_subsystem::{
 	SubsystemSender,
 };
 use polkadot_node_subsystem_util::runtime::{get_candidate_events, get_on_chain_votes};
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	BlockNumber, CandidateEvent, CandidateHash, CandidateReceipt, Hash, ScrapedOnChainVotes,
 };
 

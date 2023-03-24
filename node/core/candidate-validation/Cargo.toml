@@ -13,7 +13,7 @@ gum = { package = "tracing-gum", path = "../../gum" }
 sp-maybe-compressed-blob = { package = "sp-maybe-compressed-blob", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["bit-vec", "derive"] }
 
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-parachain = { path = "../../../parachain" }
 polkadot-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem = { path = "../../subsystem" }
@@ -29,4 +29,4 @@ futures = { version = "0.3.21", features = ["thread-pool"] }
 assert_matches = "1.4.0"
 polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../../primitives/test-helpers" }
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

@@ -31,7 +31,7 @@ xcm = { path = ".." }
 pallet-xcm = { path = "../pallet-xcm" }
 polkadot-runtime-common = { path = "../../runtime/common" }
 # westend-runtime = { path = "../../runtime/westend", features = ["runtime-benchmarks"] }
-polkadot-primitives = { path = "../../primitives" }
+infrablockspace-primitives = { path = "../../primitives" }
 
 [features]
 default = ["std"]

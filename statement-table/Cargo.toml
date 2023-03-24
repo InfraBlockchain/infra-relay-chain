@@ -7,4 +7,4 @@ edition.workspace = true
 [dependencies]
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-primitives = { package = "polkadot-primitives", path = "../primitives" }
+primitives = { package = "infrablockspace-primitives", path = "../primitives" }

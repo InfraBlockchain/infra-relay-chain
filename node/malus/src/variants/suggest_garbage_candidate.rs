@@ -33,7 +33,7 @@ use polkadot_cli::{
 };
 use polkadot_node_core_candidate_validation::find_validation_data;
 use polkadot_node_primitives::{AvailableData, BlockData, PoV};
-use polkadot_primitives::{CandidateDescriptor, CandidateReceipt};
+use infrablockspace_primitives::{CandidateDescriptor, CandidateReceipt};
 
 use polkadot_node_subsystem_util::request_validators;
 use sp_core::traits::SpawnNamed;
@@ -165,11 +165,11 @@ where
 					};
 
 					let (collator_id, collator_signature) = {
-						use polkadot_primitives::CollatorPair;
+						use infrablockspace_primitives::CollatorPair;
 						use sp_core::crypto::Pair;
 
 						let collator_pair = CollatorPair::generate().0;
-						let signature_payload = polkadot_primitives::collator_signature_payload(
+						let signature_payload = infrablockspace-primitives::collator_signature_payload(
 							&relay_parent,
 							&candidate.descriptor().para_id,
 							&validation_data_hash,

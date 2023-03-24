@@ -25,7 +25,7 @@
 
 use polkadot_node_primitives::BlockWeight;
 use polkadot_node_subsystem::ChainApiError;
-use polkadot_primitives::{BlockNumber, Hash};
+use infrablockspace_primitives::{BlockNumber, Hash};
 
 use std::collections::HashMap;
 

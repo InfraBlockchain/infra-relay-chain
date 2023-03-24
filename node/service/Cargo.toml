@@ -86,7 +86,7 @@ polkadot-node-core-parachains-inherent = { path = "../core/parachains-inherent" 
 polkadot-overseer = { path = "../overseer" }
 polkadot-client = { path = "../client", default-features = false, optional = true }
 polkadot-parachain = { path = "../../parachain" }
-polkadot-primitives = { path = "../../primitives" }
+infrablockspace-primitives = { path = "../../primitives" }
 polkadot-node-primitives = { path = "../primitives" }
 polkadot-rpc = { path = "../../rpc" }
 polkadot-node-subsystem = {path = "../subsystem" }

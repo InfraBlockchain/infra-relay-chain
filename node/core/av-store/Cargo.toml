@@ -17,7 +17,7 @@ erasure = { package = "polkadot-erasure-coding", path = "../../../erasure-coding
 polkadot-node-subsystem = {path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
 polkadot-overseer = { path = "../../overseer" }
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-primitives = { path = "../../primitives" }
 sp-consensus = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
@@ -32,4 +32,4 @@ polkadot-node-subsystem-util = { path = "../../subsystem-util" }
 polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 parking_lot = "0.12.0"
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../../primitives/test-helpers" }
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

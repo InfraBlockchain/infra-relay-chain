@@ -8,7 +8,7 @@ edition.workspace = true
 [dependencies]
 bounded-vec = "0.7"
 futures = "0.3.21"
-polkadot-primitives = { path = "../../primitives" }
+infrablockspace-primitives = { path = "../../primitives" }
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

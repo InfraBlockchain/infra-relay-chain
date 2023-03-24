@@ -38,7 +38,7 @@ use polkadot_overseer::{
 	OverseerConnector, OverseerHandle, SpawnGlue,
 };
 
-use polkadot_primitives::runtime_api::ParachainHost;
+use infrablockspace_primitives::runtime_api::ParachainHost;
 use sc_authority_discovery::Service as AuthorityDiscoveryService;
 use sc_client_api::AuxStore;
 use sc_keystore::LocalKeystore;

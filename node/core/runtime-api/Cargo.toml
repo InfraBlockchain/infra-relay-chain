@@ -11,7 +11,7 @@ lru = "0.9"
 
 sp-consensus-babe = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-metrics = { path = "../../metrics" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 polkadot-node-subsystem-types = { path = "../../subsystem-types" }
@@ -24,4 +24,4 @@ sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 futures = { version = "0.3.21", features = ["thread-pool"] }
 polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 polkadot-node-primitives = { path = "../../primitives" }
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../../primitives/test-helpers" }
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

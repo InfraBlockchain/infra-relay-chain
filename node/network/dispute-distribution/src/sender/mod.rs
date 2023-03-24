@@ -31,7 +31,7 @@ use polkadot_node_subsystem::{
 	messages::DisputeCoordinatorMessage, overseer, ActiveLeavesUpdate, SubsystemSender,
 };
 use polkadot_node_subsystem_util::{nesting_sender::NestingSender, runtime::RuntimeInfo};
-use polkadot_primitives::{CandidateHash, Hash, SessionIndex};
+use infrablockspace_primitives::{CandidateHash, Hash, SessionIndex};
 
 /// For each ongoing dispute we have a `SendTask` which takes care of it.
 ///

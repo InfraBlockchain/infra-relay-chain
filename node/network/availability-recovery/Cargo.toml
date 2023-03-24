@@ -13,7 +13,7 @@ thiserror = "1.0.31"
 gum = { package = "tracing-gum", path = "../../gum" }
 
 polkadot-erasure-coding = { path = "../../../erasure-coding" }
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem = {path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
@@ -33,4 +33,4 @@ sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substr
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
-polkadot-primitives-test-helpers = { path = "../../../primitives/test-helpers" }
+infrablockspace-primitives-test-helpers = { path = "../../../primitives/test-helpers" }

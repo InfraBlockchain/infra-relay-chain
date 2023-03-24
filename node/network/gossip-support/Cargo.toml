@@ -13,7 +13,7 @@ sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 polkadot-node-network-protocol = { path = "../protocol" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 
 futures = "0.3.21"
 futures-timer = "3.0.2"

@@ -20,7 +20,7 @@
 use polkadot_node_network_protocol::PeerId;
 use polkadot_node_subsystem::SubsystemError;
 use polkadot_node_subsystem_util::runtime;
-use polkadot_primitives::{CandidateHash, Hash};
+use infrablockspace_primitives::{CandidateHash, Hash};
 
 use crate::LOG_TARGET;
 

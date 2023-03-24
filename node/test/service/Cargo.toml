@@ -14,7 +14,7 @@ tokio = "1.24.2"
 
 # Polkadot dependencies
 polkadot-overseer = { path = "../../overseer" }
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-parachain = { path = "../../../parachain" }
 polkadot-rpc = { path = "../../../rpc" }
 polkadot-runtime-common = { path = "../../../runtime/common" }

@@ -28,7 +28,7 @@ use polkadot_node_subsystem::{
 	overseer,
 };
 
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	CandidateCommitments, CandidateDescriptor, CandidateReceipt, PersistedValidationData,
 };
 

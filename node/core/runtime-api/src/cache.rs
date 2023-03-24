@@ -19,7 +19,7 @@ use std::{collections::btree_map::BTreeMap, num::NonZeroUsize};
 use lru::LruCache;
 use sp_consensus_babe::Epoch;
 
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	vstaging::ExecutorParams, AuthorityDiscoveryId, BlockNumber, CandidateCommitments,
 	CandidateEvent, CandidateHash, CommittedCandidateReceipt, CoreState, DisputeState,
 	GroupRotationInfo, Hash, Id as ParaId, InboundDownwardMessage, InboundHrmpMessage,

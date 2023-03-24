@@ -29,7 +29,7 @@ use polkadot_node_subsystem::{
 	messages::{RuntimeApiMessage, RuntimeApiRequest, RuntimeApiSender},
 	overseer, SubsystemSender,
 };
-use polkadot_primitives::vstaging::ExecutorParams;
+use infrablockspace_primitives::vstaging::ExecutorParams;
 
 pub use overseer::{
 	gen::{OrchestraError as OverseerError, Timeout},
@@ -41,7 +41,7 @@ pub use polkadot_node_metrics::{metrics, Metronome};
 use futures::channel::{mpsc, oneshot};
 use parity_scale_codec::Encode;
 
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateEvent, CommittedCandidateReceipt, CoreState, EncodeAs,
 	GroupIndex, GroupRotationInfo, Hash, Id as ParaId, OccupiedCoreAssumption,
 	PersistedValidationData, ScrapedOnChainVotes, SessionIndex, SessionInfo, Signed,

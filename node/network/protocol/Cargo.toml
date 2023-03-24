@@ -8,7 +8,7 @@ description = "Primitives types for the Node-side"
 [dependencies]
 async-trait = "0.1.57"
 hex = "0.4.3"
-polkadot-primitives = { path = "../../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-primitives = { path = "../../primitives" }
 polkadot-node-jaeger = { path = "../../jaeger" }
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }

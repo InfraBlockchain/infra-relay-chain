@@ -41,7 +41,7 @@ use polkadot_node_subsystem::{
 };
 use polkadot_node_subsystem_util::executor_params_at_relay_parent;
 use polkadot_parachain::primitives::{ValidationParams, ValidationResult as WasmValidationResult};
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	vstaging::ExecutorParams, CandidateCommitments, CandidateDescriptor, CandidateReceipt, Hash,
 	OccupiedCoreAssumption, PersistedValidationData, ValidationCode, ValidationCodeHash,
 };

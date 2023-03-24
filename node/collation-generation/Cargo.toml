@@ -11,7 +11,7 @@ polkadot-erasure-coding = { path = "../../erasure-coding" }
 polkadot-node-primitives = { path = "../primitives" }
 polkadot-node-subsystem = { path = "../subsystem" }
 polkadot-node-subsystem-util = { path = "../subsystem-util" }
-polkadot-primitives = { path = "../../primitives" }
+infrablockspace-primitives = { path = "../../primitives" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-maybe-compressed-blob  = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 thiserror = "1.0.31"
@@ -19,4 +19,4 @@ parity-scale-codec = { version = "3.3.0", default-features = false, features = [
 
 [dev-dependencies]
 polkadot-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../primitives/test-helpers" }
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../primitives/test-helpers" }

@@ -32,7 +32,7 @@ use polkadot_node_primitives::{
 	disputes::ValidCandidateVotes, CandidateVotes, DisputeStatus, SignedDisputeStatement, Timestamp,
 };
 use polkadot_node_subsystem_util::rolling_session_window::RollingSessionWindow;
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	CandidateReceipt, DisputeStatement, IndexedVec, SessionIndex, SessionInfo,
 	ValidDisputeStatementKind, ValidatorId, ValidatorIndex, ValidatorPair, ValidatorSignature,
 };
@@ -188,14 +188,14 @@ impl CandidateVoteState<CandidateVotes> {
 
 		let n_validators = env.validators().len();
 
-		let supermajority_threshold = polkadot_primitives::supermajority_threshold(n_validators);
+		let supermajority_threshold = infrablockspace_primitives::supermajority_threshold(n_validators);
 
 		// We have a dispute, if we have votes on both sides:
 		let is_disputed = !votes.invalid.is_empty() && !votes.valid.raw().is_empty();
 
 		let dispute_status = if is_disputed {
 			let mut status = DisputeStatus::active();
-			let byzantine_threshold = polkadot_primitives::byzantine_threshold(n_validators);
+			let byzantine_threshold = infrablockspace_primitives::byzantine_threshold(n_validators);
 			let is_confirmed = votes.voted_indices().len() > byzantine_threshold;
 			if is_confirmed {
 				status = status.confirm();
