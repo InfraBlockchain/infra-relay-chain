@@ -17,7 +17,7 @@ polkadot-overseer = { path = "../../overseer" }
 infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-parachain = { path = "../../../parachain" }
 polkadot-rpc = { path = "../../../rpc" }
-polkadot-runtime-common = { path = "../../../runtime/common" }
+infrablockspace-runtime-common = { path = "../../../runtime/common" }
 polkadot-service = { path = "../../service" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 infrablockspace-node-primitives = { path = "../../primitives" }

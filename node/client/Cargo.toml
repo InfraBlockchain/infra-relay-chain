@@ -47,7 +47,7 @@ rococo-runtime = { path = "../../runtime/rococo", optional = true }
 infrablockspace-core-primitives = { path = "../../core-primitives" }
 infrablockspace-primitives = { path = "../../primitives" }
 polkadot-node-core-parachains-inherent = { path = "../core/parachains-inherent" }
-polkadot-runtime-common = { path = "../../runtime/common" }
+infrablockspace-runtime-common = { path = "../../runtime/common" }
 
 [features]
 default = ["polkadot"]

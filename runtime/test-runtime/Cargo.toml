@@ -54,7 +54,7 @@ pallet-timestamp = { git = "https://github.com/InfraBlockchain/infra-substrate",
 pallet-sudo = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-vesting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
-runtime-common = { package = "polkadot-runtime-common", path = "../common", default-features = false }
+runtime-common = { package = "infrablockspace-runtime-common", path = "../common", default-features = false }
 primitives = { package = "infrablockspace-primitives", path = "../../primitives", default-features = false }
 pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
 polkadot-parachain = { path = "../../parachain", default-features = false }
