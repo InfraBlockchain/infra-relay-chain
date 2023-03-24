@@ -24,7 +24,7 @@ sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", bran
 sp-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-std = { package = "sp-std", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
-polkadot-core-primitives = { path = "../core-primitives", default-features = false }
+infrablockspace-core-primitives = { path = "../core-primitives", default-features = false }
 polkadot-parachain = { path = "../parachain", default-features = false }
 
 [features]
@@ -46,7 +46,7 @@ std = [
 	"runtime_primitives/std",
 	"serde",
 	"polkadot-parachain/std",
-	"polkadot-core-primitives/std",
+	"infrablockspace-core-primitives/std",
 	"bitvec/std",
 ]
 runtime-benchmarks = []

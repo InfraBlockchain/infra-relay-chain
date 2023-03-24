@@ -3349,6 +3349,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "infrablockspace-core-primitives"
+version = "0.9.37"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "inout"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6574,9 +6585,9 @@ version = "0.9.37"
 dependencies = [
  "assert_cmd",
  "color-eyre",
+ "infrablockspace-core-primitives",
  "nix 0.26.2",
  "polkadot-cli",
- "polkadot-core-primitives",
  "polkadot-node-core-pvf",
  "polkadot-overseer",
  "substrate-rpc-client",
@@ -6731,10 +6742,10 @@ dependencies = [
  "frame-system",
  "frame-system-rpc-runtime-api",
  "futures",
+ "infrablockspace-core-primitives",
  "kusama-runtime",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
- "polkadot-core-primitives",
  "polkadot-node-core-parachains-inherent",
  "polkadot-primitives",
  "polkadot-runtime",
@@ -6792,17 +6803,6 @@ dependencies = [
  "sp-runtime",
  "thiserror",
  "tracing-gum",
-]
-
-[[package]]
-name = "polkadot-core-primitives"
-version = "0.9.37"
-dependencies = [
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-runtime",
- "sp-std",
 ]
 
 [[package]]
@@ -7176,10 +7176,10 @@ dependencies = [
  "futures",
  "futures-timer",
  "hex-literal",
+ "infrablockspace-core-primitives",
  "libc",
  "parity-scale-codec",
  "pin-project",
- "polkadot-core-primitives",
  "polkadot-node-metrics",
  "polkadot-node-primitives",
  "polkadot-parachain",
@@ -7461,8 +7461,8 @@ dependencies = [
  "bounded-collections",
  "derive_more",
  "frame-support",
+ "infrablockspace-core-primitives",
  "parity-scale-codec",
- "polkadot-core-primitives",
  "scale-info",
  "serde",
  "sp-core",
@@ -7491,8 +7491,8 @@ version = "0.9.37"
 dependencies = [
  "bitvec",
  "hex-literal",
+ "infrablockspace-core-primitives",
  "parity-scale-codec",
- "polkadot-core-primitives",
  "polkadot-parachain",
  "scale-info",
  "serde",
@@ -13907,9 +13907,9 @@ name = "xcm-simulator"
 version = "0.9.37"
 dependencies = [
  "frame-support",
+ "infrablockspace-core-primitives",
  "parity-scale-codec",
  "paste",
- "polkadot-core-primitives",
  "polkadot-parachain",
  "polkadot-runtime-parachains",
  "sp-io",
@@ -13924,12 +13924,12 @@ version = "0.9.37"
 dependencies = [
  "frame-support",
  "frame-system",
+ "infrablockspace-core-primitives",
  "log",
  "pallet-balances",
  "pallet-uniques",
  "pallet-xcm",
  "parity-scale-codec",
- "polkadot-core-primitives",
  "polkadot-parachain",
  "polkadot-runtime-parachains",
  "scale-info",
@@ -13952,10 +13952,10 @@ dependencies = [
  "frame-support",
  "frame-system",
  "honggfuzz",
+ "infrablockspace-core-primitives",
  "pallet-balances",
  "pallet-xcm",
  "parity-scale-codec",
- "polkadot-core-primitives",
  "polkadot-parachain",
  "polkadot-runtime-parachains",
  "scale-info",

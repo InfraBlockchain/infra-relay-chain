@@ -178,7 +178,7 @@ impl BenchmarkCallSigner<polkadot_runtime::RuntimeCall, sp_core::sr25519::Pair>
 		runtime::UncheckedExtrinsic::new_signed(
 			call,
 			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
+			infrablockspace_core_primitives::Signature::Sr25519(signature.clone()),
 			extra,
 		)
 		.into()
@@ -232,7 +232,7 @@ impl BenchmarkCallSigner<westend_runtime::RuntimeCall, sp_core::sr25519::Pair>
 		runtime::UncheckedExtrinsic::new_signed(
 			call,
 			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
+			infrablockspace_core_primitives::Signature::Sr25519(signature.clone()),
 			extra,
 		)
 		.into()
@@ -286,7 +286,7 @@ impl BenchmarkCallSigner<kusama_runtime::RuntimeCall, sp_core::sr25519::Pair>
 		runtime::UncheckedExtrinsic::new_signed(
 			call,
 			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
+			infrablockspace_core_primitives::Signature::Sr25519(signature.clone()),
 			extra,
 		)
 		.into()
@@ -340,7 +340,7 @@ impl BenchmarkCallSigner<rococo_runtime::RuntimeCall, sp_core::sr25519::Pair>
 		runtime::UncheckedExtrinsic::new_signed(
 			call,
 			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
+			infrablockspace_core_primitives::Signature::Sr25519(signature.clone()),
 			extra,
 		)
 		.into()
@@ -351,7 +351,7 @@ impl BenchmarkCallSigner<rococo_runtime::RuntimeCall, sp_core::sr25519::Pair>
 ///
 /// Not to be used outside of benchmarking since it returns mocked values.
 pub fn benchmark_inherent_data(
-	header: polkadot_core_primitives::Header,
+	header: infrablockspace_core_primitives::Header,
 ) -> std::result::Result<sp_inherents::InherentData, sp_inherents::Error> {
 	use sp_inherents::InherentDataProvider;
 	let mut inherent_data = sp_inherents::InherentData::new();

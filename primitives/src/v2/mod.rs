@@ -35,10 +35,10 @@ use sp_arithmetic::traits::{BaseArithmetic, Saturating};
 pub use runtime_primitives::traits::{BlakeTwo256, Hash as HashT};
 
 // Export some core primitives.
-pub use polkadot_core_primitives::v2::{
+pub use infrablockspace_core_primitives::v2::{
 	AccountId, AccountIndex, AccountPublic, Balance, Block, BlockId, BlockNumber, CandidateHash,
 	ChainId, DownwardMessage, Hash, Header, InboundDownwardMessage, InboundHrmpMessage, Moment,
-	Nonce, OutboundHrmpMessage, Remark, Signature, UncheckedExtrinsic,
+	Nonce, OutboundHrmpMessage, Remark, Signature, UncheckedExtrinsic, Vote, VoteWeight
 };
 
 // Export some polkadot-parachain primitives
