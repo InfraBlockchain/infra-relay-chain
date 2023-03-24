@@ -151,6 +151,16 @@ pub struct OutboundHrmpMessage<Id> {
 	pub data: sp_std::vec::Vec<u8>,
 }
 
+pub type VoteWeight = u64;
+/// Vote from the perspective of InfraBlockspace & InfraBlockchain
+#[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo)]
+pub struct Vote {
+	/// Subject of the vote from InfraBlockchain
+	pub candidate: AccountId,
+	/// Weight of the vote for the candidate
+	pub weight: VoteWeight,
+}
+
 /// `V2` primitives.
 pub mod v2 {
 	pub use super::*;
