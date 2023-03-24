@@ -21,7 +21,7 @@ use futures::{
 };
 
 use fatality::Nested;
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	request_response::{
 		incoming::OutgoingResponse,
 		v1::{StatementFetchingRequest, StatementFetchingResponse},

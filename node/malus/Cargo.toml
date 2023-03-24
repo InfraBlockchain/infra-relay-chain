@@ -14,15 +14,15 @@ path = "src/malus.rs"
 
 [dependencies]
 polkadot-cli = { path = "../../cli", features = [ "malus", "rococo-native", "kusama-native", "westend-native", "polkadot-native" ] }
-polkadot-node-subsystem = { path = "../subsystem" }
-polkadot-node-subsystem-util = { path = "../subsystem-util" }
-polkadot-node-subsystem-types = { path = "../subsystem-types" }
-polkadot-node-core-dispute-coordinator = { path = "../core/dispute-coordinator" }
-polkadot-node-core-candidate-validation = { path = "../core/candidate-validation" }
-polkadot-node-core-backing = { path = "../core/backing" }
+infrablockspace-node-subsystem = { path = "../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../subsystem-util" }
+infrablockspace-node-subsystem-types = { path = "../subsystem-types" }
+infrablockspace-node-core-dispute-coordinator = { path = "../core/dispute-coordinator" }
+infrablockspace-node-core-candidate-validation = { path = "../core/candidate-validation" }
+infrablockspace-node-core-backing = { path = "../core/backing" }
 infrablockspace-node-primitives = { path = "../primitives" }
 infrablockspace-primitives = { path = "../../primitives" }
-polkadot-node-core-pvf = { path = "../core/pvf" }
+infrablockspace-node-core-pvf = { path = "../core/pvf" }
 color-eyre = { version = "0.6.1", default-features = false }
 assert_matches = "1.5"
 async-trait = "0.1.57"
@@ -32,13 +32,13 @@ clap = { version = "4.0.9", features = ["derive"] }
 futures = "0.3.21"
 futures-timer = "3.0.2"
 gum = { package = "tracing-gum", path = "../gum/" }
-erasure = { package = "polkadot-erasure-coding", path = "../../erasure-coding" }
+erasure = { package = "erasure-coding", path = "../../erasure-coding" }
 rand = "0.8.5"
 
 [features]
 default = []
 
 [dev-dependencies]
-polkadot-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 futures = { version = "0.3.21", features = ["thread-pool"] }

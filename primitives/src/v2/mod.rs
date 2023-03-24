@@ -41,8 +41,8 @@ pub use infrablockspace_core_primitives::v2::{
 	Nonce, OutboundHrmpMessage, Remark, Signature, UncheckedExtrinsic, Vote, VoteWeight
 };
 
-// Export some polkadot-parachain primitives
-pub use polkadot_parachain::primitives::{
+// Export some infrablockspace-parachain primitives
+pub use infrablockspace_parachain::primitives::{
 	HeadData, HorizontalMessages, HrmpChannelId, Id, UpwardMessage, UpwardMessages, ValidationCode,
 	ValidationCodeHash, LOWEST_PUBLIC_ID, LOWEST_USER_ID,
 };

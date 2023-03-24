@@ -21,12 +21,12 @@ use std::sync::Arc;
 use futures::channel::oneshot;
 
 use fatality::Nested;
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	request_response::{v1, IncomingRequest, IncomingRequestReceiver},
 	UnifiedReputationChange as Rep,
 };
 use infrablockspace_node_primitives::{AvailableData, ErasureChunk};
-use polkadot_node_subsystem::{jaeger, messages::AvailabilityStoreMessage, SubsystemSender};
+use infrablockspace_node_subsystem::{jaeger, messages::AvailabilityStoreMessage, SubsystemSender};
 use infrablockspace_primitives::{CandidateHash, ValidatorIndex};
 
 use crate::{

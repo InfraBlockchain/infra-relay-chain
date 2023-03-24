@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-erasure-coding"
+name = "erasure-coding"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

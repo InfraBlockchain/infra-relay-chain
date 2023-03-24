@@ -16,5 +16,5 @@ sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = 
 xcm = { path = "../" }
 xcm-executor = { path = "../xcm-executor" }
 infrablockspace-core-primitives = { path = "../../core-primitives"}
-polkadot-parachain = { path = "../../parachain" }
-polkadot-runtime-parachains = { path = "../../runtime/parachains" }
+infrablockspace-parachain = { path = "../../parachain" }
+infrablockspace-runtime-parachains = { path = "../../runtime/parachains" }

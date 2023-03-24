@@ -31,7 +31,7 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use infrablockspace_node_primitives::{
 	disputes::ValidCandidateVotes, CandidateVotes, DisputeStatus, SignedDisputeStatement, Timestamp,
 };
-use polkadot_node_subsystem_util::rolling_session_window::RollingSessionWindow;
+use infrablockspace_node_subsystem_util::rolling_session_window::RollingSessionWindow;
 use infrablockspace_primitives::{
 	CandidateReceipt, DisputeStatement, IndexedVec, SessionIndex, SessionInfo,
 	ValidDisputeStatementKind, ValidatorId, ValidatorIndex, ValidatorPair, ValidatorSignature,

@@ -864,4 +864,4 @@ pub enum PvfCheckerMessage { }
 [BitfieldDistributionV1NetworkMessage]: network.md#bitfield-distribution-v1
 [PoVDistributionV1NetworkMessage]: network.md#pov-distribution-v1
 [StatementDistributionV1NetworkMessage]: network.md#statement-distribution-v1
-[CollatorProtocolV1NetworkMessage]: network.md#collator-protocol-v1
+[CollatorProtocolV1NetworkMessage]: network.md#infrablockspace-collator-protocol-v1

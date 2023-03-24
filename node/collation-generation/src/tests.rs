@@ -25,7 +25,7 @@ mod handle_new_activations {
 	use infrablockspace_node_primitives::{
 		BlockData, Collation, CollationResult, MaybeCompressedPoV, PoV,
 	};
-	use polkadot_node_subsystem::{
+	use infrablockspace_node_subsystem::{
 		errors::RuntimeApiError,
 		messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	};

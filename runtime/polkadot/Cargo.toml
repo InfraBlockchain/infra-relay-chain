@@ -87,7 +87,7 @@ pallet-nomination-pools-benchmarking = { git = "https://github.com/InfraBlockcha
 hex-literal = { version = "0.3.4", optional = true }
 
 runtime-common = { package = "infrablockspace-runtime-common", path = "../common", default-features = false }
-runtime-parachains = { package = "polkadot-runtime-parachains", path = "../parachains", default-features = false }
+runtime-parachains = { package = "infrablockspace-runtime-parachains", path = "../parachains", default-features = false }
 primitives = { package = "infrablockspace-primitives", path = "../../primitives", default-features = false }
 
 xcm = { package = "xcm", path = "../../xcm", default-features = false }

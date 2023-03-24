@@ -28,14 +28,14 @@ use sc_keystore::LocalKeystore;
 use infrablockspace_node_primitives::{
 	disputes::ValidCandidateVotes, CandidateVotes, DisputeStatus, SignedDisputeStatement, Timestamp,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::{
 		ApprovalVotingMessage, BlockDescription, ChainSelectionMessage, DisputeCoordinatorMessage,
 		DisputeDistributionMessage, ImportStatementsResult,
 	},
 	overseer, ActivatedLeaf, ActiveLeavesUpdate, FromOrchestra, OverseerSignal,
 };
-use polkadot_node_subsystem_util::rolling_session_window::{
+use infrablockspace_node_subsystem_util::rolling_session_window::{
 	RollingSessionWindow, SessionWindowUpdate, SessionsUnavailable,
 };
 use infrablockspace_primitives::{

@@ -29,20 +29,20 @@ use sp_core::crypto::Pair;
 use sp_keyring::Sr25519Keyring;
 use sp_runtime::traits::AppVerify;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	our_view,
 	peer_set::CollationVersion,
 	request_response::{IncomingRequest, ReqProtocolNames},
 	view,
 };
 use infrablockspace_node_primitives::BlockData;
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, ActiveLeavesUpdate, LeafStatus,
 };
 use polkadot_node_subsystem_test_helpers as test_helpers;
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CollatorPair, GroupIndex, GroupRotationInfo, IndexedVec, ScheduledCore,
 	SessionIndex, SessionInfo, ValidatorId, ValidatorIndex,
@@ -201,7 +201,7 @@ fn test_harness<T: Future<Output = TestHarness>>(
 ) {
 	let _ = env_logger::builder()
 		.is_test(true)
-		.filter(Some("polkadot_collator_protocol"), log::LevelFilter::Trace)
+		.filter(Some("infrablockspace_collator_protocol"), log::LevelFilter::Trace)
 		.filter(Some(LOG_TARGET), log::LevelFilter::Trace)
 		.try_init();
 
@@ -402,7 +402,7 @@ async fn connect_peer(
 		virtual_overseer,
 		CollatorProtocolMessage::NetworkBridgeUpdate(NetworkBridgeEvent::PeerConnected(
 			peer.clone(),
-			polkadot_node_network_protocol::ObservedRole::Authority,
+			infrablockspace_node_network_protocol::ObservedRole::Authority,
 			CollationVersion::V1.into(),
 			authority_id.map(|v| HashSet::from([v])),
 		)),

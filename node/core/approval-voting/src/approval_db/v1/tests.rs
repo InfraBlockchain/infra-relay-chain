@@ -21,7 +21,7 @@ use crate::{
 	backend::{Backend, OverlayedBackend},
 	ops::{add_block_entry, canonicalize, force_approve, NewCandidateInfo},
 };
-use polkadot_node_subsystem_util::database::Database;
+use infrablockspace_node_subsystem_util::database::Database;
 use infrablockspace_primitives::Id as ParaId;
 use std::{collections::HashMap, sync::Arc};
 
@@ -37,7 +37,7 @@ const TEST_CONFIG: Config =
 
 fn make_db() -> (DbBackend, Arc<dyn Database>) {
 	let db = kvdb_memorydb::create(NUM_COLUMNS);
-	let db = polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
+	let db = infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
 	let db_writer: Arc<dyn Database> = Arc::new(db);
 	(DbBackend::new(db_writer.clone(), TEST_CONFIG), db_writer)
 }

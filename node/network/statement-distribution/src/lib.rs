@@ -25,7 +25,7 @@
 use error::{log_error, FatalResult, JfyiErrorResult};
 use parity_scale_codec::Encode;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	self as net_protocol,
 	grid_topology::{GridNeighbors, RequiredRouting, SessionBoundGridTopologyStorage},
 	peer_set::{IsAuthority, PeerSet},
@@ -34,9 +34,9 @@ use polkadot_node_network_protocol::{
 	IfDisconnected, PeerId, UnifiedReputationChange as Rep, Versioned, View,
 };
 use infrablockspace_node_primitives::{SignedFullStatement, Statement, UncheckedSignedFullStatement};
-use polkadot_node_subsystem_util::{self as util, rand, MIN_GOSSIP_PEERS};
+use infrablockspace_node_subsystem_util::{self as util, rand, MIN_GOSSIP_PEERS};
 
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		CandidateBackingMessage, NetworkBridgeEvent, NetworkBridgeTxMessage,

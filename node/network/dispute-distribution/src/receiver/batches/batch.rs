@@ -17,7 +17,7 @@
 use std::{collections::HashMap, time::Instant};
 
 use gum::CandidateHash;
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	request_response::{incoming::OutgoingResponseSender, v1::DisputeRequest},
 	PeerId,
 };

@@ -16,7 +16,7 @@
 
 use assert_matches::assert_matches;
 use futures::StreamExt;
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 use std::{sync::Arc, time::Duration};
 
 use sp_core::testing::TaskExecutor;
@@ -27,7 +27,7 @@ use ::test_helpers::{
 };
 use parity_scale_codec::Encode;
 use infrablockspace_node_primitives::{AvailableData, BlockData, InvalidCandidate, PoV};
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		AllMessages, ChainApiMessage, DisputeCoordinatorMessage, RuntimeApiMessage,

@@ -18,8 +18,8 @@ mod parachain;
 mod relay_chain;
 
 use codec::DecodeLimit;
-use infrablockspace_core_primitives::AccountId;
-use polkadot_parachain::primitives::Id as ParaId;
+use infrablockspace_core_primitives::AccountId;
+use infrablockspace_parachain::primitives::Id as ParaId;
 use sp_runtime::traits::AccountIdConversion;
 use xcm_simulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain, TestExt};
 

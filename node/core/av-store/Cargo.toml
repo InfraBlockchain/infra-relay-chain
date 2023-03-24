@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-av-store"
+name = "infrablockspace-node-core-av-store"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -13,10 +13,10 @@ gum = { package = "tracing-gum", path = "../../gum" }
 bitvec = "1.0.0"
 
 parity-scale-codec = { version = "3.3.0", features = ["derive"] }
-erasure = { package = "polkadot-erasure-coding", path = "../../../erasure-coding" }
-polkadot-node-subsystem = {path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-overseer = { path = "../../overseer" }
+erasure = { package = "erasure-coding", path = "../../../erasure-coding" }
+infrablockspace-node-subsystem = {path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-overseer = { path = "../../overseer" }
 infrablockspace-primitives = { path = "../../../primitives" }
 infrablockspace-node-primitives = { path = "../../primitives" }
 sp-consensus = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -28,8 +28,8 @@ assert_matches = "1.4.0"
 kvdb-memorydb = "0.13.0"
 
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 parking_lot = "0.12.0"
 test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

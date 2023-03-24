@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-client"
+name = "infrablockspace-client"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -46,7 +46,7 @@ rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
 infrablockspace-core-primitives = { path = "../../core-primitives" }
 infrablockspace-primitives = { path = "../../primitives" }
-polkadot-node-core-parachains-inherent = { path = "../core/parachains-inherent" }
+infrablockspace-node-core-parachains-inherent = { path = "../core/parachains-inherent" }
 infrablockspace-runtime-common = { path = "../../runtime/common" }
 
 [features]

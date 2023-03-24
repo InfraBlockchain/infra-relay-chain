@@ -23,11 +23,11 @@ use futures::channel::oneshot;
 use lru::LruCache;
 
 use infrablockspace_node_primitives::{DISPUTE_CANDIDATE_LIFETIME_AFTER_FINALIZATION, MAX_FINALITY_LAG};
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::ChainApiMessage, overseer, ActivatedLeaf, ActiveLeavesUpdate, ChainApiError,
 	SubsystemSender,
 };
-use polkadot_node_subsystem_util::runtime::{get_candidate_events, get_on_chain_votes};
+use infrablockspace_node_subsystem_util::runtime::{get_candidate_events, get_on_chain_votes};
 use infrablockspace_primitives::{
 	BlockNumber, CandidateEvent, CandidateHash, CandidateReceipt, Hash, ScrapedOnChainVotes,
 };

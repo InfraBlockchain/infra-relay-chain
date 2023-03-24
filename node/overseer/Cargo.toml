@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-overseer"
+name = "infrablockspace-overseer"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -10,9 +10,9 @@ sp-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = 
 futures = "0.3.21"
 futures-timer = "3.0.2"
 parking_lot = "0.12.0"
-polkadot-node-network-protocol = { path = "../network/protocol" }
+infrablockspace-node-network-protocol = { path = "../network/protocol" }
 infrablockspace-node-primitives = { path = "../primitives" }
-polkadot-node-subsystem-types = { path = "../subsystem-types" }
+infrablockspace-node-subsystem-types = { path = "../subsystem-types" }
 polkadot-node-metrics = { path = "../metrics" }
 infrablockspace-primitives = { path = "../../primitives" }
 orchestra = "0.0.4"

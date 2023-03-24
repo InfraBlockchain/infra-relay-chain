@@ -16,7 +16,7 @@
 
 use crate::{error::PrepareError, host::PrepareResultSender, prepare::PrepareStats};
 use always_assert::always;
-use polkadot_parachain::primitives::ValidationCodeHash;
+use infrablockspace_parachain::primitives::ValidationCodeHash;
 use infrablockspace_primitives::vstaging::ExecutorParamsHash;
 use std::{
 	collections::HashMap,

@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-provisioner"
+name = "infrablockspace-node-core-provisioner"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -11,8 +11,8 @@ gum = { package = "tracing-gum", path = "../../gum" }
 thiserror = "1.0.31"
 infrablockspace-primitives = { path = "../../../primitives" }
 infrablockspace-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 rand = "0.8.5"
 futures-timer = "3.0.2"
 fatality = "0.0.6"
@@ -20,5 +20,5 @@ fatality = "0.0.6"
 [dev-dependencies]
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

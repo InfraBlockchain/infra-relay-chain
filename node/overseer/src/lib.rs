@@ -75,7 +75,7 @@ use client::{BlockImportNotification, BlockchainEvents, FinalityNotification};
 use infrablockspace_primitives::{Block, BlockNumber, Hash};
 
 use self::messages::{BitfieldSigningMessage, PvfCheckerMessage};
-use polkadot_node_subsystem_types::messages::{
+use infrablockspace_node_subsystem_types::messages::{
 	ApprovalDistributionMessage, ApprovalVotingMessage, AvailabilityDistributionMessage,
 	AvailabilityRecoveryMessage, AvailabilityStoreMessage, BitfieldDistributionMessage,
 	CandidateBackingMessage, CandidateValidationMessage, ChainApiMessage, ChainSelectionMessage,
@@ -84,7 +84,7 @@ use polkadot_node_subsystem_types::messages::{
 	NetworkBridgeTxMessage, ProvisionerMessage, RuntimeApiMessage, StatementDistributionMessage,
 };
 
-pub use polkadot_node_subsystem_types::{
+pub use infrablockspace_node_subsystem_types::{
 	errors::{SubsystemError, SubsystemResult},
 	jaeger, ActivatedLeaf, ActiveLeavesUpdate, LeafStatus, OverseerSignal,
 	RuntimeApiSubsystemClient,
@@ -370,7 +370,7 @@ pub async fn forward_events<P: BlockchainEvents<Block>>(client: Arc<P>, mut hand
 /// # use futures::{executor, pin_mut, select, FutureExt};
 /// # use futures_timer::Delay;
 /// # use infrablockspace_primitives::Hash;
-/// # use polkadot_overseer::{
+/// # use infrablockspace_overseer::{
 /// # 	self as overseer,
 /// #   OverseerSignal,
 /// # 	SubsystemSender as _,
@@ -557,7 +557,7 @@ pub struct Overseer<SupportsParachains> {
 		RuntimeApiMessage,
 		CandidateBackingMessage,
 	])]
-	collator_protocol: CollatorProtocol,
+	infrablockspace_collator_protocol: CollatorProtocol,
 
 	#[subsystem(ApprovalDistributionMessage, sends: [
 		NetworkBridgeTxMessage,

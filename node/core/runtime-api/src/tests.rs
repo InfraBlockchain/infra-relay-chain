@@ -18,7 +18,7 @@ use super::*;
 
 use ::test_helpers::{dummy_committed_candidate_receipt, dummy_validation_code};
 use infrablockspace_node_primitives::{BabeAllowedSlots, BabeEpoch, BabeEpochConfiguration};
-use polkadot_node_subsystem::SpawnGlue;
+use infrablockspace_node_subsystem::SpawnGlue;
 use polkadot_node_subsystem_test_helpers::make_subsystem_context;
 use infrablockspace_primitives::{
 	runtime_api::ParachainHost, AuthorityDiscoveryId, Block, CandidateEvent,

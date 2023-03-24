@@ -18,18 +18,18 @@
 
 use futures::{channel::oneshot, future::BoxFuture, FutureExt};
 
-use polkadot_node_network_protocol::request_response::{
+use infrablockspace_node_network_protocol::request_response::{
 	outgoing::{RequestError, Requests},
 	v1::{PoVFetchingRequest, PoVFetchingResponse},
 	OutgoingRequest, Recipient,
 };
 use infrablockspace_node_primitives::PoV;
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{IfDisconnected, NetworkBridgeTxMessage},
 	overseer,
 };
-use polkadot_node_subsystem_util::runtime::RuntimeInfo;
+use infrablockspace_node_subsystem_util::runtime::RuntimeInfo;
 use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateHash, Hash, Id as ParaId, ValidatorIndex,
 };
@@ -137,7 +137,7 @@ mod tests {
 	use sp_core::testing::TaskExecutor;
 
 	use infrablockspace_node_primitives::BlockData;
-	use polkadot_node_subsystem::messages::{
+	use infrablockspace_node_subsystem::messages::{
 		AllMessages, AvailabilityDistributionMessage, RuntimeApiMessage, RuntimeApiRequest,
 	};
 	use polkadot_node_subsystem_test_helpers as test_helpers;
@@ -168,7 +168,7 @@ mod tests {
 			TaskExecutor,
 		>(pool.clone());
 		let keystore = make_ferdie_keystore();
-		let mut runtime = polkadot_node_subsystem_util::runtime::RuntimeInfo::new(Some(keystore));
+		let mut runtime = infrablockspace_node_subsystem_util::runtime::RuntimeInfo::new(Some(keystore));
 
 		let (tx, rx) = oneshot::channel();
 		let testee = async {

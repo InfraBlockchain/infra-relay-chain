@@ -21,8 +21,8 @@ futures = "0.3.21"
 pyro = { package = "pyroscope", version = "0.3.1", optional = true }
 
 service = { package = "polkadot-service", path = "../node/service", default-features = false, optional = true }
-polkadot-client = { path = "../node/client", optional = true }
-polkadot-node-core-pvf = { path = "../node/core/pvf", optional = true }
+infrablockspace-client = { path = "../node/client", optional = true }
+infrablockspace-node-core-pvf = { path = "../node/core/pvf", optional = true }
 polkadot-performance-test = { path = "../node/test/performance-test", optional = true }
 
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -51,8 +51,8 @@ cli = [
 	"sc-tracing",
 	"frame-benchmarking-cli",
 	"try-runtime-cli",
-	"polkadot-client",
-	"polkadot-node-core-pvf",
+	"infrablockspace-client",
+	"infrablockspace-node-core-pvf",
 ]
 runtime-benchmarks = [
 	"service/runtime-benchmarks",

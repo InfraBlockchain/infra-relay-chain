@@ -21,7 +21,7 @@
 #![warn(missing_docs)]
 
 use futures::{channel::oneshot, FutureExt as _};
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	self as net_protocol,
 	grid_topology::{RandomRouting, RequiredRouting, SessionGridTopologies, SessionGridTopology},
 	peer_set::MAX_NOTIFICATION_SIZE,
@@ -30,7 +30,7 @@ use polkadot_node_network_protocol::{
 use infrablockspace_node_primitives::approval::{
 	AssignmentCert, BlockApprovalMeta, IndirectAssignmentCert, IndirectSignedApprovalVote,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::{
 		ApprovalCheckResult, ApprovalDistributionMessage, ApprovalVotingMessage,
 		AssignmentCheckResult, NetworkBridgeEvent, NetworkBridgeTxMessage,

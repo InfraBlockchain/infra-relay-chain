@@ -31,11 +31,11 @@ use polkadot_cli::{
 	},
 	Cli,
 };
-use polkadot_node_core_candidate_validation::find_validation_data;
+use infrablockspace_node_core_candidate_validation::find_validation_data;
 use infrablockspace_node_primitives::{AvailableData, BlockData, PoV};
 use infrablockspace_primitives::{CandidateDescriptor, CandidateReceipt};
 
-use polkadot_node_subsystem_util::request_validators;
+use infrablockspace_node_subsystem_util::request_validators;
 use sp_core::traits::SpawnNamed;
 
 use rand::distributions::{Bernoulli, Distribution};
@@ -52,7 +52,7 @@ use crate::{
 
 // Import extra types relevant to the particular
 // subsystem.
-use polkadot_node_subsystem::{messages::CandidateBackingMessage, SpawnGlue};
+use infrablockspace_node_subsystem::{messages::CandidateBackingMessage, SpawnGlue};
 
 use std::sync::Arc;
 
@@ -70,7 +70,7 @@ where
 {
 	type Message = CandidateBackingMessage;
 
-	/// Intercept incoming `Second` requests from the `collator-protocol` subsystem.
+	/// Intercept incoming `Second` requests from the `infrablockspace-collator-protocol` subsystem.
 	fn intercept_incoming(
 		&self,
 		subsystem_sender: &mut Sender,

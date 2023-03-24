@@ -17,10 +17,10 @@
 
 //! Error handling related code and Error/Result definitions.
 
-use polkadot_node_network_protocol::request_response::incoming;
+use infrablockspace_node_network_protocol::request_response::incoming;
 use infrablockspace_node_primitives::UncheckedSignedFullStatement;
-use polkadot_node_subsystem::errors::SubsystemError;
-use polkadot_node_subsystem_util::runtime;
+use infrablockspace_node_subsystem::errors::SubsystemError;
+use infrablockspace_node_subsystem_util::runtime;
 
 use crate::LOG_TARGET;
 

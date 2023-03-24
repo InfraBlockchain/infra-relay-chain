@@ -25,7 +25,7 @@ sp-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 sp-std = { package = "sp-std", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 infrablockspace-core-primitives = { path = "../core-primitives", default-features = false }
-polkadot-parachain = { path = "../parachain", default-features = false }
+infrablockspace-parachain = { path = "../parachain", default-features = false }
 
 [features]
 default = ["std"]
@@ -45,7 +45,7 @@ std = [
 	"sp-arithmetic/std",
 	"runtime_primitives/std",
 	"serde",
-	"polkadot-parachain/std",
+	"infrablockspace-parachain/std",
 	"infrablockspace-core-primitives/std",
 	"bitvec/std",
 ]

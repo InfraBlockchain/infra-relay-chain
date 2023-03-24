@@ -16,7 +16,7 @@
 
 use ::test_helpers::{dummy_digest, dummy_hash};
 use futures::{channel::oneshot, future::BoxFuture, prelude::*};
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		AllMessages, CandidateValidationMessage, PreCheckOutcome, PvfCheckerMessage,

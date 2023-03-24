@@ -20,8 +20,8 @@
 //! multiple subsystems and intercept or replace incoming and outgoing
 //! messages on the overseer level.
 
-use polkadot_node_subsystem::*;
-pub use polkadot_node_subsystem::{messages, messages::*, overseer, FromOrchestra};
+use infrablockspace_node_subsystem::*;
+pub use infrablockspace_node_subsystem::{messages, messages::*, overseer, FromOrchestra};
 use std::{future::Future, pin::Pin};
 
 /// Filter incoming and outgoing messages.

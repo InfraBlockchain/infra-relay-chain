@@ -23,14 +23,14 @@
 #![deny(unused_crate_dependencies, unused_results)]
 #![warn(missing_docs)]
 
-use polkadot_node_core_pvf::{
+use infrablockspace_node_core_pvf::{
 	InvalidCandidate as WasmInvalidCandidate, PrepareError, PrepareStats, PvfWithExecutorParams,
 	ValidationError, ValidationHost,
 };
 use infrablockspace_node_primitives::{
 	BlockData, InvalidCandidate, PoV, ValidationResult, POV_BOMB_LIMIT, VALIDATION_CODE_BOMB_LIMIT,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::RuntimeApiError,
 	messages::{
 		CandidateValidationMessage, PreCheckOutcome, RuntimeApiMessage, RuntimeApiRequest,
@@ -39,8 +39,8 @@ use polkadot_node_subsystem::{
 	overseer, FromOrchestra, OverseerSignal, SpawnedSubsystem, SubsystemError, SubsystemResult,
 	SubsystemSender,
 };
-use polkadot_node_subsystem_util::executor_params_at_relay_parent;
-use polkadot_parachain::primitives::{ValidationParams, ValidationResult as WasmValidationResult};
+use infrablockspace_node_subsystem_util::executor_params_at_relay_parent;
+use infrablockspace_parachain::primitives::{ValidationParams, ValidationResult as WasmValidationResult};
 use infrablockspace_primitives::{
 	vstaging::ExecutorParams, CandidateCommitments, CandidateDescriptor, CandidateReceipt, Hash,
 	OccupiedCoreAssumption, PersistedValidationData, ValidationCode, ValidationCodeHash,
@@ -83,7 +83,7 @@ pub struct CandidateValidationSubsystem {
 	#[allow(missing_docs)]
 	pub metrics: Metrics,
 	#[allow(missing_docs)]
-	pub pvf_metrics: polkadot_node_core_pvf::Metrics,
+	pub pvf_metrics: infrablockspace_node_core_pvf::Metrics,
 	config: Config,
 }
 
@@ -95,7 +95,7 @@ impl CandidateValidationSubsystem {
 	pub fn with_config(
 		config: Config,
 		metrics: Metrics,
-		pvf_metrics: polkadot_node_core_pvf::Metrics,
+		pvf_metrics: infrablockspace_node_core_pvf::Metrics,
 	) -> Self {
 		CandidateValidationSubsystem { config, metrics, pvf_metrics }
 	}
@@ -121,12 +121,12 @@ impl<Context> CandidateValidationSubsystem {
 async fn run<Context>(
 	mut ctx: Context,
 	metrics: Metrics,
-	pvf_metrics: polkadot_node_core_pvf::Metrics,
+	pvf_metrics: infrablockspace_node_core_pvf::Metrics,
 	cache_path: PathBuf,
 	program_path: PathBuf,
 ) -> SubsystemResult<()> {
-	let (validation_host, task) = polkadot_node_core_pvf::start(
-		polkadot_node_core_pvf::Config::new(cache_path, program_path),
+	let (validation_host, task) = infrablockspace_node_core_pvf::start(
+		infrablockspace_node_core_pvf::Config::new(cache_path, program_path),
 		pvf_metrics,
 	);
 	ctx.spawn_blocking("pvf-validation-host", task.boxed())?;
@@ -727,7 +727,7 @@ impl ValidationBackend for ValidationHost {
 		timeout: Duration,
 		encoded_params: Vec<u8>,
 	) -> Result<WasmValidationResult, ValidationError> {
-		let priority = polkadot_node_core_pvf::Priority::Normal;
+		let priority = infrablockspace_node_core_pvf::Priority::Normal;
 
 		let (tx, rx) = oneshot::channel();
 		if let Err(err) =

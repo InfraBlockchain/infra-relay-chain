@@ -29,7 +29,7 @@ use futures::{pin_mut, select_biased, FutureExt};
 use futures_timer::Delay;
 use parity_scale_codec::{Decode, Encode};
 
-use polkadot_parachain::primitives::ValidationResult;
+use infrablockspace_parachain::primitives::ValidationResult;
 use infrablockspace_primitives::vstaging::ExecutorParams;
 use std::{
 	path::{Path, PathBuf},

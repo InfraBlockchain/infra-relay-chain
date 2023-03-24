@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-collation-generation"
+name = "infrablockspace-node-collation-generation"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -7,10 +7,10 @@ edition.workspace = true
 [dependencies]
 futures = "0.3.21"
 gum = { package = "tracing-gum", path = "../gum" }
-polkadot-erasure-coding = { path = "../../erasure-coding" }
+erasure-coding = { path = "../../erasure-coding" }
 infrablockspace-node-primitives = { path = "../primitives" }
-polkadot-node-subsystem = { path = "../subsystem" }
-polkadot-node-subsystem-util = { path = "../subsystem-util" }
+infrablockspace-node-subsystem = { path = "../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../subsystem-util" }
 infrablockspace-primitives = { path = "../../primitives" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-maybe-compressed-blob  = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -18,5 +18,5 @@ thiserror = "1.0.31"
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["bit-vec", "derive"] }
 
 [dev-dependencies]
-polkadot-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
 test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../primitives/test-helpers" }

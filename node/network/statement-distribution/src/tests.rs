@@ -19,7 +19,7 @@ use assert_matches::assert_matches;
 use futures::executor::{self, block_on};
 use futures_timer::Delay;
 use parity_scale_codec::{Decode, Encode};
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	grid_topology::{SessionGridTopology, TopologyPeerInfo},
 	peer_set::ValidationVersion,
 	request_response::{
@@ -29,7 +29,7 @@ use polkadot_node_network_protocol::{
 	view, ObservedRole,
 };
 use infrablockspace_node_primitives::{Statement, UncheckedSignedFullStatement};
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{network_bridge_event, AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, LeafStatus,

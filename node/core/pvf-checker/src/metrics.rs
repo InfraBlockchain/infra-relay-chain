@@ -16,7 +16,7 @@
 
 //! Metrics definitions for the PVF pre-checking subsystem.
 
-use polkadot_node_subsystem_util::metrics::{self, prometheus};
+use infrablockspace_node_subsystem_util::metrics::{self, prometheus};
 
 #[derive(Clone)]
 struct MetricsInner {

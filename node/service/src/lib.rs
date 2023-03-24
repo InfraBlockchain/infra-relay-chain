@@ -36,17 +36,17 @@ mod tests;
 use {
 	grandpa::{self, FinalityProofProvider as GrandpaFinalityProofProvider},
 	gum::info,
-	polkadot_node_core_approval_voting::{
+	infrablockspace_node_core_approval_voting::{
 		self as approval_voting_subsystem, Config as ApprovalVotingConfig,
 	},
-	polkadot_node_core_av_store::Config as AvailabilityConfig,
-	polkadot_node_core_av_store::Error as AvailabilityError,
-	polkadot_node_core_candidate_validation::Config as CandidateValidationConfig,
-	polkadot_node_core_chain_selection::{
+	infrablockspace_node_core_av_store::Config as AvailabilityConfig,
+	infrablockspace_node_core_av_store::Error as AvailabilityError,
+	infrablockspace_node_core_candidate_validation::Config as CandidateValidationConfig,
+	infrablockspace_node_core_chain_selection::{
 		self as chain_selection_subsystem, Config as ChainSelectionConfig,
 	},
-	polkadot_node_core_dispute_coordinator::Config as DisputeCoordinatorConfig,
-	polkadot_node_network_protocol::{
+	infrablockspace_node_core_dispute_coordinator::Config as DisputeCoordinatorConfig,
+	infrablockspace_node_network_protocol::{
 		peer_set::PeerSetProtocolNames, request_response::ReqProtocolNames,
 	},
 	sc_client_api::BlockBackend,
@@ -54,11 +54,11 @@ use {
 	sp_trie::PrefixedMemoryDB,
 };
 
-use polkadot_node_subsystem_util::database::Database;
+use infrablockspace_node_subsystem_util::database::Database;
 
 #[cfg(feature = "full-node")]
 pub use {
-	polkadot_overseer::{Handle, Overseer, OverseerConnector, OverseerHandle},
+	infrablockspace_overseer::{Handle, Overseer, OverseerConnector, OverseerHandle},
 	infrablockspace_primitives::runtime_api::ParachainHost,
 	relay_chain_selection::SelectRelayChain,
 	sc_client_api::AuxStore,
@@ -68,7 +68,7 @@ pub use {
 };
 
 #[cfg(feature = "full-node")]
-use polkadot_node_subsystem::jaeger;
+use infrablockspace_node_subsystem::jaeger;
 
 use std::{sync::Arc, time::Duration};
 
@@ -81,23 +81,23 @@ use telemetry::TelemetryWorker;
 use telemetry::{Telemetry, TelemetryWorkerHandle};
 
 #[cfg(feature = "rococo-native")]
-pub use polkadot_client::RococoExecutorDispatch;
+pub use infrablockspace_client::RococoExecutorDispatch;
 
 #[cfg(feature = "westend-native")]
-pub use polkadot_client::WestendExecutorDispatch;
+pub use infrablockspace_client::WestendExecutorDispatch;
 
 #[cfg(feature = "kusama-native")]
-pub use polkadot_client::KusamaExecutorDispatch;
+pub use infrablockspace_client::KusamaExecutorDispatch;
 
 #[cfg(feature = "polkadot-native")]
-pub use polkadot_client::PolkadotExecutorDispatch;
+pub use infrablockspace_client::PolkadotExecutorDispatch;
 
 pub use chain_spec::{KusamaChainSpec, PolkadotChainSpec, RococoChainSpec, WestendChainSpec};
 pub use consensus_common::{block_validation::Chain, Proposal, SelectChain};
 use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
 use mmr_gadget::MmrGadget;
 #[cfg(feature = "full-node")]
-pub use polkadot_client::{
+pub use infrablockspace_client::{
 	AbstractClient, Client, ClientHandle, ExecuteWithClient, FullBackend, FullClient,
 	RuntimeApiCollection,
 };
@@ -210,7 +210,7 @@ pub enum Error {
 	Consensus(#[from] consensus_common::Error),
 
 	#[error("Failed to create an overseer")]
-	Overseer(#[from] polkadot_overseer::SubsystemError),
+	Overseer(#[from] infrablockspace_overseer::SubsystemError),
 
 	#[error(transparent)]
 	Prometheus(#[from] prometheus_endpoint::PrometheusError),
@@ -219,7 +219,7 @@ pub enum Error {
 	Telemetry(#[from] telemetry::Error),
 
 	#[error(transparent)]
-	Jaeger(#[from] polkadot_node_subsystem::jaeger::JaegerError),
+	Jaeger(#[from] infrablockspace_node_subsystem::jaeger::JaegerError),
 
 	#[cfg(feature = "full-node")]
 	#[error(transparent)]
@@ -452,9 +452,9 @@ fn new_partial<RuntimeApi, ExecutorDispatch, ChainSelection>(
 		sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, ExecutorDispatch>>,
 		(
 			impl Fn(
-				polkadot_rpc::DenyUnsafe,
-				polkadot_rpc::SubscriptionTaskExecutor,
-			) -> Result<polkadot_rpc::RpcExtension, SubstrateServiceError>,
+				infrablockspace_rpc::DenyUnsafe,
+				infrablockspace_rpc::SubscriptionTaskExecutor,
+			) -> Result<infrablockspace_rpc::RpcExtension, SubstrateServiceError>,
 			(
 				babe::BabeBlockImport<
 					Block,
@@ -567,34 +567,34 @@ where
 		let backend = backend.clone();
 
 		move |deny_unsafe,
-		      subscription_executor: polkadot_rpc::SubscriptionTaskExecutor|
-		      -> Result<polkadot_rpc::RpcExtension, service::Error> {
-			let deps = polkadot_rpc::FullDeps {
+		      subscription_executor: infrablockspace_rpc::SubscriptionTaskExecutor|
+		      -> Result<infrablockspace_rpc::RpcExtension, service::Error> {
+			let deps = infrablockspace_rpc::FullDeps {
 				client: client.clone(),
 				pool: transaction_pool.clone(),
 				select_chain: select_chain.clone(),
 				chain_spec: chain_spec.cloned_box(),
 				deny_unsafe,
-				babe: polkadot_rpc::BabeDeps {
+				babe: infrablockspace_rpc::BabeDeps {
 					babe_config: babe_config.clone(),
 					shared_epoch_changes: shared_epoch_changes.clone(),
 					keystore: keystore.clone(),
 				},
-				grandpa: polkadot_rpc::GrandpaDeps {
+				grandpa: infrablockspace_rpc::GrandpaDeps {
 					shared_voter_state: shared_voter_state.clone(),
 					shared_authority_set: shared_authority_set.clone(),
 					justification_stream: justification_stream.clone(),
 					subscription_executor: subscription_executor.clone(),
 					finality_provider: finality_proof_provider.clone(),
 				},
-				beefy: polkadot_rpc::BeefyDeps {
+				beefy: infrablockspace_rpc::BeefyDeps {
 					beefy_finality_proof_stream: beefy_rpc_links.from_voter_justif_stream.clone(),
 					beefy_best_block_stream: beefy_rpc_links.from_voter_best_beefy_stream.clone(),
 					subscription_executor,
 				},
 			};
 
-			polkadot_rpc::create_full(deps, backend.clone()).map_err(Into::into)
+			infrablockspace_rpc::create_full(deps, backend.clone()).map_err(Into::into)
 		}
 	};
 
@@ -704,7 +704,7 @@ where
 	ExecutorDispatch: NativeExecutionDispatch + 'static,
 	OverseerGenerator: OverseerGen,
 {
-	use polkadot_node_network_protocol::request_response::IncomingRequest;
+	use infrablockspace_node_network_protocol::request_response::IncomingRequest;
 	use sc_network_common::sync::warp::WarpSyncParams;
 
 	let is_offchain_indexing_enabled = config.offchain_worker.indexing_enabled;
@@ -759,7 +759,7 @@ where
 
 	let select_chain = if requires_overseer_for_chain_sel {
 		let metrics =
-			polkadot_node_subsystem_util::metrics::Metrics::register(prometheus_registry.as_ref())?;
+			infrablockspace_node_subsystem_util::metrics::Metrics::register(prometheus_registry.as_ref())?;
 
 		SelectRelayChain::new_with_overseer(
 			basics.backend.clone(),
@@ -822,7 +822,7 @@ where
 		PeerSetProtocolNames::new(genesis_hash, config.chain_spec.fork_id());
 
 	{
-		use polkadot_network_bridge::{peer_sets_info, IsAuthority};
+		use infrablockspace_network_bridge::{peer_sets_info, IsAuthority};
 		let is_authority = if role.is_authority() { IsAuthority::Yes } else { IsAuthority::No };
 		config
 			.network
@@ -1053,7 +1053,7 @@ where
 				Box::pin(async move {
 					use futures::{pin_mut, select, FutureExt};
 
-					let forward = polkadot_overseer::forward_events(overseer_client, handle);
+					let forward = infrablockspace_overseer::forward_events(overseer_client, handle);
 
 					let forward = forward.fuse();
 					let overseer_fut = overseer.run().fuse();
@@ -1105,7 +1105,7 @@ where
 
 				async move {
 					let parachain =
-						polkadot_node_core_parachains_inherent::ParachainsInherentDataProvider::new(
+						infrablockspace_node_core_parachains_inherent::ParachainsInherentDataProvider::new(
 							client_clone,
 							overseer_handle,
 							parent,
@@ -1552,7 +1552,7 @@ impl ExecuteWithClient for RevertConsensus {
 		<Api as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<BlakeTwo256>,
 		Backend: sc_client_api::Backend<Block> + 'static,
 		Backend::State: sp_api::StateBackend<BlakeTwo256>,
-		Api: polkadot_client::RuntimeApiCollection<StateBackend = Backend::State>,
+		Api: infrablockspace_client::RuntimeApiCollection<StateBackend = Backend::State>,
 		Client: AbstractClient<Block, Backend, Api = Api> + 'static,
 	{
 		// Revert consensus-related components.

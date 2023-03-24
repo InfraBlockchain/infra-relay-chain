@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-statement-distribution"
+name = "infrablockspace-statement-distribution"
 description = "Statement Distribution Subsystem"
 version.workspace = true
 authors.workspace = true
@@ -11,10 +11,10 @@ gum = { package = "tracing-gum", path = "../../gum" }
 infrablockspace-primitives = { path = "../../../primitives" }
 sp-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-polkadot-node-subsystem = {path = "../../subsystem" }
+infrablockspace-node-subsystem = {path = "../../subsystem" }
 infrablockspace-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-network-protocol = { path = "../../network/protocol" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-network-protocol = { path = "../../network/protocol" }
 arrayvec = "0.5.2"
 indexmap = "1.9.1"
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }
@@ -22,7 +22,7 @@ thiserror = "1.0.31"
 fatality = "0.0.6"
 
 [dev-dependencies]
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 assert_matches = "1.4.0"
 sp-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

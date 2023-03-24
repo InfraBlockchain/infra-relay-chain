@@ -32,7 +32,7 @@ use sp_std::prelude::*;
 
 use pallet_xcm::XcmPassthrough;
 use infrablockspace_core_primitives::BlockNumber as RelayBlockNumber;
-use polkadot_parachain::primitives::{
+use infrablockspace_parachain::primitives::{
 	DmpMessageHandler, Id as ParaId, Sibling, XcmpMessageFormat, XcmpMessageHandler,
 };
 use xcm::{latest::prelude::*, VersionedXcm};

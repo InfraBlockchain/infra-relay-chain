@@ -138,7 +138,7 @@ impl std::ops::Deref for OurView {
 /// # Example
 ///
 /// ```
-/// # use polkadot_node_network_protocol::our_view;
+/// # use infrablockspace_node_network_protocol::our_view;
 /// # use infrablockspace_primitives::Hash;
 /// let our_view = our_view![Hash::repeat_byte(1), Hash::repeat_byte(2)];
 /// ```
@@ -172,7 +172,7 @@ pub struct View {
 /// # Example
 ///
 /// ```
-/// # use polkadot_node_network_protocol::view;
+/// # use infrablockspace_node_network_protocol::view;
 /// # use infrablockspace_primitives::Hash;
 /// let view = view![Hash::repeat_byte(1), Hash::repeat_byte(2)];
 /// ```

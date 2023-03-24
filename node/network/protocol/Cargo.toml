@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-network-protocol"
+name = "infrablockspace-node-network-protocol"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

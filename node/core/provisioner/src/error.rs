@@ -17,8 +17,8 @@
 ///! Error types for provisioner module
 use fatality::Nested;
 use futures::channel::{mpsc, oneshot};
-use polkadot_node_subsystem::errors::{ChainApiError, RuntimeApiError, SubsystemError};
-use polkadot_node_subsystem_util as util;
+use infrablockspace_node_subsystem::errors::{ChainApiError, RuntimeApiError, SubsystemError};
+use infrablockspace_node_subsystem_util as util;
 use infrablockspace_primitives::Hash;
 
 pub type FatalResult<T> = std::result::Result<T, FatalError>;

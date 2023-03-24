@@ -19,7 +19,7 @@ use futures::{executor, pending, pin_mut, poll, select, stream, FutureExt};
 use std::{collections::HashMap, sync::atomic, task::Poll};
 
 use ::test_helpers::{dummy_candidate_descriptor, dummy_candidate_receipt, dummy_hash};
-use polkadot_node_network_protocol::{PeerId, UnifiedReputationChange};
+use infrablockspace_node_network_protocol::{PeerId, UnifiedReputationChange};
 use infrablockspace_node_primitives::{
 	BlockData, CollationGenerationConfig, CollationResult, DisputeMessage, InvalidDisputeVote, PoV,
 	UncheckedDisputeMessage, ValidDisputeVote,
@@ -1094,7 +1094,7 @@ fn context_holds_onto_message_until_enough_signals_received() {
 		network_bridge_tx: network_bridge_tx_bounded_tx.clone(),
 		network_bridge_rx: network_bridge_rx_bounded_tx.clone(),
 		chain_api: chain_api_bounded_tx.clone(),
-		collator_protocol: collator_protocol_bounded_tx.clone(),
+		infrablockspace_collator_protocol: collator_protocol_bounded_tx.clone(),
 		collation_generation: collation_generation_bounded_tx.clone(),
 		approval_distribution: approval_distribution_bounded_tx.clone(),
 		approval_voting: approval_voting_bounded_tx.clone(),

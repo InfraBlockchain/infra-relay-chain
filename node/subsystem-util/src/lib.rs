@@ -24,7 +24,7 @@
 
 #![warn(missing_docs)]
 
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::{RuntimeApiError, SubsystemError},
 	messages::{RuntimeApiMessage, RuntimeApiRequest, RuntimeApiSender},
 	overseer, SubsystemSender,
@@ -56,13 +56,13 @@ use std::time::Duration;
 use thiserror::Error;
 
 pub use metered;
-pub use polkadot_node_network_protocol::MIN_GOSSIP_PEERS;
+pub use infrablockspace_node_network_protocol::MIN_GOSSIP_PEERS;
 
 pub use determine_new_blocks::determine_new_blocks;
 
 /// These reexports are required so that external crates can use the `delegated_subsystem` macro properly.
 pub mod reexports {
-	pub use polkadot_overseer::gen::{SpawnedSubsystem, Spawner, Subsystem, SubsystemContext};
+	pub use infrablockspace_overseer::gen::{SpawnedSubsystem, Spawner, Subsystem, SubsystemContext};
 }
 
 /// A rolling session window cache.

@@ -26,7 +26,7 @@ Output:
 
 This network protocol uses the `Collation` peer-set of the [`NetworkBridge`][NB].
 
-It uses the [`CollatorProtocolV1Message`](../../types/network.md#collator-protocol) as its `WireMessage`
+It uses the [`CollatorProtocolV1Message`](../../types/network.md#infrablockspace-collator-protocol) as its `WireMessage`
 
 Since this protocol functions both for validators and collators, it is easiest to go through the protocol actions for each of them separately.
 
@@ -128,7 +128,7 @@ Several approaches have been discussed, but all have some issues:
 [CB]: ../backing/candidate-backing.md
 [CBM]: ../../types/overseer-protocol.md#candidate-backing-mesage
 [CG]: collation-generation.md
-[CPM]: ../../types/overseer-protocol.md#collator-protocol-message
+[CPM]: ../../types/overseer-protocol.md#infrablockspace-collator-protocol-message
 [CS]: ../backing/candidate-selection.md
 [CSM]: ../../types/overseer-protocol.md#candidate-selection-message
 [NB]: ../utility/network-bridge.md

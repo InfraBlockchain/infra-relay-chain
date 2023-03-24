@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-bitfield-signing"
+name = "infrablockspace-node-core-bitfield-signing"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -8,12 +8,12 @@ edition.workspace = true
 futures = "0.3.21"
 gum = { package = "tracing-gum", path = "../../gum" }
 infrablockspace-primitives = { path = "../../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 wasm-timer = "0.2.5"
 thiserror = "1.0.31"
 
 [dev-dependencies]
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

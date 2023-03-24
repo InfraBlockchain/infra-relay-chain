@@ -118,7 +118,7 @@ use crate::{
 };
 use parity_scale_codec::{Decode, Encode};
 use infrablockspace_core_primitives as pcp;
-use polkadot_parachain::primitives as ppp;
+use infrablockspace_parachain::primitives as ppp;
 use sp_std::{collections::btree_map::BTreeMap, prelude::*};
 
 sp_api::decl_runtime_apis! {

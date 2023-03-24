@@ -1,14 +1,14 @@
 [package]
-name = "polkadot-approval-distribution"
+name = "infrablockspace-approval-distribution"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
 polkadot-node-metrics = { path = "../../metrics" }
-polkadot-node-network-protocol = { path = "../protocol" }
+infrablockspace-node-network-protocol = { path = "../protocol" }
 infrablockspace-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
 infrablockspace-primitives = { path = "../../../primitives" }
 rand = "0.8"
 
@@ -19,8 +19,8 @@ gum = { package = "tracing-gum", path = "../../gum" }
 sp-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", features = ["std"] }
 
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 infrablockspace-primitives-test-helpers = { path = "../../../primitives/test-helpers" }
 
 assert_matches = "1.4.0"

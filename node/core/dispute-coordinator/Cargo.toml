@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-dispute-coordinator"
+name = "infrablockspace-node-core-dispute-coordinator"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -15,15 +15,15 @@ fatality = "0.0.6"
 
 infrablockspace-primitives = { path = "../../../primitives" }
 infrablockspace-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 
 [dev-dependencies]
 kvdb-memorydb = "0.13.0"
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

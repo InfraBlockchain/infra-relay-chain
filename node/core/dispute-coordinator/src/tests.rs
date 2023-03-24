@@ -29,12 +29,12 @@ use futures::{
 	future::{self, BoxFuture},
 };
 
-use polkadot_node_subsystem_util::database::Database;
+use infrablockspace_node_subsystem_util::database::Database;
 
 use infrablockspace_node_primitives::{
 	DisputeMessage, DisputeStatus, SignedDisputeStatement, SignedFullStatement, Statement,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::{
 		ApprovalVotingMessage, ChainApiMessage, ChainSelectionMessage, DisputeCoordinatorMessage,
 		DisputeDistributionMessage, ImportStatementsResult,
@@ -43,7 +43,7 @@ use polkadot_node_subsystem::{
 	OverseerSignal,
 };
 
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 use sc_keystore::LocalKeystore;
 use sp_application_crypto::AppKey;
 use sp_core::{sr25519::Pair, testing::TaskExecutor, Pair as PairT};
@@ -52,7 +52,7 @@ use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr};
 
 use ::test_helpers::{dummy_candidate_receipt_bad_sig, dummy_digest, dummy_hash};
 use infrablockspace_node_primitives::{Timestamp, ACTIVE_DURATION_SECS};
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{AllMessages, BlockDescription, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, ActiveLeavesUpdate, LeafStatus,
@@ -211,7 +211,7 @@ impl Default for TestState {
 			make_keystore(vec![Sr25519Keyring::Alice.to_seed()].into_iter()).into();
 
 		let db = kvdb_memorydb::create(1);
-		let db = polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
+		let db = infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
 		let db = Arc::new(db);
 		let config = Config { col_dispute_data: 0, col_session_data: 1 };
 

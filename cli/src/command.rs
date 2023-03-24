@@ -18,7 +18,7 @@ use crate::cli::{Cli, Subcommand};
 use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
 use futures::future::TryFutureExt;
 use log::info;
-use polkadot_client::benchmarking::{
+use infrablockspace_client::benchmarking::{
 	benchmark_inherent_data, ExistentialDepositProvider, RemarkBuilder, TransferKeepAliveBuilder,
 };
 use sc_cli::{RuntimeVersion, SubstrateCli};
@@ -78,7 +78,7 @@ impl SubstrateCli for Cli {
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
 		let id = if id == "" {
 			let n = get_exec_name().unwrap_or_default();
-			["polkadot", "kusama", "westend", "rococo", "versi"]
+			["polkadot", "rococo", "versi"]
 				.iter()
 				.cloned()
 				.find(|&chain| n.starts_with(chain))
@@ -223,7 +223,7 @@ fn ensure_dev(spec: &Box<dyn service::ChainSpec>) -> std::result::Result<(), Str
 	}
 }
 
-/// Unwraps a [`polkadot_client::Client`] into the concrete runtime client.
+/// Unwraps a [`infrablockspace_client::Client`] into the concrete runtime client.
 macro_rules! unwrap_client {
 	(
 		$client:ident,
@@ -231,13 +231,13 @@ macro_rules! unwrap_client {
 	) => {
 		match $client.as_ref() {
 			#[cfg(feature = "polkadot-native")]
-			polkadot_client::Client::Polkadot($client) => $code,
+			infrablockspace_client::Client::Polkadot($client) => $code,
 			#[cfg(feature = "westend-native")]
-			polkadot_client::Client::Westend($client) => $code,
+			infrablockspace_client::Client::Westend($client) => $code,
 			#[cfg(feature = "kusama-native")]
-			polkadot_client::Client::Kusama($client) => $code,
+			infrablockspace_client::Client::Kusama($client) => $code,
 			#[cfg(feature = "rococo-native")]
-			polkadot_client::Client::Rococo($client) => $code,
+			infrablockspace_client::Client::Rococo($client) => $code,
 			#[allow(unreachable_patterns)]
 			_ => {
 				let _ = $client;
@@ -494,7 +494,7 @@ pub fn run() -> Result<()> {
 
 			#[cfg(not(target_os = "android"))]
 			{
-				polkadot_node_core_pvf::prepare_worker_entrypoint(&cmd.socket_path);
+				infrablockspace_node_core_pvf::prepare_worker_entrypoint(&cmd.socket_path);
 				Ok(())
 			}
 		},
@@ -513,7 +513,7 @@ pub fn run() -> Result<()> {
 
 			#[cfg(not(target_os = "android"))]
 			{
-				polkadot_node_core_pvf::execute_worker_entrypoint(&cmd.socket_path);
+				infrablockspace_node_core_pvf::execute_worker_entrypoint(&cmd.socket_path);
 				Ok(())
 			}
 		},

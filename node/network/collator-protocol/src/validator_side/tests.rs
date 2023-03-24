@@ -22,16 +22,16 @@ use sp_keyring::Sr25519Keyring;
 use sp_keystore::{testing::KeyStore as TestKeyStore, SyncCryptoStore};
 use std::{iter, sync::Arc, task::Poll, time::Duration};
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	our_view,
 	peer_set::CollationVersion,
 	request_response::{Requests, ResponseSender},
 	ObservedRole,
 };
 use infrablockspace_node_primitives::BlockData;
-use polkadot_node_subsystem::messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest};
+use infrablockspace_node_subsystem::messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest};
 use polkadot_node_subsystem_test_helpers as test_helpers;
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 use infrablockspace_primitives::{
 	CollatorPair, CoreState, GroupIndex, GroupRotationInfo, OccupiedCore, ScheduledCore,
 	ValidatorId, ValidatorIndex,
@@ -122,7 +122,7 @@ struct TestHarness {
 fn test_harness<T: Future<Output = VirtualOverseer>>(test: impl FnOnce(TestHarness) -> T) {
 	let _ = env_logger::builder()
 		.is_test(true)
-		.filter(Some("polkadot_collator_protocol"), log::LevelFilter::Trace)
+		.filter(Some("infrablockspace_collator_protocol"), log::LevelFilter::Trace)
 		.filter(Some(LOG_TARGET), log::LevelFilter::Trace)
 		.try_init();
 

@@ -16,7 +16,7 @@
 
 use super::*;
 use futures::{executor::block_on, pin_mut, StreamExt};
-use polkadot_node_subsystem::messages::AllMessages;
+use infrablockspace_node_subsystem::messages::AllMessages;
 use infrablockspace_primitives::{CandidateHash, OccupiedCore};
 use test_helpers::dummy_candidate_descriptor;
 

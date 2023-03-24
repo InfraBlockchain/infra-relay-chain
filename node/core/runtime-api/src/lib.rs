@@ -22,12 +22,12 @@
 #![deny(unused_crate_dependencies)]
 #![warn(missing_docs)]
 
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::RuntimeApiError,
 	messages::{RuntimeApiMessage, RuntimeApiRequest as Request},
 	overseer, FromOrchestra, OverseerSignal, SpawnedSubsystem, SubsystemError, SubsystemResult,
 };
-use polkadot_node_subsystem_types::RuntimeApiSubsystemClient;
+use infrablockspace_node_subsystem_types::RuntimeApiSubsystemClient;
 use infrablockspace_primitives::Hash;
 
 use cache::{RequestResult, RequestResultCache};

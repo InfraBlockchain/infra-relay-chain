@@ -26,7 +26,7 @@ use futures::{
 	lock::Mutex,
 	FutureExt,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::RuntimeApiError,
 	jaeger,
 	messages::{
@@ -35,7 +35,7 @@ use polkadot_node_subsystem::{
 	overseer, ActivatedLeaf, FromOrchestra, LeafStatus, OverseerSignal, PerLeafSpan,
 	SpawnedSubsystem, SubsystemError, SubsystemResult, SubsystemSender,
 };
-use polkadot_node_subsystem_util::{self as util, Validator};
+use infrablockspace_node_subsystem_util::{self as util, Validator};
 use infrablockspace_primitives::{AvailabilityBitfield, CoreState, Hash, ValidatorIndex};
 use sp_keystore::{Error as KeystoreError, SyncCryptoStorePtr};
 use std::{collections::HashMap, iter::FromIterator, time::Duration};

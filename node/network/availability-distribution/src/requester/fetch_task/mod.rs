@@ -22,13 +22,13 @@ use futures::{
 	FutureExt, SinkExt,
 };
 
-use polkadot_erasure_coding::branch_hash;
-use polkadot_node_network_protocol::request_response::{
+use erasure_coding::branch_hash;
+use infrablockspace_node_network_protocol::request_response::{
 	outgoing::{OutgoingRequest, Recipient, RequestError, Requests},
 	v1::{ChunkFetchingRequest, ChunkFetchingResponse},
 };
 use infrablockspace_node_primitives::ErasureChunk;
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{AvailabilityStoreMessage, IfDisconnected, NetworkBridgeTxMessage},
 	overseer,

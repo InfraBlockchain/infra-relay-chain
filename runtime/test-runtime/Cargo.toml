@@ -57,8 +57,8 @@ pallet-vesting = { git = "https://github.com/InfraBlockchain/infra-substrate", b
 runtime-common = { package = "infrablockspace-runtime-common", path = "../common", default-features = false }
 primitives = { package = "infrablockspace-primitives", path = "../../primitives", default-features = false }
 pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
-polkadot-parachain = { path = "../../parachain", default-features = false }
-polkadot-runtime-parachains = { path = "../parachains", default-features = false }
+infrablockspace-parachain = { path = "../../parachain", default-features = false }
+infrablockspace-runtime-parachains = { path = "../parachains", default-features = false }
 xcm-builder = { path = "../../xcm/xcm-builder", default-features = false }
 xcm-executor = { path = "../../xcm/xcm-executor", default-features = false }
 xcm = { path = "../../xcm", default-features = false }
@@ -77,7 +77,7 @@ substrate-wasm-builder = { git = "https://github.com/InfraBlockchain/infra-subst
 default = ["std"]
 no_std = []
 only-staking = []
-runtime-metrics = ["polkadot-runtime-parachains/runtime-metrics", "sp-io/with-tracing"]
+runtime-metrics = ["infrablockspace-runtime-parachains/runtime-metrics", "sp-io/with-tracing"]
 
 std = [
 	"authority-discovery-primitives/std",
@@ -89,7 +89,7 @@ std = [
 	"scale-info/std",
 	"inherents/std",
 	"sp-core/std",
-	"polkadot-parachain/std",
+	"infrablockspace-parachain/std",
 	"pallet-xcm/std",
 	"xcm-builder/std",
 	"xcm-executor/std",

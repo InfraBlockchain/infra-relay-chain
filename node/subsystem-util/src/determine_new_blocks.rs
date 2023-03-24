@@ -17,7 +17,7 @@
 //! A utility for fetching all unknown blocks based on a new chain-head hash.
 
 use futures::{channel::oneshot, prelude::*};
-use polkadot_node_subsystem::{messages::ChainApiMessage, SubsystemSender};
+use infrablockspace_node_subsystem::{messages::ChainApiMessage, SubsystemSender};
 use infrablockspace_primitives::{BlockNumber, Hash, Header};
 
 /// Given a new chain-head hash, this determines the hashes of all new blocks we should track
@@ -164,7 +164,7 @@ mod tests {
 	use super::*;
 	use assert_matches::assert_matches;
 	use polkadot_node_subsystem_test_helpers::make_subsystem_context;
-	use polkadot_overseer::{AllMessages, SubsystemContext};
+	use infrablockspace_overseer::{AllMessages, SubsystemContext};
 	use sp_core::testing::TaskExecutor;
 	use std::collections::{HashMap, HashSet};
 

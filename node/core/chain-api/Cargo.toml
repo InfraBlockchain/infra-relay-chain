@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-chain-api"
+name = "infrablockspace-node-core-chain-api"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -10,7 +10,7 @@ gum = { package = "tracing-gum", path = "../../gum" }
 sp-blockchain = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-metrics = { path = "../../metrics" }
-polkadot-node-subsystem = {path = "../../subsystem" }
+infrablockspace-node-subsystem = {path = "../../subsystem" }
 sc-client-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-consensus-babe = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
@@ -19,5 +19,5 @@ futures = { version = "0.3.21", features = ["thread-pool"] }
 maplit = "1.0.2"
 parity-scale-codec = "3.3.0"
 infrablockspace-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

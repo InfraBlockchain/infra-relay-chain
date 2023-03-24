@@ -129,7 +129,7 @@ Network bridge event handlers are the intended recipients of particular network 
 [AppD]: ../../types/overseer-protocol.md#approval-distribution-message
 [BitD]: ../../types/overseer-protocol.md#bitfield-distribution-message
 [StmtD]: ../../types/overseer-protocol.md#statement-distribution-message
-[CollP]: ../../types/overseer-protocol.md#collator-protocol-message
+[CollP]: ../../types/overseer-protocol.md#infrablockspace-collator-protocol-message
 
 [VP1]: ../../types/network.md#validation-v1
 [CP1]: ../../types/network.md#collation-v1

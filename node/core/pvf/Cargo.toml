@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-pvf"
+name = "infrablockspace-node-core-pvf"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -25,7 +25,7 @@ tokio = { version = "1.24.2", features = ["fs", "process"] }
 
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }
 
-polkadot-parachain = { path = "../../../parachain" }
+infrablockspace-parachain = { path = "../../../parachain" }
 infrablockspace-core-primitives = { path = "../../../core-primitives" }
 polkadot-node-metrics = { path = "../../metrics" }
 infrablockspace-node-primitives = { path = "../../primitives" }

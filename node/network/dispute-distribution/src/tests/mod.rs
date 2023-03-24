@@ -35,18 +35,18 @@ use parity_scale_codec::{Decode, Encode};
 
 use sc_network::config::RequestResponseConfig;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	request_response::{v1::DisputeRequest, IncomingRequest, ReqProtocolNames},
 	PeerId,
 };
 use sp_keyring::Sr25519Keyring;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	request_response::{v1::DisputeResponse, Recipient, Requests},
 	IfDisconnected,
 };
 use infrablockspace_node_primitives::DisputeStatus;
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::{
 		AllMessages, DisputeCoordinatorMessage, DisputeDistributionMessage, ImportStatementsResult,
 		NetworkBridgeTxMessage, RuntimeApiMessage, RuntimeApiRequest,

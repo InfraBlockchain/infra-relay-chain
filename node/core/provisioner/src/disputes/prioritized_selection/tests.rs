@@ -21,7 +21,7 @@ use super::super::{
 use bitvec::prelude::*;
 use futures::channel::mpsc;
 use infrablockspace_node_primitives::{CandidateVotes, DisputeStatus, ACTIVE_DURATION_SECS};
-use polkadot_node_subsystem::messages::{
+use infrablockspace_node_subsystem::messages::{
 	AllMessages, DisputeCoordinatorMessage, RuntimeApiMessage, RuntimeApiRequest,
 };
 use polkadot_node_subsystem_test_helpers::TestSubsystemSender;

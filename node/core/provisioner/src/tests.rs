@@ -214,7 +214,7 @@ mod select_availability_bitfields {
 pub(crate) mod common {
 	use super::super::*;
 	use futures::channel::mpsc;
-	use polkadot_node_subsystem::messages::AllMessages;
+	use infrablockspace_node_subsystem::messages::AllMessages;
 	use polkadot_node_subsystem_test_helpers::TestSubsystemSender;
 
 	pub fn test_harness<OverseerFactory, Overseer, TestFactory, Test>(
@@ -243,7 +243,7 @@ mod select_candidates {
 	};
 	use ::test_helpers::{dummy_candidate_descriptor, dummy_hash};
 	use futures::channel::mpsc;
-	use polkadot_node_subsystem::messages::{
+	use infrablockspace_node_subsystem::messages::{
 		AllMessages, RuntimeApiMessage,
 		RuntimeApiRequest::{
 			AvailabilityCores, PersistedValidationData as PersistedValidationDataReq,

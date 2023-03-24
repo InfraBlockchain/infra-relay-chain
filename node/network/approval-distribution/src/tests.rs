@@ -17,7 +17,7 @@
 use super::*;
 use assert_matches::assert_matches;
 use futures::{executor, future, Future};
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	grid_topology::{SessionGridTopology, TopologyPeerInfo},
 	our_view,
 	peer_set::ValidationVersion,
@@ -26,9 +26,9 @@ use polkadot_node_network_protocol::{
 use infrablockspace_node_primitives::approval::{
 	AssignmentCertKind, VRFOutput, VRFProof, RELAY_VRF_MODULO_CONTEXT,
 };
-use polkadot_node_subsystem::messages::{network_bridge_event, AllMessages, ApprovalCheckError};
+use infrablockspace_node_subsystem::messages::{network_bridge_event, AllMessages, ApprovalCheckError};
 use polkadot_node_subsystem_test_helpers as test_helpers;
-use polkadot_node_subsystem_util::TimeoutExt as _;
+use infrablockspace_node_subsystem_util::TimeoutExt as _;
 use infrablockspace_primitives::{AuthorityDiscoveryId, BlakeTwo256, HashT};
 use polkadot_primitives_test_helpers::dummy_signature;
 use rand::SeedableRng;
@@ -2278,7 +2278,7 @@ fn resends_messages_periodically() {
 }
 
 fn batch_test_round(message_count: usize) {
-	use polkadot_node_subsystem::SubsystemContext;
+	use infrablockspace_node_subsystem::SubsystemContext;
 	let pool = sp_core::testing::TaskExecutor::new();
 	let mut state = State::default();
 

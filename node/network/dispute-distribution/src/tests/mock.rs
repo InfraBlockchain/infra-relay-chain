@@ -26,7 +26,7 @@ use std::{
 use async_trait::async_trait;
 use lazy_static::lazy_static;
 
-use polkadot_node_network_protocol::{authority_discovery::AuthorityDiscovery, PeerId};
+use infrablockspace_node_network_protocol::{authority_discovery::AuthorityDiscovery, PeerId};
 use sc_keystore::LocalKeystore;
 use sp_application_crypto::AppKey;
 use sp_keyring::Sr25519Keyring;
@@ -217,7 +217,7 @@ impl AuthorityDiscovery for MockAuthorityDiscovery {
 
 	async fn get_authority_ids_by_peer_id(
 		&mut self,
-		peer_id: polkadot_node_network_protocol::PeerId,
+		peer_id: infrablockspace_node_network_protocol::PeerId,
 	) -> Option<HashSet<infrablockspace-primitives::AuthorityDiscoveryId>> {
 		for (a, p) in self.peer_ids.iter() {
 			if p == &peer_id {

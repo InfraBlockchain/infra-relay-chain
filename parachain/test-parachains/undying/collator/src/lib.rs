@@ -329,7 +329,7 @@ use sp_core::traits::SpawnNamed;
 mod tests {
 	use super::*;
 	use futures::executor::block_on;
-	use polkadot_parachain::primitives::{ValidationParams, ValidationResult};
+	use infrablockspace_parachain::primitives::{ValidationParams, ValidationResult};
 	use infrablockspace_primitives::{Hash, PersistedValidationData};
 
 	#[test]
@@ -354,7 +354,7 @@ mod tests {
 	}
 
 	fn validate_collation(collator: &Collator, parent_head: HeadData, collation: Collation) {
-		use polkadot_node_core_pvf::testing::validate_candidate;
+		use infrablockspace_node_core_pvf::testing::validate_candidate;
 
 		let block_data = match collation.proof_of_validity {
 			MaybeCompressedPoV::Raw(pov) => pov.block_data,

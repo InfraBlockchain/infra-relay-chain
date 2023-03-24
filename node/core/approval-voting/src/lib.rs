@@ -28,7 +28,7 @@ use infrablockspace_node_primitives::{
 	},
 	ValidationResult, APPROVAL_EXECUTION_TIMEOUT,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::RecoveryError,
 	messages::{
 		ApprovalCheckError, ApprovalCheckResult, ApprovalDistributionMessage,
@@ -40,7 +40,7 @@ use polkadot_node_subsystem::{
 	overseer, FromOrchestra, OverseerSignal, SpawnedSubsystem, SubsystemError, SubsystemResult,
 	SubsystemSender,
 };
-use polkadot_node_subsystem_util::{
+use infrablockspace_node_subsystem_util::{
 	database::Database,
 	metrics::{self, prometheus},
 	rolling_session_window::{

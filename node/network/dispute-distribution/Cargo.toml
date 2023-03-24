@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-dispute-distribution"
+name = "infrablockspace-dispute-distribution"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -11,10 +11,10 @@ gum = { package = "tracing-gum", path = "../../gum" }
 derive_more = "0.99.17"
 parity-scale-codec = { version = "3.3.0", features = ["std"] }
 infrablockspace-primitives = { path = "../../../primitives" }
-polkadot-erasure-coding = { path = "../../../erasure-coding" }
-polkadot-node-subsystem = {path = "../../subsystem" }
-polkadot-node-network-protocol = { path = "../../network/protocol" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
+erasure-coding = { path = "../../../erasure-coding" }
+infrablockspace-node-subsystem = {path = "../../subsystem" }
+infrablockspace-node-network-protocol = { path = "../../network/protocol" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 infrablockspace-node-primitives = { path = "../../primitives" }
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -26,7 +26,7 @@ indexmap = "1.9.1"
 
 [dev-dependencies]
 async-trait = "0.1.57"
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-tracing = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

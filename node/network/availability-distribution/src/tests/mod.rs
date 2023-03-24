@@ -18,7 +18,7 @@ use std::collections::HashSet;
 
 use futures::{executor, future, Future};
 
-use polkadot_node_network_protocol::request_response::{IncomingRequest, ReqProtocolNames};
+use infrablockspace_node_network_protocol::request_response::{IncomingRequest, ReqProtocolNames};
 use infrablockspace_primitives::{CoreState, Hash};
 use sp_keystore::SyncCryptoStorePtr;
 

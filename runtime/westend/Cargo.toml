@@ -89,8 +89,8 @@ hex-literal = { version = "0.3.4", optional = true }
 
 runtime-common = { package = "infrablockspace-runtime-common", path = "../common", default-features = false }
 primitives = { package = "infrablockspace-primitives", path = "../../primitives", default-features = false }
-polkadot-parachain = { path = "../../parachain", default-features = false }
-runtime-parachains = { package = "polkadot-runtime-parachains", path = "../parachains", default-features = false }
+infrablockspace-parachain = { path = "../../parachain", default-features = false }
+runtime-parachains = { package = "infrablockspace-runtime-parachains", path = "../parachains", default-features = false }
 
 xcm = { package = "xcm", path = "../../xcm", default-features = false }
 xcm-executor = { package = "xcm-executor", path = "../../xcm/xcm-executor", default-features = false }
@@ -121,7 +121,7 @@ std = [
 	"scale-info/std",
 	"inherents/std",
 	"sp-core/std",
-	"polkadot-parachain/std",
+	"infrablockspace-parachain/std",
 	"sp-api/std",
 	"tx-pool-api/std",
 	"block-builder-api/std",

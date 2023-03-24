@@ -17,7 +17,7 @@ sp-consensus-babe = { git = "https://github.com/InfraBlockchain/infra-substrate"
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-maybe-compressed-blob = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-polkadot-parachain = { path = "../../parachain", default-features = false }
+infrablockspace-parachain = { path = "../../parachain", default-features = false }
 schnorrkel = "0.9.1"
 thiserror = "1.0.31"
 serde = { version = "1.0.137", features = ["derive"] }
@@ -26,4 +26,4 @@ serde = { version = "1.0.137", features = ["derive"] }
 zstd = { version = "0.11.2", default-features = false }
 
 [dev-dependencies]
-polkadot-erasure-coding = { path = "../../erasure-coding" }
+erasure-coding = { path = "../../erasure-coding" }

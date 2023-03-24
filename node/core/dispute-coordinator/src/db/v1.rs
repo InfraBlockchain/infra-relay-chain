@@ -17,7 +17,7 @@
 //! `V1` database for the dispute coordinator.
 
 use infrablockspace_node_primitives::DisputeStatus;
-use polkadot_node_subsystem_util::database::{DBTransaction, Database};
+use infrablockspace_node_subsystem_util::database::{DBTransaction, Database};
 use infrablockspace_primitives::{
 	CandidateHash, CandidateReceipt, Hash, InvalidDisputeStatementKind, SessionIndex,
 	ValidDisputeStatementKind, ValidatorIndex, ValidatorSignature,
@@ -376,7 +376,7 @@ mod tests {
 
 	fn make_db() -> DbBackend {
 		let db = kvdb_memorydb::create(1);
-		let db = polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[0]);
+		let db = infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[0]);
 		let store = Arc::new(db);
 		let config = ColumnConfiguration { col_dispute_data: 0, col_session_data: 1 };
 		DbBackend::new(store, config, Metrics::default())

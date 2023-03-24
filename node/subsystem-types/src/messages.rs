@@ -18,7 +18,7 @@
 //!
 //! These messages are intended to define the protocol by which different subsystems communicate with each
 //! other and signals that they receive from an overseer to coordinate their work.
-//! This is intended for use with the `polkadot-overseer` crate.
+//! This is intended for use with the `infrablockspace-overseer` crate.
 //!
 //! Subsystems' APIs are defined separately from their implementation, leading to easier mocking.
 
@@ -28,7 +28,7 @@ use thiserror::Error;
 
 pub use sc_network::IfDisconnected;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	self as net_protocol, peer_set::PeerSet, request_response::Requests, PeerId,
 	UnifiedReputationChange,
 };

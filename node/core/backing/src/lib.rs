@@ -34,7 +34,7 @@ use infrablockspace_node_primitives::{
 	AvailableData, InvalidCandidate, PoV, SignedFullStatement, Statement, ValidationResult,
 	BACKING_EXECUTION_TIMEOUT,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		AvailabilityDistributionMessage, AvailabilityStoreMessage, CandidateBackingMessage,
@@ -44,7 +44,7 @@ use polkadot_node_subsystem::{
 	overseer, ActiveLeavesUpdate, FromOrchestra, OverseerSignal, PerLeafSpan, SpawnedSubsystem,
 	Stage, SubsystemError,
 };
-use polkadot_node_subsystem_util::{
+use infrablockspace_node_subsystem_util::{
 	self as util, request_from_runtime, request_session_index_for_child, request_validator_groups,
 	request_validators, Validator,
 };

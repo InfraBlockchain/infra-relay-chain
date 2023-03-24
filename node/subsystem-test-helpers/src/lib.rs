@@ -18,11 +18,11 @@
 
 #![warn(missing_docs)]
 
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::AllMessages, overseer, FromOrchestra, OverseerSignal, SpawnGlue, SpawnedSubsystem,
 	SubsystemError, SubsystemResult,
 };
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 
 use futures::{channel::mpsc, poll, prelude::*};
 use parking_lot::Mutex;
@@ -435,8 +435,8 @@ impl Future for Yield {
 mod tests {
 	use super::*;
 	use futures::executor::block_on;
-	use polkadot_node_subsystem::messages::CollatorProtocolMessage;
-	use polkadot_overseer::{dummy::dummy_overseer_builder, Handle, HeadSupportsParachains};
+	use infrablockspace_node_subsystem::messages::CollatorProtocolMessage;
+	use infrablockspace_overseer::{dummy::dummy_overseer_builder, Handle, HeadSupportsParachains};
 	use infrablockspace_primitives::Hash;
 	use sp_core::traits::SpawnNamed;
 

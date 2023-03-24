@@ -24,7 +24,7 @@
 //! and as the finalized block advances, orphaned sub-trees are entirely pruned.
 
 use infrablockspace_node_primitives::BlockWeight;
-use polkadot_node_subsystem::ChainApiError;
+use infrablockspace_node_subsystem::ChainApiError;
 use infrablockspace_primitives::{BlockNumber, Hash};
 
 use std::collections::HashMap;

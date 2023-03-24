@@ -21,7 +21,7 @@ use std::{
 
 use futures::future::pending;
 
-use polkadot_node_network_protocol::request_response::DISPUTE_REQUEST_TIMEOUT;
+use infrablockspace_node_network_protocol::request_response::DISPUTE_REQUEST_TIMEOUT;
 use infrablockspace_primitives::{CandidateHash, CandidateReceipt};
 
 use crate::{

@@ -25,8 +25,8 @@ use futures::channel::oneshot;
 
 use sc_network::multiaddr::{self, Multiaddr};
 
-pub use polkadot_node_network_protocol::authority_discovery::AuthorityDiscovery;
-use polkadot_node_network_protocol::{
+pub use infrablockspace_node_network_protocol::authority_discovery::AuthorityDiscovery;
+use infrablockspace_node_network_protocol::{
 	peer_set::{PeerSet, PeerSetProtocolNames, PerPeerSet},
 	PeerId,
 };
@@ -169,7 +169,7 @@ mod tests {
 
 	use async_trait::async_trait;
 	use futures::stream::BoxStream;
-	use polkadot_node_network_protocol::{
+	use infrablockspace_node_network_protocol::{
 		request_response::{outgoing::Requests, ReqProtocolNames},
 		PeerId,
 	};

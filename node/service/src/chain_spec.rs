@@ -172,11 +172,11 @@ pub fn wococo_config() -> Result<RococoChainSpec, String> {
 	feature = "polkadot-native"
 ))]
 fn default_parachains_host_configuration(
-) -> polkadot_runtime_parachains::configuration::HostConfiguration<infrablockspace_primitives::BlockNumber>
+) -> infrablockspace_runtime_parachains::configuration::HostConfiguration<infrablockspace_primitives::BlockNumber>
 {
 	use infrablockspace_primitives::{MAX_CODE_SIZE, MAX_POV_SIZE};
 
-	polkadot_runtime_parachains::configuration::HostConfiguration {
+	infrablockspace_runtime_parachains::configuration::HostConfiguration {
 		validation_upgrade_cooldown: 2u32,
 		validation_upgrade_delay: 2,
 		code_retention_period: 1200,
@@ -1622,7 +1622,7 @@ pub fn rococo_testnet_genesis(
 		sudo: rococo_runtime::SudoConfig { key: Some(root_key.clone()) },
 		hrmp: Default::default(),
 		configuration: rococo_runtime::ConfigurationConfig {
-			config: polkadot_runtime_parachains::configuration::HostConfiguration {
+			config: infrablockspace_runtime_parachains::configuration::HostConfiguration {
 				max_validators_per_core: Some(1),
 				..default_parachains_host_configuration()
 			},

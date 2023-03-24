@@ -81,58 +81,58 @@ async-trait = "0.1.57"
 lru = "0.9"
 log = "0.4.17"
 
-# Polkadot
-polkadot-node-core-parachains-inherent = { path = "../core/parachains-inherent" }
-polkadot-overseer = { path = "../overseer" }
-polkadot-client = { path = "../client", default-features = false, optional = true }
-polkadot-parachain = { path = "../../parachain" }
+# Infrablockspace
+infrablockspace-node-core-parachains-inherent = { path = "../core/parachains-inherent" }
+infrablockspace-overseer = { path = "../overseer" }
+infrablockspace-client = { path = "../client", default-features = false, optional = true }
+infrablockspace-parachain = { path = "../../parachain" }
 infrablockspace-primitives = { path = "../../primitives" }
 infrablockspace-node-primitives = { path = "../primitives" }
-polkadot-rpc = { path = "../../rpc" }
-polkadot-node-subsystem = {path = "../subsystem" }
-polkadot-node-subsystem-util = { path = "../subsystem-util" }
-polkadot-node-subsystem-types = { path = "../subsystem-types" }
-polkadot-runtime-parachains = { path = "../../runtime/parachains" }
-polkadot-node-network-protocol = { path = "../network/protocol" }
+infrablockspace-rpc = { path = "../../rpc" }
+infrablockspace-node-subsystem = {path = "../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../subsystem-util" }
+infrablockspace-node-subsystem-types = { path = "../subsystem-types" }
+infrablockspace-runtime-parachains = { path = "../../runtime/parachains" }
+infrablockspace-node-network-protocol = { path = "../network/protocol" }
 
-# Polkadot Runtime Constants
+# Infrablockspace Runtime Constants
 polkadot-runtime-constants = { path = "../../runtime/polkadot/constants", optional = true }
 kusama-runtime-constants = { path = "../../runtime/kusama/constants", optional = true }
 rococo-runtime-constants = { path = "../../runtime/rococo/constants", optional = true }
 westend-runtime-constants = { path = "../../runtime/westend/constants", optional = true }
 
-# Polkadot Runtimes
+# Infrablockspace Runtimes
 polkadot-runtime = { path = "../../runtime/polkadot", optional = true }
 kusama-runtime = { path = "../../runtime/kusama", optional = true }
 westend-runtime = { path = "../../runtime/westend", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
-# Polkadot Subsystems
-polkadot-approval-distribution = { path = "../network/approval-distribution", optional = true }
-polkadot-availability-bitfield-distribution = { path = "../network/bitfield-distribution", optional = true }
-polkadot-availability-distribution = { path = "../network/availability-distribution", optional = true }
-polkadot-availability-recovery = { path = "../network/availability-recovery", optional = true }
-polkadot-collator-protocol = { path = "../network/collator-protocol", optional = true }
-polkadot-dispute-distribution = { path = "../network/dispute-distribution", optional = true }
-polkadot-gossip-support = { path = "../network/gossip-support", optional = true }
-polkadot-network-bridge = { path = "../network/bridge", optional = true }
-polkadot-node-collation-generation = { path = "../collation-generation", optional = true }
-polkadot-node-core-approval-voting = { path = "../core/approval-voting", optional = true }
-polkadot-node-core-av-store = { path = "../core/av-store", optional = true }
-polkadot-node-core-backing = { path = "../core/backing", optional = true }
-polkadot-node-core-bitfield-signing = { path = "../core/bitfield-signing", optional = true }
-polkadot-node-core-candidate-validation = { path = "../core/candidate-validation", optional = true }
-polkadot-node-core-chain-api = { path = "../core/chain-api", optional = true }
-polkadot-node-core-chain-selection = { path = "../core/chain-selection", optional = true }
-polkadot-node-core-dispute-coordinator = { path = "../core/dispute-coordinator", optional = true }
-polkadot-node-core-provisioner = { path = "../core/provisioner", optional = true }
-polkadot-node-core-pvf-checker = { path = "../core/pvf-checker", optional = true }
-polkadot-node-core-runtime-api = { path = "../core/runtime-api", optional = true }
-polkadot-statement-distribution = { path = "../network/statement-distribution", optional = true }
+# Infrablockspace Subsystems
+infrablockspace-approval-distribution = { path = "../network/approval-distribution", optional = true }
+infrablockspace-availability-bitfield-distribution = { path = "../network/bitfield-distribution", optional = true }
+infrablockspace-availability-distribution = { path = "../network/availability-distribution", optional = true }
+infrablockspace-availability-recovery = { path = "../network/availability-recovery", optional = true }
+infrablockspace-collator-protocol = { path = "../network/collator-protocol", optional = true }
+infrablockspace-dispute-distribution = { path = "../network/dispute-distribution", optional = true }
+infrablockspace-gossip-support = { path = "../network/gossip-support", optional = true }
+infrablockspace-network-bridge = { path = "../network/bridge", optional = true }
+infrablockspace-node-collation-generation = { path = "../collation-generation", optional = true }
+infrablockspace-node-core-approval-voting = { path = "../core/approval-voting", optional = true }
+infrablockspace-node-core-av-store = { path = "../core/av-store", optional = true }
+infrablockspace-node-core-backing = { path = "../core/backing", optional = true }
+infrablockspace-node-core-bitfield-signing = { path = "../core/bitfield-signing", optional = true }
+infrablockspace-node-core-candidate-validation = { path = "../core/candidate-validation", optional = true }
+infrablockspace-node-core-chain-api = { path = "../core/chain-api", optional = true }
+infrablockspace-node-core-chain-selection = { path = "../core/chain-selection", optional = true }
+infrablockspace-node-core-dispute-coordinator = { path = "../core/dispute-coordinator", optional = true }
+infrablockspace-node-core-provisioner = { path = "../core/provisioner", optional = true }
+infrablockspace-node-core-pvf-checker = { path = "../core/pvf-checker", optional = true }
+infrablockspace-node-core-runtime-api = { path = "../core/runtime-api", optional = true }
+infrablockspace-statement-distribution = { path = "../network/statement-distribution", optional = true }
 
 [dev-dependencies]
 polkadot-test-client = { path = "../test/client" }
-polkadot-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
 env_logger = "0.9.0"
 assert_matches = "1.5.0"
 tempfile = "3.2"
@@ -145,28 +145,28 @@ db = [
 ]
 
 full-node = [
-	"polkadot-node-core-av-store",
-	"polkadot-node-core-approval-voting",
-	"polkadot-availability-bitfield-distribution",
-	"polkadot-availability-distribution",
-	"polkadot-availability-recovery",
-	"polkadot-client",
-	"polkadot-collator-protocol",
-	"polkadot-dispute-distribution",
-	"polkadot-gossip-support",
-	"polkadot-network-bridge",
-	"polkadot-node-collation-generation",
-	"polkadot-node-core-backing",
-	"polkadot-node-core-bitfield-signing",
-	"polkadot-node-core-candidate-validation",
-	"polkadot-node-core-chain-api",
-	"polkadot-node-core-chain-selection",
-	"polkadot-node-core-dispute-coordinator",
-	"polkadot-node-core-provisioner",
-	"polkadot-node-core-runtime-api",
-	"polkadot-statement-distribution",
-	"polkadot-approval-distribution",
-	"polkadot-node-core-pvf-checker",
+	"infrablockspace-node-core-av-store",
+	"infrablockspace-node-core-approval-voting",
+	"infrablockspace-availability-bitfield-distribution",
+	"infrablockspace-availability-distribution",
+	"infrablockspace-availability-recovery",
+	"infrablockspace-client",
+	"infrablockspace-collator-protocol",
+	"infrablockspace-dispute-distribution",
+	"infrablockspace-gossip-support",
+	"infrablockspace-network-bridge",
+	"infrablockspace-node-collation-generation",
+	"infrablockspace-node-core-backing",
+	"infrablockspace-node-core-bitfield-signing",
+	"infrablockspace-node-core-candidate-validation",
+	"infrablockspace-node-core-chain-api",
+	"infrablockspace-node-core-chain-selection",
+	"infrablockspace-node-core-dispute-coordinator",
+	"infrablockspace-node-core-provisioner",
+	"infrablockspace-node-core-runtime-api",
+	"infrablockspace-statement-distribution",
+	"infrablockspace-approval-distribution",
+	"infrablockspace-node-core-pvf-checker",
 	"kvdb-rocksdb",
 	"parity-db",
 ]
@@ -174,10 +174,10 @@ full-node = [
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
 # Validators require the native runtime currently
-polkadot-native = [ "polkadot-runtime", "polkadot-runtime-constants", "polkadot-client/polkadot" ]
-kusama-native = [ "kusama-runtime", "kusama-runtime-constants", "polkadot-client/kusama" ]
-westend-native = [ "westend-runtime", "westend-runtime-constants", "polkadot-client/westend" ]
-rococo-native = [ "rococo-runtime", "rococo-runtime-constants", "polkadot-client/rococo" ]
+polkadot-native = [ "polkadot-runtime", "polkadot-runtime-constants", "infrablockspace-client/polkadot" ]
+kusama-native = [ "kusama-runtime", "kusama-runtime-constants", "infrablockspace-client/kusama" ]
+westend-native = [ "westend-runtime", "westend-runtime-constants", "infrablockspace-client/westend" ]
+rococo-native = [ "rococo-runtime", "rococo-runtime-constants", "infrablockspace-client/rococo" ]
 
 runtime-benchmarks = [
 	"polkadot-runtime?/runtime-benchmarks",
@@ -202,10 +202,10 @@ fast-runtime = [
 
 malus = ["full-node"]
 runtime-metrics = [
-	"polkadot-client/runtime-metrics",
+	"infrablockspace-client/runtime-metrics",
 	"rococo-runtime?/runtime-metrics",
 	"westend-runtime?/runtime-metrics",
 	"kusama-runtime?/runtime-metrics",
 	"polkadot-runtime?/runtime-metrics",
-	"polkadot-runtime-parachains/runtime-metrics"
+	"infrablockspace-runtime-parachains/runtime-metrics"
 ]

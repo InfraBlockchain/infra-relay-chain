@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-parachain"
+name = "infrablockspace-parachain"
 description = "Types and utilities for creating and working with parachains"
 authors.workspace = true
 edition.workspace = true

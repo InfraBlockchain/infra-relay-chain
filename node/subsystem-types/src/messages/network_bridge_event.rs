@@ -18,7 +18,7 @@ use std::{collections::HashSet, convert::TryFrom};
 
 pub use sc_network::{PeerId, ReputationChange};
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	grid_topology::SessionGridTopology, peer_set::ProtocolVersion, ObservedRole, OurView, View,
 	WrongVariant,
 };
