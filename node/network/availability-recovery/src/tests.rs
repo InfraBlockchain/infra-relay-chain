@@ -28,7 +28,7 @@ use super::*;
 use sc_network::config::RequestResponseConfig;
 
 use polkadot_erasure_coding::{branches, obtain_chunks_v1 as obtain_chunks};
-use polkadot_node_primitives::{BlockData, PoV, Proof};
+use infrablockspace_node_primitives::{BlockData, PoV, Proof};
 use polkadot_node_subsystem::{
 	jaeger,
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},

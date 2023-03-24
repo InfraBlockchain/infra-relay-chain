@@ -26,7 +26,7 @@ use futures::{channel::oneshot, future::poll_fn, Future};
 use futures_timer::Delay;
 use indexmap::{map::Entry, IndexMap};
 use polkadot_node_network_protocol::request_response::v1::DisputeRequest;
-use polkadot_node_primitives::{DisputeMessage, DisputeStatus};
+use infrablockspace_node_primitives::{DisputeMessage, DisputeStatus};
 use polkadot_node_subsystem::{
 	messages::DisputeCoordinatorMessage, overseer, ActiveLeavesUpdate, SubsystemSender,
 };

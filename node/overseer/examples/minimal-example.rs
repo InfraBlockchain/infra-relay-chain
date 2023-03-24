@@ -24,7 +24,7 @@ use orchestra::async_trait;
 use std::time::Duration;
 
 use ::test_helpers::{dummy_candidate_descriptor, dummy_hash};
-use polkadot_node_primitives::{BlockData, PoV};
+use infrablockspace_node_primitives::{BlockData, PoV};
 use polkadot_node_subsystem_types::messages::CandidateValidationMessage;
 use polkadot_overseer::{
 	self as overseer,

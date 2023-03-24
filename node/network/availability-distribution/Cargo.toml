@@ -13,7 +13,7 @@ polkadot-erasure-coding = { path = "../../../erasure-coding" }
 polkadot-node-network-protocol = { path = "../../network/protocol" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", features = ["std"] }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 thiserror = "1.0.31"

@@ -23,5 +23,5 @@ sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch =
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 futures = { version = "0.3.21", features = ["thread-pool"] }
 polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

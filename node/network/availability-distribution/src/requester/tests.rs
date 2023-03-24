@@ -19,7 +19,7 @@ use std::{future::Future, sync::Arc};
 use futures::FutureExt;
 
 use polkadot_node_network_protocol::jaeger;
-use polkadot_node_primitives::{BlockData, ErasureChunk, PoV};
+use infrablockspace_node_primitives::{BlockData, ErasureChunk, PoV};
 use polkadot_node_subsystem_util::runtime::RuntimeInfo;
 use infrablockspace_primitives::{
 	BlockNumber, CoreState, GroupIndex, Hash, Id as ParaId, ScheduledCore, SessionIndex,

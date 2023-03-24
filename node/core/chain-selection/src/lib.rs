@@ -16,7 +16,7 @@
 
 //! Implements the Chain Selection Subsystem.
 
-use polkadot_node_primitives::BlockWeight;
+use infrablockspace_node_primitives::BlockWeight;
 use polkadot_node_subsystem::{
 	errors::ChainApiError,
 	messages::{ChainApiMessage, ChainSelectionMessage},

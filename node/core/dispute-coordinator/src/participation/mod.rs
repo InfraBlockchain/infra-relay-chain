@@ -25,7 +25,7 @@ use futures::{
 #[cfg(test)]
 use futures_timer::Delay;
 
-use polkadot_node_primitives::{ValidationResult, APPROVAL_EXECUTION_TIMEOUT};
+use infrablockspace_node_primitives::{ValidationResult, APPROVAL_EXECUTION_TIMEOUT};
 use polkadot_node_subsystem::{
 	messages::{AvailabilityRecoveryMessage, CandidateValidationMessage},
 	overseer, ActiveLeavesUpdate, RecoveryError,

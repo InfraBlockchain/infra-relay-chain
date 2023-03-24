@@ -23,7 +23,7 @@ use polkadot_node_network_protocol::request_response::{
 	v1::{PoVFetchingRequest, PoVFetchingResponse},
 	OutgoingRequest, Recipient,
 };
-use polkadot_node_primitives::PoV;
+use infrablockspace_node_primitives::PoV;
 use polkadot_node_subsystem::{
 	jaeger,
 	messages::{IfDisconnected, NetworkBridgeTxMessage},
@@ -136,7 +136,7 @@ mod tests {
 	use parity_scale_codec::Encode;
 	use sp_core::testing::TaskExecutor;
 
-	use polkadot_node_primitives::BlockData;
+	use infrablockspace_node_primitives::BlockData;
 	use polkadot_node_subsystem::messages::{
 		AllMessages, AvailabilityDistributionMessage, RuntimeApiMessage, RuntimeApiRequest,
 	};

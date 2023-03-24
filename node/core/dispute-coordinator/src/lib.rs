@@ -31,7 +31,7 @@ use futures::FutureExt;
 use gum::CandidateHash;
 use sc_keystore::LocalKeystore;
 
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	CandidateVotes, DisputeMessage, DisputeMessageCheckError, SignedDisputeStatement,
 };
 use polkadot_node_subsystem::{

@@ -43,7 +43,7 @@ use polkadot_node_network_protocol::{
 	},
 	v1 as protocol_v1, OurView, PeerId, UnifiedReputationChange as Rep, Versioned, View,
 };
-use polkadot_node_primitives::{PoV, SignedFullStatement};
+use infrablockspace_node_primitives::{PoV, SignedFullStatement};
 use polkadot_node_subsystem::{
 	jaeger,
 	messages::{

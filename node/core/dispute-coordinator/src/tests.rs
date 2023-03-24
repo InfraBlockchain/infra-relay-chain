@@ -31,7 +31,7 @@ use futures::{
 
 use polkadot_node_subsystem_util::database::Database;
 
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	DisputeMessage, DisputeStatus, SignedDisputeStatement, SignedFullStatement, Statement,
 };
 use polkadot_node_subsystem::{
@@ -51,7 +51,7 @@ use sp_keyring::Sr25519Keyring;
 use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr};
 
 use ::test_helpers::{dummy_candidate_receipt_bad_sig, dummy_digest, dummy_hash};
-use polkadot_node_primitives::{Timestamp, ACTIVE_DURATION_SECS};
+use infrablockspace_node_primitives::{Timestamp, ACTIVE_DURATION_SECS};
 use polkadot_node_subsystem::{
 	jaeger,
 	messages::{AllMessages, BlockDescription, RuntimeApiMessage, RuntimeApiRequest},

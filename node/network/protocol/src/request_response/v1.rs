@@ -18,7 +18,7 @@
 
 use parity_scale_codec::{Decode, Encode};
 
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	AvailableData, DisputeMessage, ErasureChunk, PoV, Proof, UncheckedDisputeMessage,
 };
 use infrablockspace_primitives::{

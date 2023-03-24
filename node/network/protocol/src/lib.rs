@@ -403,7 +403,7 @@ pub mod v1 {
 		Id as ParaId, UncheckedSignedAvailabilityBitfield, ValidatorIndex, ValidatorSignature,
 	};
 
-	use polkadot_node_primitives::{
+	use infrablockspace_node_primitives::{
 		approval::{IndirectAssignmentCert, IndirectSignedApprovalVote},
 		UncheckedSignedFullStatement,
 	};

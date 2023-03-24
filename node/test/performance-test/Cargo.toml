@@ -12,7 +12,7 @@ log = "0.4"
 
 polkadot-node-core-pvf = { path = "../../core/pvf" }
 polkadot-erasure-coding = { path = "../../../erasure-coding" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 infrablockspace-primitives = { path = "../../../primitives" }
 
 kusama-runtime = { path = "../../../runtime/kusama" }

@@ -25,7 +25,7 @@ polkadot-node-jaeger = { path = "../jaeger" }
 polkadot-node-metrics = { path = "../metrics" }
 polkadot-node-network-protocol = { path = "../network/protocol" }
 infrablockspace-primitives = { path = "../../primitives" }
-polkadot-node-primitives = { path = "../primitives" }
+infrablockspace-node-primitives = { path = "../primitives" }
 polkadot-overseer = { path = "../overseer" }
 metered = { package = "prioritized-metered-channel", version = "0.2.0" }
 

@@ -6,7 +6,7 @@ edition.workspace = true
 
 [dependencies]
 infrablockspace-primitives = { path = "../primitives" }
-polkadot-node-primitives = { package = "polkadot-node-primitives", path = "../node/primitives" }
+infrablockspace-node-primitives = { package = "infrablockspace-node-primitives", path = "../node/primitives" }
 novelpoly = { package = "reed-solomon-novelpoly", version = "1.0.0" }
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["std", "derive"] }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

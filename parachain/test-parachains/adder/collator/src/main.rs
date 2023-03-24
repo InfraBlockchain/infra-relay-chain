@@ -17,7 +17,7 @@
 //! Collator for the adder test parachain.
 
 use polkadot_cli::{Error, Result};
-use polkadot_node_primitives::CollationGenerationConfig;
+use infrablockspace_node_primitives::CollationGenerationConfig;
 use polkadot_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
 use infrablockspace_primitives::Id as ParaId;
 use sc_cli::{Error as SubstrateCliError, SubstrateCli};

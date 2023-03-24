@@ -38,7 +38,7 @@ use polkadot_node_network_protocol::{
 	jaeger,
 	request_response::{v1, IncomingRequest, OutgoingRequest, Requests},
 };
-use polkadot_node_primitives::ErasureChunk;
+use infrablockspace_node_primitives::ErasureChunk;
 use polkadot_node_subsystem::{
 	messages::{
 		AllMessages, AvailabilityDistributionMessage, AvailabilityStoreMessage, ChainApiMessage,

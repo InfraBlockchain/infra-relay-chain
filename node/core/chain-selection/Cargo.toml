@@ -10,7 +10,7 @@ futures = "0.3.21"
 futures-timer = "3"
 gum = { package = "tracing-gum", path = "../../gum" }
 infrablockspace-primitives = { path = "../../../primitives" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
 kvdb = "0.13.0"

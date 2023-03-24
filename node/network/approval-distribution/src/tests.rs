@@ -23,7 +23,7 @@ use polkadot_node_network_protocol::{
 	peer_set::ValidationVersion,
 	view, ObservedRole,
 };
-use polkadot_node_primitives::approval::{
+use infrablockspace_node_primitives::approval::{
 	AssignmentCertKind, VRFOutput, VRFProof, RELAY_VRF_MODULO_CONTEXT,
 };
 use polkadot_node_subsystem::messages::{network_bridge_event, AllMessages, ApprovalCheckError};

@@ -21,7 +21,7 @@ use futures::{channel::oneshot, executor, future, Future};
 
 use ::test_helpers::TestCandidateBuilder;
 use parking_lot::Mutex;
-use polkadot_node_primitives::{AvailableData, BlockData, PoV, Proof};
+use infrablockspace_node_primitives::{AvailableData, BlockData, PoV, Proof};
 use polkadot_node_subsystem::{
 	errors::RuntimeApiError,
 	jaeger,

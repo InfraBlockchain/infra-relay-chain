@@ -23,7 +23,7 @@
 //! Each direct descendant of the finalized block acts as its own sub-tree,
 //! and as the finalized block advances, orphaned sub-trees are entirely pruned.
 
-use polkadot_node_primitives::BlockWeight;
+use infrablockspace_node_primitives::BlockWeight;
 use polkadot_node_subsystem::ChainApiError;
 use infrablockspace_primitives::{BlockNumber, Hash};
 

@@ -22,7 +22,7 @@
 //! been sufficiently approved to finalize.
 
 use polkadot_node_jaeger as jaeger;
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	approval::{
 		BlockApprovalMeta, DelayTranche, IndirectAssignmentCert, IndirectSignedApprovalVote,
 	},

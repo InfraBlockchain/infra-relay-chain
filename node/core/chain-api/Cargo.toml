@@ -18,6 +18,6 @@ sc-consensus-babe = { git = "https://github.com/InfraBlockchain/infra-substrate"
 futures = { version = "0.3.21", features = ["thread-pool"] }
 maplit = "1.0.2"
 parity-scale-codec = "3.3.0"
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

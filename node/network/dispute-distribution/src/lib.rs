@@ -33,7 +33,7 @@ use polkadot_node_subsystem_util::nesting_sender::NestingSender;
 use sp_keystore::SyncCryptoStorePtr;
 
 use polkadot_node_network_protocol::request_response::{incoming::IncomingRequestReceiver, v1};
-use polkadot_node_primitives::DISPUTE_WINDOW;
+use infrablockspace_node_primitives::DISPUTE_WINDOW;
 use polkadot_node_subsystem::{
 	messages::DisputeDistributionMessage, overseer, FromOrchestra, OverseerSignal,
 	SpawnedSubsystem, SubsystemError,

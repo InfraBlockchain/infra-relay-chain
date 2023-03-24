@@ -28,7 +28,7 @@
 
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	disputes::ValidCandidateVotes, CandidateVotes, DisputeStatus, SignedDisputeStatement, Timestamp,
 };
 use polkadot_node_subsystem_util::rolling_session_window::RollingSessionWindow;

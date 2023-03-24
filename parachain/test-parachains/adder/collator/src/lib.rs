@@ -19,7 +19,7 @@
 use futures::channel::oneshot;
 use futures_timer::Delay;
 use parity_scale_codec::{Decode, Encode};
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	Collation, CollationResult, CollationSecondedSignal, CollatorFn, MaybeCompressedPoV, PoV,
 	Statement,
 };
@@ -181,7 +181,7 @@ impl Collator {
 				hrmp_watermark: validation_data.relay_parent_number,
 			};
 
-			let compressed_pov = polkadot_node_primitives::maybe_compress_pov(pov);
+			let compressed_pov = infrablockspace-node-primitives::maybe_compress_pov(pov);
 
 			let (result_sender, recv) = oneshot::channel::<CollationSecondedSignal>();
 			let seconded_collations = seconded_collations.clone();

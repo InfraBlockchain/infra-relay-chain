@@ -23,7 +23,7 @@
 
 use crate::LOG_TARGET;
 use futures::channel::oneshot;
-use polkadot_node_primitives::CandidateVotes;
+use infrablockspace_node_primitives::CandidateVotes;
 use polkadot_node_subsystem::{messages::DisputeCoordinatorMessage, overseer};
 use infrablockspace_primitives::{CandidateHash, SessionIndex};
 

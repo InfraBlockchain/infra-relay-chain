@@ -17,7 +17,7 @@ sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", bran
 
 infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-node-network-protocol = { path = "../../network/protocol" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
 polkadot-node-subsystem = {path = "../../subsystem" }
 fatality = "0.0.6"

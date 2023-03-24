@@ -8,7 +8,7 @@ edition.workspace = true
 futures = "0.3.21"
 gum = { package = "tracing-gum", path = "../gum" }
 polkadot-erasure-coding = { path = "../../erasure-coding" }
-polkadot-node-primitives = { path = "../primitives" }
+infrablockspace-node-primitives = { path = "../primitives" }
 polkadot-node-subsystem = { path = "../subsystem" }
 polkadot-node-subsystem-util = { path = "../subsystem-util" }
 infrablockspace-primitives = { path = "../../primitives" }

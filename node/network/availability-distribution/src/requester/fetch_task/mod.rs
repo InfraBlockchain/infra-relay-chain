@@ -27,7 +27,7 @@ use polkadot_node_network_protocol::request_response::{
 	outgoing::{OutgoingRequest, Recipient, RequestError, Requests},
 	v1::{ChunkFetchingRequest, ChunkFetchingResponse},
 };
-use polkadot_node_primitives::ErasureChunk;
+use infrablockspace_node_primitives::ErasureChunk;
 use polkadot_node_subsystem::{
 	jaeger,
 	messages::{AvailabilityStoreMessage, IfDisconnected, NetworkBridgeTxMessage},

@@ -21,7 +21,7 @@ use polkadot_node_network_protocol::{
 	request_response::{incoming::OutgoingResponseSender, v1::DisputeRequest},
 	PeerId,
 };
-use polkadot_node_primitives::SignedDisputeStatement;
+use infrablockspace_node_primitives::SignedDisputeStatement;
 use infrablockspace_primitives::{CandidateReceipt, ValidatorIndex};
 
 use crate::receiver::{BATCH_COLLECTING_INTERVAL, MIN_KEEP_BATCH_ALIVE_VOTES};

@@ -27,7 +27,7 @@ use polkadot_node_core_pvf::{
 	InvalidCandidate as WasmInvalidCandidate, PrepareError, PrepareStats, PvfWithExecutorParams,
 	ValidationError, ValidationHost,
 };
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	BlockData, InvalidCandidate, PoV, ValidationResult, POV_BOMB_LIMIT, VALIDATION_CODE_BOMB_LIMIT,
 };
 use polkadot_node_subsystem::{

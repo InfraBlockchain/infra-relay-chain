@@ -22,7 +22,7 @@ use crate::{
 };
 
 use polkadot_node_core_candidate_validation::find_validation_data;
-use polkadot_node_primitives::{InvalidCandidate, ValidationResult};
+use infrablockspace_node_primitives::{InvalidCandidate, ValidationResult};
 use polkadot_node_subsystem::{
 	messages::{CandidateValidationMessage, ValidationFailed},
 	overseer,

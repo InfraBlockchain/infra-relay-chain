@@ -24,7 +24,7 @@ use std::time::{Duration, Instant};
 mod constants;
 
 pub use constants::*;
-pub use polkadot_node_primitives::VALIDATION_CODE_BOMB_LIMIT;
+pub use infrablockspace_node_primitives::VALIDATION_CODE_BOMB_LIMIT;
 
 /// Value used for reference benchmark of erasure-coding.
 pub const ERASURE_CODING_N_VALIDATORS: usize = 1024;

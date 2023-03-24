@@ -37,7 +37,7 @@ use crate::{
 	Error,
 };
 
-use polkadot_node_primitives::BlockWeight;
+use infrablockspace_node_primitives::BlockWeight;
 use infrablockspace_primitives::{BlockNumber, Hash};
 
 use parity_scale_codec::{Decode, Encode};

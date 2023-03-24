@@ -22,7 +22,7 @@ mod handle_new_activations {
 		task::{Context as FuturesContext, Poll},
 		Future,
 	};
-	use polkadot_node_primitives::{
+	use infrablockspace_node_primitives::{
 		BlockData, Collation, CollationResult, MaybeCompressedPoV, PoV,
 	};
 	use polkadot_node_subsystem::{

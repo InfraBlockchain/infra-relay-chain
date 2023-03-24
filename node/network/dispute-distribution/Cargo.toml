@@ -15,7 +15,7 @@ polkadot-erasure-coding = { path = "../../../erasure-coding" }
 polkadot-node-subsystem = {path = "../../subsystem" }
 polkadot-node-network-protocol = { path = "../../network/protocol" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

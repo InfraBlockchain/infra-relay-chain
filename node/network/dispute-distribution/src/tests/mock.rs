@@ -32,7 +32,7 @@ use sp_application_crypto::AppKey;
 use sp_keyring::Sr25519Keyring;
 use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr};
 
-use polkadot_node_primitives::{DisputeMessage, SignedDisputeStatement};
+use infrablockspace_node_primitives::{DisputeMessage, SignedDisputeStatement};
 use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateHash, CandidateReceipt, Hash, SessionIndex, SessionInfo,
 	ValidatorId, ValidatorIndex,

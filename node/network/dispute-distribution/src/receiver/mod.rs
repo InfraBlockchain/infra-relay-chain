@@ -39,7 +39,7 @@ use polkadot_node_network_protocol::{
 	},
 	PeerId, UnifiedReputationChange as Rep,
 };
-use polkadot_node_primitives::DISPUTE_WINDOW;
+use infrablockspace_node_primitives::DISPUTE_WINDOW;
 use polkadot_node_subsystem::{
 	messages::{DisputeCoordinatorMessage, ImportStatementsResult},
 	overseer,

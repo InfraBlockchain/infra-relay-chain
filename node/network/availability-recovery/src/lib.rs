@@ -47,7 +47,7 @@ use polkadot_node_network_protocol::{
 	},
 	IfDisconnected, UnifiedReputationChange as Rep,
 };
-use polkadot_node_primitives::{AvailableData, ErasureChunk};
+use infrablockspace_node_primitives::{AvailableData, ErasureChunk};
 use polkadot_node_subsystem::{
 	errors::RecoveryError,
 	jaeger,

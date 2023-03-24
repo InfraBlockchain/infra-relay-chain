@@ -30,7 +30,7 @@ use futures::{
 };
 
 use error::{Error, FatalResult};
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	AvailableData, InvalidCandidate, PoV, SignedFullStatement, Statement, ValidationResult,
 	BACKING_EXECUTION_TIMEOUT,
 };

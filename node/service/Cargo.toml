@@ -87,7 +87,7 @@ polkadot-overseer = { path = "../overseer" }
 polkadot-client = { path = "../client", default-features = false, optional = true }
 polkadot-parachain = { path = "../../parachain" }
 infrablockspace-primitives = { path = "../../primitives" }
-polkadot-node-primitives = { path = "../primitives" }
+infrablockspace-node-primitives = { path = "../primitives" }
 polkadot-rpc = { path = "../../rpc" }
 polkadot-node-subsystem = {path = "../subsystem" }
 polkadot-node-subsystem-util = { path = "../subsystem-util" }

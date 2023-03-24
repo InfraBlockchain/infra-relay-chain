@@ -25,7 +25,7 @@ use futures::{
 
 use sc_keystore::LocalKeystore;
 
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	disputes::ValidCandidateVotes, CandidateVotes, DisputeStatus, SignedDisputeStatement, Timestamp,
 };
 use polkadot_node_subsystem::{

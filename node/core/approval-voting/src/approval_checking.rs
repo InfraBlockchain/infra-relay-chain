@@ -17,7 +17,7 @@
 //! Utilities for checking whether a candidate has been approved under a given block.
 
 use bitvec::{order::Lsb0 as BitOrderLsb0, slice::BitSlice};
-use polkadot_node_primitives::approval::DelayTranche;
+use infrablockspace_node_primitives::approval::DelayTranche;
 use infrablockspace_primitives::ValidatorIndex;
 
 use crate::{

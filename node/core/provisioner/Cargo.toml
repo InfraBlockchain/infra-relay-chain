@@ -10,7 +10,7 @@ futures = "0.3.21"
 gum = { package = "tracing-gum", path = "../../gum" }
 thiserror = "1.0.31"
 infrablockspace-primitives = { path = "../../../primitives" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
 rand = "0.8.5"

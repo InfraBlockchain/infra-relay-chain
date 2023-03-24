@@ -21,7 +21,7 @@ polkadot-node-subsystem = { path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
 polkadot-overseer = { path = "../../overseer" }
 infrablockspace-primitives = { path = "../../../primitives" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-jaeger = { path = "../../jaeger" }
 
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }

@@ -32,7 +32,7 @@ use polkadot_cli::{
 	Cli,
 };
 use polkadot_node_core_candidate_validation::find_validation_data;
-use polkadot_node_primitives::{AvailableData, BlockData, PoV};
+use infrablockspace_node_primitives::{AvailableData, BlockData, PoV};
 use infrablockspace_primitives::{CandidateDescriptor, CandidateReceipt};
 
 use polkadot_node_subsystem_util::request_validators;

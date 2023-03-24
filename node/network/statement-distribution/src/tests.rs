@@ -28,7 +28,7 @@ use polkadot_node_network_protocol::{
 	},
 	view, ObservedRole,
 };
-use polkadot_node_primitives::{Statement, UncheckedSignedFullStatement};
+use infrablockspace_node_primitives::{Statement, UncheckedSignedFullStatement};
 use polkadot_node_subsystem::{
 	jaeger,
 	messages::{network_bridge_event, AllMessages, RuntimeApiMessage, RuntimeApiRequest},

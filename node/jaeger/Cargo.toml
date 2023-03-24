@@ -10,7 +10,7 @@ mick-jaeger = "0.1.8"
 lazy_static = "1.4"
 parking_lot = "0.12.0"
 infrablockspace-primitives = { path = "../../primitives" }
-polkadot-node-primitives = { path = "../primitives" }
+infrablockspace-node-primitives = { path = "../primitives" }
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 thiserror = "1.0.31"

@@ -27,7 +27,7 @@ use polkadot_node_network_protocol::{
 	peer_set::MAX_NOTIFICATION_SIZE,
 	v1 as protocol_v1, PeerId, UnifiedReputationChange as Rep, Versioned, View,
 };
-use polkadot_node_primitives::approval::{
+use infrablockspace_node_primitives::approval::{
 	AssignmentCert, BlockApprovalMeta, IndirectAssignmentCert, IndirectSignedApprovalVote,
 };
 use polkadot_node_subsystem::{

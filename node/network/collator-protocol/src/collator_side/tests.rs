@@ -35,7 +35,7 @@ use polkadot_node_network_protocol::{
 	request_response::{IncomingRequest, ReqProtocolNames},
 	view,
 };
-use polkadot_node_primitives::BlockData;
+use infrablockspace_node_primitives::BlockData;
 use polkadot_node_subsystem::{
 	jaeger,
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},

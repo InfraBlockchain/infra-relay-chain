@@ -7,7 +7,7 @@ edition.workspace = true
 [dependencies]
 polkadot-node-metrics = { path = "../../metrics" }
 polkadot-node-network-protocol = { path = "../protocol" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 infrablockspace-primitives = { path = "../../../primitives" }
 rand = "0.8"

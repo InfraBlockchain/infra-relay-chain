@@ -15,7 +15,7 @@ parity-scale-codec = { version = "3.3.0", default-features = false, features = [
 
 infrablockspace-primitives = { path = "../../../primitives" }
 polkadot-parachain = { path = "../../../parachain" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-subsystem = { path = "../../subsystem" }
 polkadot-node-subsystem-util = { path = "../../subsystem-util" }
 polkadot-node-metrics = { path = "../../metrics" }

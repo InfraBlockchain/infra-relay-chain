@@ -33,7 +33,7 @@ use polkadot_node_network_protocol::{
 	v1::{self as protocol_v1, StatementMetadata},
 	IfDisconnected, PeerId, UnifiedReputationChange as Rep, Versioned, View,
 };
-use polkadot_node_primitives::{SignedFullStatement, Statement, UncheckedSignedFullStatement};
+use infrablockspace_node_primitives::{SignedFullStatement, Statement, UncheckedSignedFullStatement};
 use polkadot_node_subsystem_util::{self as util, rand, MIN_GOSSIP_PEERS};
 
 use polkadot_node_subsystem::{

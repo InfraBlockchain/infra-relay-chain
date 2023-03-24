@@ -28,7 +28,7 @@ parity-scale-codec = { version = "3.3.0", default-features = false, features = [
 polkadot-parachain = { path = "../../../parachain" }
 infrablockspace-core-primitives = { path = "../../../core-primitives" }
 polkadot-node-metrics = { path = "../../metrics" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 
 infrablockspace-primitives = { path = "../../../primitives" }
 sc-executor = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

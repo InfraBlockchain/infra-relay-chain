@@ -23,7 +23,7 @@ use super::database::{DBTransaction, Database};
 use kvdb::{DBKey, DBOp};
 
 use parity_scale_codec::{Decode, Encode};
-pub use polkadot_node_primitives::{new_session_window_size, SessionWindowSize};
+pub use infrablockspace_node_primitives::{new_session_window_size, SessionWindowSize};
 use infrablockspace_primitives::{BlockNumber, Hash, SessionIndex, SessionInfo};
 use std::sync::Arc;
 
