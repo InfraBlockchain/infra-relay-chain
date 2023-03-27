@@ -1,7 +1,9 @@
 [package]
 name = "infrablockspace-runtime"
 version = "0.1.0"
-edition = "2021"
+authors.workspace = true
+edition.workspace = true
+build = "build.rs"
 
 [dependencies]
 

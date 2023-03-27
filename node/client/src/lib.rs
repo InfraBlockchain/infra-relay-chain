@@ -47,9 +47,25 @@ pub type FullClient<RuntimeApi, ExecutorDispatch> =
 #[cfg(not(any(
 	feature = "rococo",
 	feature = "kusama",
-	feature = "polkadot"
+	feature = "polkadot",
 )))]
 compile_error!("at least one runtime feature must be enabled");
+
+#[cfg(feature = "infrablockspace")]
+pub struct InfraBsExecutorDispatch;
+
+#[cfg(feature = "infrablockspace")]
+impl sc_executor::NativeExecutionDispatch for InfraBsExecutorDispatch {
+	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
+
+	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+		infrabs_runtime::api::dispatch(method, data)
+	}
+
+	fn native_version() -> sc_executor::NativeVersion {
+		infrabs_runtime::native_version()
+	}
+}
 
 /// The native executor instance for Polkadot.
 #[cfg(feature = "polkadot")]

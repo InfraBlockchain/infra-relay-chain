@@ -180,7 +180,6 @@ runtime-benchmarks = [
 	"polkadot-runtime?/runtime-benchmarks",
 	"kusama-runtime?/runtime-benchmarks",
 	"rococo-runtime?/runtime-benchmarks",
-
 	"service/runtime-benchmarks",
 ]
 try-runtime = [
