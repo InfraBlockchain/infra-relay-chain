@@ -48,8 +48,6 @@ pub enum NetworkId {
 	Kusama,
 	/// The Rococo testnet Relay-chain.
 	Rococo,
-	/// The Wococo testnet Relay-chain.
-	Wococo,
 	/// An Ethereum network specified by its chain ID.
 	Ethereum {
 		/// The EIP-155 chain ID.

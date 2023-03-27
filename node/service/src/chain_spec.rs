@@ -14,29 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
-//! Polkadot chain configurations.
-
 use beefy_primitives::crypto::AuthorityId as BeefyId;
 use frame_support::weights::Weight;
 use grandpa::AuthorityId as GrandpaId;
+
+// Infrablockspace Runtime Configuration
+#[cfg(feature = "infrablockspace-native")]
+use infrablockspace_runtime as infrabs;
+
+// Polkadot Runtime Configuration
 #[cfg(feature = "kusama-native")]
 use kusama_runtime as kusama;
 #[cfg(feature = "kusama-native")]
 use kusama_runtime_constants::currency::UNITS as KSM;
-use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_staking::Forcing;
-use infrablockspace_primitives::{AccountId, AccountPublic, AssignmentId, ValidatorId};
 #[cfg(feature = "polkadot-native")]
 use polkadot_runtime as polkadot;
 #[cfg(feature = "polkadot-native")]
 use polkadot_runtime_constants::currency::UNITS as DOT;
-use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
-use sp_consensus_babe::AuthorityId as BabeId;
-
 #[cfg(feature = "rococo-native")]
 use rococo_runtime as rococo;
 #[cfg(feature = "rococo-native")]
 use rococo_runtime_constants::currency::UNITS as ROC;
+
+use infrablockspace_primitives::{AccountId, AccountPublic, AssignmentId, ValidatorId};
+use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
+use pallet_staking::Forcing;
+use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
+use sp_consensus_babe::AuthorityId as BabeId;
 use sc_chain_spec::{ChainSpecExtension, ChainType};
 use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public};
@@ -49,8 +53,6 @@ const POLKADOT_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit
 const KUSAMA_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 #[cfg(feature = "rococo-native")]
 const ROCOCO_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
-#[cfg(feature = "rococo-native")]
-const VERSI_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 const DEFAULT_PROTOCOL_ID: &str = "dot";
 
 /// Node `ChainSpec` extensions.
@@ -69,6 +71,10 @@ pub struct Extensions {
 	/// This value will be set by the `sync-state rpc` implementation.
 	pub light_sync_state: sc_sync_state_rpc::LightSyncStateExtension,
 }
+
+/// The 'ChainSpec' parameterized for the Infrablockspace runtime.
+#[cfg(feature = "infrablockspace-native")]
+pub type InfraBsChainSpec = service::GenericChainSpec<infrabs::GenesisConfig, Extensions>;
 
 /// The `ChainSpec` parameterized for the polkadot runtime.
 #[cfg(feature = "polkadot-native")]
@@ -93,11 +99,6 @@ pub type KusamaChainSpec = DummyChainSpec;
 /// The `ChainSpec` parameterized for the rococo runtime.
 #[cfg(feature = "rococo-native")]
 pub type RococoChainSpec = service::GenericChainSpec<RococoGenesisExt, Extensions>;
-
-/// The `ChainSpec` parameterized for the `versi` runtime.
-///
-/// As of now `Versi` will just be a clone of `Rococo`, until we need it to differ.
-pub type VersiChainSpec = RococoChainSpec;
 
 /// The `ChainSpec` parameterized for the rococo runtime.
 // Dummy chain spec, but that is fine when we don't have the native runtime.
@@ -138,11 +139,6 @@ pub fn kusama_config() -> Result<KusamaChainSpec, String> {
 
 pub fn rococo_config() -> Result<RococoChainSpec, String> {
 	RococoChainSpec::from_json_bytes(&include_bytes!("../chain-specs/rococo.json")[..])
-}
-
-/// This is a temporary testnet that uses the same runtime as rococo.
-pub fn wococo_config() -> Result<RococoChainSpec, String> {
-	RococoChainSpec::from_json_bytes(&include_bytes!("../chain-specs/wococo.json")[..])
 }
 
 /// The default parachains host configuration.
@@ -936,43 +932,6 @@ pub fn rococo_staging_testnet_config() -> Result<RococoChainSpec, String> {
 	))
 }
 
-pub fn versi_chain_spec_properties() -> serde_json::map::Map<String, serde_json::Value> {
-	serde_json::json!({
-		"ss58Format": 42,
-		"tokenDecimals": 12,
-		"tokenSymbol": "VRS",
-	})
-	.as_object()
-	.expect("Map given; qed")
-	.clone()
-}
-
-/// Versi staging testnet config.
-#[cfg(feature = "rococo-native")]
-pub fn versi_staging_testnet_config() -> Result<RococoChainSpec, String> {
-	let wasm_binary = rococo::WASM_BINARY.ok_or("Versi development wasm not available")?;
-	let boot_nodes = vec![];
-
-	Ok(RococoChainSpec::from_genesis(
-		"Versi Staging Testnet",
-		"versi_staging_testnet",
-		ChainType::Live,
-		move || RococoGenesisExt {
-			runtime_genesis_config: rococo_staging_testnet_config_genesis(wasm_binary),
-			session_length_in_blocks: Some(100),
-		},
-		boot_nodes,
-		Some(
-			TelemetryEndpoints::new(vec![(VERSI_STAGING_TELEMETRY_URL.to_string(), 0)])
-				.expect("Versi Staging telemetry url is valid; qed"),
-		),
-		Some("versi"),
-		None,
-		Some(versi_chain_spec_properties()),
-		Default::default(),
-	))
-}
-
 /// Helper function to generate a crypto pair from seed
 pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
 	TPublic::Pair::from_string(&format!("//{}", seed), None)
@@ -1398,53 +1357,6 @@ pub fn rococo_development_config() -> Result<RococoChainSpec, String> {
 	))
 }
 
-/// `Versi` development config (single validator Alice)
-#[cfg(feature = "rococo-native")]
-pub fn versi_development_config() -> Result<RococoChainSpec, String> {
-	let wasm_binary = rococo::WASM_BINARY.ok_or("Versi development wasm not available")?;
-
-	Ok(RococoChainSpec::from_genesis(
-		"Development",
-		"versi_dev",
-		ChainType::Development,
-		move || RococoGenesisExt {
-			runtime_genesis_config: rococo_development_config_genesis(wasm_binary),
-			// Use 1 minute session length.
-			session_length_in_blocks: Some(10),
-		},
-		vec![],
-		None,
-		Some("versi"),
-		None,
-		None,
-		Default::default(),
-	))
-}
-
-/// Wococo development config (single validator Alice)
-#[cfg(feature = "rococo-native")]
-pub fn wococo_development_config() -> Result<RococoChainSpec, String> {
-	const WOCOCO_DEV_PROTOCOL_ID: &str = "woco";
-	let wasm_binary = rococo::WASM_BINARY.ok_or("Wococo development wasm not available")?;
-
-	Ok(RococoChainSpec::from_genesis(
-		"Development",
-		"wococo_dev",
-		ChainType::Development,
-		move || RococoGenesisExt {
-			runtime_genesis_config: rococo_development_config_genesis(wasm_binary),
-			// Use 1 minute session length.
-			session_length_in_blocks: Some(10),
-		},
-		vec![],
-		None,
-		Some(WOCOCO_DEV_PROTOCOL_ID),
-		None,
-		None,
-		Default::default(),
-	))
-}
-
 #[cfg(feature = "polkadot-native")]
 fn polkadot_local_testnet_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig {
 	polkadot_testnet_genesis(
@@ -1542,80 +1454,3 @@ pub fn rococo_local_testnet_config() -> Result<RococoChainSpec, String> {
 	))
 }
 
-/// Wococo is a temporary testnet that uses almost the same runtime as rococo.
-#[cfg(feature = "rococo-native")]
-fn wococo_local_testnet_genesis(wasm_binary: &[u8]) -> rococo_runtime::GenesisConfig {
-	rococo_testnet_genesis(
-		wasm_binary,
-		vec![
-			get_authority_keys_from_seed("Alice"),
-			get_authority_keys_from_seed("Bob"),
-			get_authority_keys_from_seed("Charlie"),
-			get_authority_keys_from_seed("Dave"),
-		],
-		get_account_id_from_seed::<sr25519::Public>("Alice"),
-		None,
-	)
-}
-
-/// Wococo local testnet config (multivalidator Alice + Bob + Charlie + Dave)
-#[cfg(feature = "rococo-native")]
-pub fn wococo_local_testnet_config() -> Result<RococoChainSpec, String> {
-	let wasm_binary = rococo::WASM_BINARY.ok_or("Wococo development wasm not available")?;
-
-	Ok(RococoChainSpec::from_genesis(
-		"Wococo Local Testnet",
-		"wococo_local_testnet",
-		ChainType::Local,
-		move || RococoGenesisExt {
-			runtime_genesis_config: wococo_local_testnet_genesis(wasm_binary),
-			// Use 1 minute session length.
-			session_length_in_blocks: Some(10),
-		},
-		vec![],
-		None,
-		Some(DEFAULT_PROTOCOL_ID),
-		None,
-		None,
-		Default::default(),
-	))
-}
-
-/// `Versi` is a temporary testnet that uses the same runtime as rococo.
-#[cfg(feature = "rococo-native")]
-fn versi_local_testnet_genesis(wasm_binary: &[u8]) -> rococo_runtime::GenesisConfig {
-	rococo_testnet_genesis(
-		wasm_binary,
-		vec![
-			get_authority_keys_from_seed("Alice"),
-			get_authority_keys_from_seed("Bob"),
-			get_authority_keys_from_seed("Charlie"),
-			get_authority_keys_from_seed("Dave"),
-		],
-		get_account_id_from_seed::<sr25519::Public>("Alice"),
-		None,
-	)
-}
-
-/// `Versi` local testnet config (multivalidator Alice + Bob + Charlie + Dave)
-#[cfg(feature = "rococo-native")]
-pub fn versi_local_testnet_config() -> Result<RococoChainSpec, String> {
-	let wasm_binary = rococo::WASM_BINARY.ok_or("Versi development wasm not available")?;
-
-	Ok(RococoChainSpec::from_genesis(
-		"Versi Local Testnet",
-		"versi_local_testnet",
-		ChainType::Local,
-		move || RococoGenesisExt {
-			runtime_genesis_config: versi_local_testnet_genesis(wasm_binary),
-			// Use 1 minute session length.
-			session_length_in_blocks: Some(10),
-		},
-		vec![],
-		None,
-		Some("versi"),
-		None,
-		None,
-		Default::default(),
-	))
-}

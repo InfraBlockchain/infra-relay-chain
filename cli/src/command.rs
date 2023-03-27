@@ -78,7 +78,7 @@ impl SubstrateCli for Cli {
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
 		let id = if id == "" {
 			let n = get_exec_name().unwrap_or_default();
-			["polkadot", "rococo", "versi"]
+			["polkadot", "rococo"]
 				.iter()
 				.cloned()
 				.find(|&chain| n.starts_with(chain))
@@ -114,23 +114,6 @@ impl SubstrateCli for Cli {
 			#[cfg(not(feature = "rococo-native"))]
 			name if name.starts_with("rococo-") && !name.ends_with(".json") =>
 				Err(format!("`{}` only supported with `rococo-native` feature enabled.", name))?,
-			"wococo" => Box::new(service::chain_spec::wococo_config()?),
-			#[cfg(feature = "rococo-native")]
-			"wococo-dev" => Box::new(service::chain_spec::wococo_development_config()?),
-			#[cfg(feature = "rococo-native")]
-			"wococo-local" => Box::new(service::chain_spec::wococo_local_testnet_config()?),
-			#[cfg(not(feature = "rococo-native"))]
-			name if name.starts_with("wococo-") =>
-				Err(format!("`{}` only supported with `rococo-native` feature enabled.", name))?,
-			#[cfg(feature = "rococo-native")]
-			"versi-dev" => Box::new(service::chain_spec::versi_development_config()?),
-			#[cfg(feature = "rococo-native")]
-			"versi-local" => Box::new(service::chain_spec::versi_local_testnet_config()?),
-			#[cfg(feature = "rococo-native")]
-			"versi-staging" => Box::new(service::chain_spec::versi_staging_testnet_config()?),
-			#[cfg(not(feature = "rococo-native"))]
-			name if name.starts_with("versi-") =>
-				Err(format!("`{}` only supported with `rococo-native` feature enabled.", name))?,
 			path => {
 				let path = std::path::PathBuf::from(path);
 
@@ -140,9 +123,7 @@ impl SubstrateCli for Cli {
 				// When `force_*` is given or the file name starts with the name of one of the known chains,
 				// we use the chain spec for the specific chain.
 				if self.run.force_rococo ||
-					chain_spec.is_rococo() ||
-					chain_spec.is_wococo() ||
-					chain_spec.is_versi()
+					chain_spec.is_rococo()
 				{
 					Box::new(service::RococoChainSpec::from_json_file(path)?)
 				} else if self.run.force_kusama || chain_spec.is_kusama() {
@@ -161,7 +142,7 @@ impl SubstrateCli for Cli {
 		}
 
 		#[cfg(feature = "rococo-native")]
-		if spec.is_rococo() || spec.is_wococo() || spec.is_versi() {
+		if spec.is_rococo() {
 			return &service::rococo_runtime::VERSION
 		}
 
@@ -193,7 +174,7 @@ fn set_default_ss58_version(spec: &Box<dyn service::ChainSpec>) {
 }
 
 const DEV_ONLY_ERROR_PATTERN: &'static str =
-	"can only use subcommand with --chain [polkadot-dev, kusama-dev, rococo-dev, wococo-dev], got ";
+	"can only use subcommand with --chain [polkadot-dev, kusama-dev, rococo-dev], got ";
 
 fn ensure_dev(spec: &Box<dyn service::ChainSpec>) -> std::result::Result<(), String> {
 	if spec.is_dev() {

@@ -116,6 +116,11 @@ pub use sp_runtime::{
 	},
 };
 
+// Infrablockspace Native Runtimes
+#[cfg(feature = "infrablockspace-native")]
+pub use {infrablockspace_runtime, infrablocksapce_runtime_constants};
+
+// Polkadot Native Runtimes
 #[cfg(feature = "kusama-native")]
 pub use {kusama_runtime, kusama_runtime_constants};
 #[cfg(feature = "polkadot-native")]
@@ -243,12 +248,6 @@ pub trait IdentifyVariant {
 	/// Returns if this is a configuration for the `Rococo` network.
 	fn is_rococo(&self) -> bool;
 
-	/// Returns if this is a configuration for the `Wococo` test network.
-	fn is_wococo(&self) -> bool;
-
-	/// Returns if this is a configuration for the `Versi` test network.
-	fn is_versi(&self) -> bool;
-
 	/// Returns true if this configuration is for a development network.
 	fn is_dev(&self) -> bool;
 }
@@ -262,12 +261,6 @@ impl IdentifyVariant for Box<dyn ChainSpec> {
 	}
 	fn is_rococo(&self) -> bool {
 		self.id().starts_with("rococo") || self.id().starts_with("rco")
-	}
-	fn is_wococo(&self) -> bool {
-		self.id().starts_with("wococo") || self.id().starts_with("wco")
-	}
-	fn is_versi(&self) -> bool {
-		self.id().starts_with("versi") || self.id().starts_with("vrs")
 	}
 	fn is_dev(&self) -> bool {
 		self.id().ends_with("dev")
@@ -702,9 +695,7 @@ where
 	let backoff_authoring_blocks = {
 		let mut backoff = sc_consensus_slots::BackoffAuthoringOnFinalizedHeadLagging::default();
 
-		if config.chain_spec.is_rococo() ||
-			config.chain_spec.is_wococo() ||
-			config.chain_spec.is_versi()
+		if config.chain_spec.is_rococo()
 		{
 			// it's a testnet that's in flux, finality has stalled sometimes due
 			// to operational issues and it's annoying to slow down block
@@ -717,9 +708,7 @@ where
 
 	// If not on a known test network, warn the user that BEEFY is still experimental.
 	if enable_beefy &&
-		!config.chain_spec.is_rococo() &&
-		!config.chain_spec.is_wococo() &&
-		!config.chain_spec.is_versi()
+		!config.chain_spec.is_rococo()
 	{
 		gum::warn!("BEEFY is still experimental, usage on a production network is discouraged.");
 	}
@@ -738,7 +727,7 @@ where
 	let overseer_connector = OverseerConnector::default();
 	let overseer_handle = Handle::new(overseer_connector.handle());
 
-	let chain_spec = config.chain_spec.cloned_box();
+	let _chain_spec = config.chain_spec.cloned_box();
 
 	let local_keystore = basics.keystore_container.local_keystore();
 	let auth_or_collator = role.is_authority() || is_collator.is_collator();
@@ -1145,7 +1134,7 @@ where
 			runtime: client.clone(),
 			key_store: keystore_opt.clone(),
 			network_params,
-			min_block_delta: if chain_spec.is_wococo() { 4 } else { 8 },
+			min_block_delta: 8,
 			prometheus_registry: prometheus_registry.clone(),
 			links: beefy_links,
 			on_demand_justifications_handler: beefy_on_demand_justifications_handler,
@@ -1155,13 +1144,15 @@ where
 
 		// Wococo's purpose is to be a testbed for BEEFY, so if it fails we'll
 		// bring the node down with it to make sure it is noticed.
-		if chain_spec.is_wococo() {
-			task_manager
-				.spawn_essential_handle()
-				.spawn_blocking("beefy-gadget", None, gadget);
-		} else {
-			task_manager.spawn_handle().spawn_blocking("beefy-gadget", None, gadget);
-		}
+		// if chain_spec.is_wococo() {
+		// 	task_manager
+		// 		.spawn_essential_handle()
+		// 		.spawn_blocking("beefy-gadget", None, gadget);
+		// } else {
+		// 	task_manager.spawn_handle().spawn_blocking("beefy-gadget", None, gadget);
+		// }
+		
+		task_manager.spawn_handle().spawn_blocking("beefy-gadget", None, gadget);
 
 		if is_offchain_indexing_enabled {
 			task_manager.spawn_handle().spawn_blocking(
@@ -1301,9 +1292,7 @@ pub fn new_chain_ops(
 	config.keystore = service::config::KeystoreConfig::InMemory;
 
 	#[cfg(feature = "rococo-native")]
-	if config.chain_spec.is_rococo() ||
-		config.chain_spec.is_wococo() ||
-		config.chain_spec.is_versi()
+	if config.chain_spec.is_rococo()
 	{
 		return chain_ops!(config, jaeger_agent, None; rococo_runtime, RococoExecutorDispatch, Rococo)
 	}
@@ -1350,9 +1339,7 @@ pub fn build_full(
 	hwbench: Option<sc_sysinfo::HwBench>,
 ) -> Result<NewFull<Client>, Error> {
 	#[cfg(feature = "rococo-native")]
-	if config.chain_spec.is_rococo() ||
-		config.chain_spec.is_wococo() ||
-		config.chain_spec.is_versi()
+	if config.chain_spec.is_rococo()
 	{
 		return new_full::<rococo_runtime::RuntimeApi, RococoExecutorDispatch, _>(
 			config,

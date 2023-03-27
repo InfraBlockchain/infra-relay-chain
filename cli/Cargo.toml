@@ -65,6 +65,7 @@ fast-runtime = ["service/fast-runtime"]
 pyroscope = ["pyro"]
 hostperfcheck = ["polkadot-performance-test"]
 
+infrablockspace-native = ["service/infrablockspace-native"]
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
 # Validators require the native runtime currently

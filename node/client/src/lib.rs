@@ -48,6 +48,7 @@ pub type FullClient<RuntimeApi, ExecutorDispatch> =
 	feature = "rococo",
 	feature = "kusama",
 	feature = "polkadot",
+	feauture = "infrablockspace",
 )))]
 compile_error!("at least one runtime feature must be enabled");
 
@@ -282,6 +283,8 @@ pub(crate) use with_client;
 /// See [`ExecuteWithClient`] for more information.
 #[derive(Clone)]
 pub enum Client {
+	#[cfg(feature = "infrablockspace")]
+	Polkadot(Arc<FullClient<infrablockspace::RuntimeApi, InfraBsExecutorDispatch>>),
 	#[cfg(feature = "polkadot")]
 	Polkadot(Arc<FullClient<polkadot_runtime::RuntimeApi, PolkadotExecutorDispatch>>),
 	#[cfg(feature = "kusama")]

@@ -1,8 +1,7 @@
 
 //! InfrablockSpace runtime. This can be compiled with `#[no_std]`, ready for Wasm.
-
 #![cfg_attr(not(feature = "std"), no_std)]
-
+// `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
 // InfraBlockspace Primivites types
@@ -21,27 +20,53 @@ use runtime_common::{
 	SlowAdjustingFeeUpdate, U256ToBalance,
 };
 
-/// Constant values used within the runtime.
-use infrabs_runtime_constants::{currency::*, fee::*, time::*};
 
-// Basic weights for InfraBs Runtime
-impl_runtime_weights!(infrablockspace_runtime_constants);
-
+// For Runtime 
+use infrablockspace_runtime_constants::{currency::*, fee::*, time::*};
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
-    construct_runtime, parameter_types
+    construct_runtime, parameter_types,
+	traits::{
+		ConstU32, Contains, EitherOf, EitherOfDiverse, InstanceFilter, KeyOwnerProofSystem,
+		LockIdentifier, PrivilegeCmp, StorageMapShim, WithdrawReasons, 
+	}
 };
 use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
 use sp_core::{ConstU128, OpaqueMetadata};
 use sp_runtime::{
-    generic,
+    create_runtime_str, generic, impl_opaque_keys,
     traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
 		OpaqueKeys, SaturatedConversion, Verify,
 	},
-    ApplyExtrinsicResult
+    ApplyExtrinsicResult, KeyTypeId
 };
 use sp_version::RuntimeVersion;
+
+// Weights used in the runtime.
+mod weights;
+
+// Basic weights for InfraBs Runtime
+impl_runtime_weights!(infrablockspace_runtime_constants);
+
+// For Parachains
+use runtime_parachains::{
+	configuration as parachains_configuration, 
+	disputes as parachains_disputes,
+	ump as parachains_ump,
+	dmp as parachains_dmp, 
+	hrmp as parachains_hrmp, 
+	inclusion as parachains_inclusion,
+	initializer as parachains_initializer, 
+	origin as parachains_origin, 
+	paras as parachains_paras,
+	paras_inherent as parachains_paras_inherent, 
+	reward_points as parachains_reward_points,
+	runtime_api_impl::v2 as parachains_runtime_api_impl, 
+	scheduler as parachains_scheduler,
+	session_info as parachains_session_info, 
+	shared as parachains_shared, 
+};
 
 /// Runtime version (InfraBs).
 #[sp_version::runtime_version]
@@ -49,7 +74,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("infrabs"),
 	impl_name: create_runtime_str!("bclabs-infrabs"),
 	authoring_version: 2,
-	spec_version: 1000,
+	spec_version: 1000, // ToDO
 	impl_version: 0,
 	#[cfg(not(feature = "disable-runtime-api"))]
 	apis: RUNTIME_API_VERSIONS,
@@ -59,6 +84,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	state_version: 0,
 };
 
+// Frame System
 parameter_types! {
 	pub const Version: RuntimeVersion = VERSION;
 	pub const SS58Prefix: u8 = 2;
@@ -89,6 +115,24 @@ impl frame_system::Config for Runtime {
 	type SS58Prefix = SS58Prefix;
 	type OnSetCode = ();
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
+}
+
+parameter_types! {
+	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
+	pub const MaxLocks: u32 = 50;
+	pub const MaxReserves: u32 = 50;
+}
+
+impl pallet_balances::Config for Runtime {
+    type Balance = Balance;
+	type DustRemoval = ();
+	type RuntimeEvent = RuntimeEvent;
+	type ExistentialDeposit = ExistentialDeposit;
+	type AccountStore = System;
+	type MaxLocks = MaxLocks;
+	type MaxReserves = MaxReserves;
+	type ReserveIdentifier = [u8; 8];
+	type WeightInfo = weights::pallet_balances::WeightInfo<Runtime>;
 }
 
 construct_runtime! {

@@ -96,11 +96,17 @@ infrablockspace-runtime-parachains = { path = "../../runtime/parachains" }
 infrablockspace-node-network-protocol = { path = "../network/protocol" }
 
 # Infrablockspace Runtime Constants
+infrablockspace-runtime-constants = { path = "../../runtime/infrabs/constants", optional = true }
+
+# Polkadot Runtime Constants
 polkadot-runtime-constants = { path = "../../runtime/polkadot/constants", optional = true }
 kusama-runtime-constants = { path = "../../runtime/kusama/constants", optional = true }
 rococo-runtime-constants = { path = "../../runtime/rococo/constants", optional = true }
 
 # Infrablockspace Runtimes
+infrablockspace-runtime = { path = "../../runtime/infrabs", optional = true }
+
+# Polkadot Runtimes
 polkadot-runtime = { path = "../../runtime/polkadot", optional = true }
 kusama-runtime = { path = "../../runtime/kusama", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
@@ -169,6 +175,7 @@ full-node = [
 	"parity-db",
 ]
 
+infrablockspace-native = [ "infrablockspace-runtime", "infrablockspace-runtime-constants", "infrablockspace-client/polkadot" ]
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
 # Validators require the native runtime currently
@@ -195,9 +202,7 @@ fast-runtime = [
 
 malus = ["full-node"]
 runtime-metrics = [
-	"infrablockspace-client/runtime-metrics",
 	"rococo-runtime?/runtime-metrics",
 	"kusama-runtime?/runtime-metrics",
 	"polkadot-runtime?/runtime-metrics",
-	"infrablockspace-runtime-parachains/runtime-metrics"
 ]
