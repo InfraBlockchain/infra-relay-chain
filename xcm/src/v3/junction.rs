@@ -46,8 +46,6 @@ pub enum NetworkId {
 	Polkadot,
 	/// The Kusama canary-net Relay-chain.
 	Kusama,
-	/// The Westend testnet Relay-chain.
-	Westend,
 	/// The Rococo testnet Relay-chain.
 	Rococo,
 	/// The Wococo testnet Relay-chain.

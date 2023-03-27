@@ -30,7 +30,6 @@ xcm = { path = ".." }
 # temp
 pallet-xcm = { path = "../pallet-xcm" }
 infrablockspace-runtime-common = { path = "../../runtime/common" }
-# westend-runtime = { path = "../../runtime/westend", features = ["runtime-benchmarks"] }
 infrablockspace-primitives = { path = "../../primitives" }
 
 [features]

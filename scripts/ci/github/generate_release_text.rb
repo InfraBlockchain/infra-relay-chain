@@ -127,7 +127,6 @@ rustc_stable = ENV['RUSTC_STABLE']
 rustc_nightly = ENV['RUSTC_NIGHTLY']
 polkadot_runtime = get_runtime('polkadot', polkadot_path)
 kusama_runtime = get_runtime('kusama', polkadot_path)
-westend_runtime = get_runtime('westend', polkadot_path)
 rococo_runtime = get_runtime('rococo', polkadot_path)
 
 # These json files should have been downloaded as part of the build-runtimes

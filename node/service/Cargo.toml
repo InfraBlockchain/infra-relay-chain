@@ -99,12 +99,10 @@ infrablockspace-node-network-protocol = { path = "../network/protocol" }
 polkadot-runtime-constants = { path = "../../runtime/polkadot/constants", optional = true }
 kusama-runtime-constants = { path = "../../runtime/kusama/constants", optional = true }
 rococo-runtime-constants = { path = "../../runtime/rococo/constants", optional = true }
-westend-runtime-constants = { path = "../../runtime/westend/constants", optional = true }
 
 # Infrablockspace Runtimes
 polkadot-runtime = { path = "../../runtime/polkadot", optional = true }
 kusama-runtime = { path = "../../runtime/kusama", optional = true }
-westend-runtime = { path = "../../runtime/westend", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
 # Infrablockspace Subsystems
@@ -176,13 +174,11 @@ full-node = [
 # Validators require the native runtime currently
 polkadot-native = [ "polkadot-runtime", "polkadot-runtime-constants", "infrablockspace-client/polkadot" ]
 kusama-native = [ "kusama-runtime", "kusama-runtime-constants", "infrablockspace-client/kusama" ]
-westend-native = [ "westend-runtime", "westend-runtime-constants", "infrablockspace-client/westend" ]
 rococo-native = [ "rococo-runtime", "rococo-runtime-constants", "infrablockspace-client/rococo" ]
 
 runtime-benchmarks = [
 	"polkadot-runtime?/runtime-benchmarks",
 	"kusama-runtime?/runtime-benchmarks",
-	"westend-runtime?/runtime-benchmarks",
 	"rococo-runtime?/runtime-benchmarks",
 
 	"service/runtime-benchmarks",
@@ -190,13 +186,11 @@ runtime-benchmarks = [
 try-runtime = [
 	"polkadot-runtime?/try-runtime",
 	"kusama-runtime?/try-runtime",
-	"westend-runtime?/try-runtime",
 	"rococo-runtime?/try-runtime",
 ]
 fast-runtime = [
 	"polkadot-runtime?/fast-runtime",
 	"kusama-runtime?/fast-runtime",
-	"westend-runtime?/fast-runtime",
 	"rococo-runtime?/fast-runtime",
 ]
 
@@ -204,7 +198,6 @@ malus = ["full-node"]
 runtime-metrics = [
 	"infrablockspace-client/runtime-metrics",
 	"rococo-runtime?/runtime-metrics",
-	"westend-runtime?/runtime-metrics",
 	"kusama-runtime?/runtime-metrics",
 	"polkadot-runtime?/runtime-metrics",
 	"infrablockspace-runtime-parachains/runtime-metrics"

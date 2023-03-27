@@ -93,10 +93,6 @@ pub struct RunCmd {
 	#[arg(long = "force-kusama")]
 	pub force_kusama: bool,
 
-	/// Force using Westend native runtime.
-	#[arg(long = "force-westend")]
-	pub force_westend: bool,
-
 	/// Force using Rococo native runtime.
 	#[arg(long = "force-rococo")]
 	pub force_rococo: bool,

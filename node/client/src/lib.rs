@@ -47,7 +47,6 @@ pub type FullClient<RuntimeApi, ExecutorDispatch> =
 #[cfg(not(any(
 	feature = "rococo",
 	feature = "kusama",
-	feature = "westend",
 	feature = "polkadot"
 )))]
 compile_error!("at least one runtime feature must be enabled");
@@ -83,23 +82,6 @@ impl sc_executor::NativeExecutionDispatch for KusamaExecutorDispatch {
 
 	fn native_version() -> sc_executor::NativeVersion {
 		kusama_runtime::native_version()
-	}
-}
-
-#[cfg(feature = "westend")]
-/// The native executor instance for Westend.
-pub struct WestendExecutorDispatch;
-
-#[cfg(feature = "westend")]
-impl sc_executor::NativeExecutionDispatch for WestendExecutorDispatch {
-	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
-
-	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		westend_runtime::api::dispatch(method, data)
-	}
-
-	fn native_version() -> sc_executor::NativeVersion {
-		westend_runtime::native_version()
 	}
 }
 
@@ -204,7 +186,7 @@ where
 
 /// Execute something with the client instance.
 ///
-/// As there exist multiple chains inside Polkadot, like Polkadot itself, Kusama, Westend etc,
+/// As there exist multiple chains inside Polkadot, like Polkadot itself, Kusama etc,
 /// there can exist different kinds of client types. As these client types differ in the generics
 /// that are being used, we can not easily return them from a function. For returning them from a
 /// function there exists [`Client`]. However, the problem on how to use this client instance still
@@ -229,7 +211,7 @@ pub trait ExecuteWithClient {
 
 /// A handle to a Polkadot client instance.
 ///
-/// The Polkadot service supports multiple different runtimes (Westend, Polkadot itself, etc). As each runtime has a
+/// The Polkadot service supports multiple different runtimes (Polkadot itself, etc). As each runtime has a
 /// specialized client, we need to hide them behind a trait. This is this trait.
 ///
 /// When wanting to work with the inner client, you need to use `execute_with`.
@@ -256,13 +238,6 @@ macro_rules! with_client {
 			Client::Polkadot($client) => {
 				#[allow(unused_imports)]
 				use polkadot_runtime as runtime;
-
-				$code
-			},
-			#[cfg(feature = "westend")]
-			Client::Westend($client) => {
-				#[allow(unused_imports)]
-				use westend_runtime as runtime;
 
 				$code
 			},
@@ -293,8 +268,6 @@ pub(crate) use with_client;
 pub enum Client {
 	#[cfg(feature = "polkadot")]
 	Polkadot(Arc<FullClient<polkadot_runtime::RuntimeApi, PolkadotExecutorDispatch>>),
-	#[cfg(feature = "westend")]
-	Westend(Arc<FullClient<westend_runtime::RuntimeApi, WestendExecutorDispatch>>),
 	#[cfg(feature = "kusama")]
 	Kusama(Arc<FullClient<kusama_runtime::RuntimeApi, KusamaExecutorDispatch>>),
 	#[cfg(feature = "rococo")]

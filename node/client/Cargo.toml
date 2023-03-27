@@ -41,7 +41,6 @@ sc-service = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 # Polkadot Runtimes
 polkadot-runtime = { path = "../../runtime/polkadot", optional = true }
 kusama-runtime = { path = "../../runtime/kusama", optional = true }
-westend-runtime = { path = "../../runtime/westend", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
 infrablockspace-core-primitives = { path = "../../core-primitives" }
@@ -54,10 +53,8 @@ default = ["polkadot"]
 polkadot = ["polkadot-runtime"]
 kusama = ["kusama-runtime"]
 rococo = ["rococo-runtime"]
-westend = ["westend-runtime"]
 runtime-metrics = [
     "rococo-runtime/runtime-metrics",
     "kusama-runtime/runtime-metrics",
-    "westend-runtime/runtime-metrics",
     "polkadot-runtime/runtime-metrics",
 ]

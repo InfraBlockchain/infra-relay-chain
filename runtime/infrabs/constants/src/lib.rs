@@ -1,14 +1,7 @@
-pub fn add(left: usize, right: usize) -> usize {
-	left + right
-}
 
-#[cfg(test)]
-mod tests {
-	use super::*;
+//! InfrablockSpace runtime. This can be compiled with `#[no_std]`, ready for Wasm.
 
-	#[test]
-	fn it_works() {
-		let result = add(2, 2);
-		assert_eq!(result, 4);
-	}
-}
+#![cfg_attr(not(feature = "std"), no_std)]
+
+#![recursion_limit = "256"]
+

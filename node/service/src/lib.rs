@@ -83,16 +83,13 @@ use telemetry::{Telemetry, TelemetryWorkerHandle};
 #[cfg(feature = "rococo-native")]
 pub use infrablockspace_client::RococoExecutorDispatch;
 
-#[cfg(feature = "westend-native")]
-pub use infrablockspace_client::WestendExecutorDispatch;
-
 #[cfg(feature = "kusama-native")]
 pub use infrablockspace_client::KusamaExecutorDispatch;
 
 #[cfg(feature = "polkadot-native")]
 pub use infrablockspace_client::PolkadotExecutorDispatch;
 
-pub use chain_spec::{KusamaChainSpec, PolkadotChainSpec, RococoChainSpec, WestendChainSpec};
+pub use chain_spec::{KusamaChainSpec, PolkadotChainSpec, RococoChainSpec};
 pub use consensus_common::{block_validation::Chain, Proposal, SelectChain};
 use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
 use mmr_gadget::MmrGadget;
@@ -125,8 +122,6 @@ pub use {kusama_runtime, kusama_runtime_constants};
 pub use {polkadot_runtime, polkadot_runtime_constants};
 #[cfg(feature = "rococo-native")]
 pub use {rococo_runtime, rococo_runtime_constants};
-#[cfg(feature = "westend-native")]
-pub use {westend_runtime, westend_runtime_constants};
 
 /// Provides the header and block number for a hash.
 ///
@@ -233,7 +228,7 @@ pub enum Error {
 	DatabasePathRequired,
 
 	#[cfg(feature = "full-node")]
-	#[error("Expected at least one of polkadot, kusama, westend or rococo runtime feature")]
+	#[error("Expected at least one of polkadot, kusama or rococo runtime feature")]
 	NoRuntime,
 }
 
@@ -244,9 +239,6 @@ pub trait IdentifyVariant {
 
 	/// Returns if this is a configuration for the `Kusama` network.
 	fn is_kusama(&self) -> bool;
-
-	/// Returns if this is a configuration for the `Westend` network.
-	fn is_westend(&self) -> bool;
 
 	/// Returns if this is a configuration for the `Rococo` network.
 	fn is_rococo(&self) -> bool;
@@ -267,9 +259,6 @@ impl IdentifyVariant for Box<dyn ChainSpec> {
 	}
 	fn is_kusama(&self) -> bool {
 		self.id().starts_with("kusama") || self.id().starts_with("ksm")
-	}
-	fn is_westend(&self) -> bool {
-		self.id().starts_with("westend") || self.id().starts_with("wnd")
 	}
 	fn is_rococo(&self) -> bool {
 		self.id().starts_with("rococo") || self.id().starts_with("rco")
@@ -1324,11 +1313,6 @@ pub fn new_chain_ops(
 		return chain_ops!(config, jaeger_agent, None; kusama_runtime, KusamaExecutorDispatch, Kusama)
 	}
 
-	#[cfg(feature = "westend-native")]
-	if config.chain_spec.is_westend() {
-		return chain_ops!(config, jaeger_agent, None; westend_runtime, WestendExecutorDispatch, Westend)
-	}
-
 	#[cfg(feature = "polkadot-native")]
 	{
 		return chain_ops!(config, jaeger_agent, None; polkadot_runtime, PolkadotExecutorDispatch, Polkadot)
@@ -1404,25 +1388,6 @@ pub fn build_full(
 			hwbench,
 		)
 		.map(|full| full.with_client(Client::Kusama))
-	}
-
-	#[cfg(feature = "westend-native")]
-	if config.chain_spec.is_westend() {
-		return new_full::<westend_runtime::RuntimeApi, WestendExecutorDispatch, _>(
-			config,
-			is_collator,
-			grandpa_pause,
-			enable_beefy,
-			jaeger_agent,
-			telemetry_worker_handle,
-			None,
-			overseer_enable_anyways,
-			overseer_gen,
-			overseer_message_channel_override,
-			malus_finality_delay,
-			hwbench,
-		)
-		.map(|full| full.with_client(Client::Westend))
 	}
 
 	#[cfg(feature = "polkadot-native")]

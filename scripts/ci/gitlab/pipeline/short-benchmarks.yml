@@ -20,8 +20,3 @@ short-benchmark-kusama:
   <<: *short-bench
   variables:
     RUNTIME: kusama
-
-short-benchmark-westend:
-  <<: *short-bench
-  variables:
-    RUNTIME: westend
