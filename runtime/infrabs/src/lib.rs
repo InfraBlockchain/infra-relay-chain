@@ -1,4 +1,3 @@
-
 //! InfrablockSpace runtime. This can be compiled with `#[no_std]`, ready for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
@@ -20,40 +19,38 @@ use runtime_common::{
 	SlowAdjustingFeeUpdate, U256ToBalance,
 };
 
-// For Runtime 
+// For Runtime
 use infrablockspace_runtime_constants::{currency::*, fee::*, time::*};
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
-use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
 use sp_core::{ConstU128, OpaqueMetadata};
 use sp_io::storage;
 use sp_runtime::{
-    create_runtime_str, generic, impl_opaque_keys,
-    traits::{
+	create_runtime_str, generic, impl_opaque_keys,
+	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
-		OpaqueKeys, SaturatedConversion, Verify
+		OpaqueKeys, SaturatedConversion, Verify,
 	},
-    ApplyExtrinsicResult, KeyTypeId, Permill
+	ApplyExtrinsicResult, KeyTypeId, Permill,
 };
+use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
 use sp_version::RuntimeVersion;
 pub type AssetId = u32;
 
 // Frame Imports
 use frame_support::{
-    construct_runtime, parameter_types,
+	construct_runtime, parameter_types,
 	traits::{
-		ConstU32, Contains, EitherOf, EitherOfDiverse, InstanceFilter, KeyOwnerProofSystem,
-		LockIdentifier, PrivilegeCmp, StorageMapShim, WithdrawReasons, AsEnsureOriginWithArg,
-		tokens::fungibles::{CreditOf, Balanced},
-	}, 
-	weights::ConstantMultiplier, 
-	PalletId
+		tokens::fungibles::{Balanced, CreditOf},
+		AsEnsureOriginWithArg, ConstU32, Contains, EitherOf, EitherOfDiverse, InstanceFilter,
+		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp, StorageMapShim, WithdrawReasons,
+	},
+	weights::ConstantMultiplier,
+	PalletId,
 };
-use frame_system::{
-	EnsureSigned, EnsureRoot, EnsureRootWithSuccess
-};
-use pallet_transaction_payment::CurrencyAdapter;
+use frame_system::{EnsureRoot, EnsureRootWithSuccess, EnsureSigned};
 use pallet_asset_tx_payment::{FungiblesAdapter, HandleCredit};
-use pallet_assets::{BalanceToAssetBalance, AssetsCallback};
+use pallet_assets::{AssetsCallback, BalanceToAssetBalance};
+use pallet_transaction_payment::CurrencyAdapter;
 
 // Weights used in the Runtime.
 mod weights;
@@ -63,21 +60,12 @@ impl_runtime_weights!(infrablockspace_runtime_constants);
 
 // For Parachains
 use runtime_parachains::{
-	configuration as parachains_configuration, 
-	disputes as parachains_disputes,
-	ump as parachains_ump,
-	dmp as parachains_dmp, 
-	hrmp as parachains_hrmp, 
-	inclusion as parachains_inclusion,
-	initializer as parachains_initializer, 
-	origin as parachains_origin, 
-	paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent, 
-	reward_points as parachains_reward_points,
-	runtime_api_impl::v2 as parachains_runtime_api_impl, 
-	scheduler as parachains_scheduler,
-	session_info as parachains_session_info, 
-	shared as parachains_shared, 
+	configuration as parachains_configuration, disputes as parachains_disputes,
+	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
+	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
+	paras_inherent as parachains_paras_inherent, reward_points as parachains_reward_points,
+	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
+	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
 };
 
 /// Runtime version (InfraBs).
@@ -137,7 +125,7 @@ parameter_types! {
 }
 
 impl pallet_balances::Config for Runtime {
-    type Balance = Balance;
+	type Balance = Balance;
 	type DustRemoval = ();
 	type RuntimeEvent = RuntimeEvent;
 	type ExistentialDeposit = ExistentialDeposit;
@@ -225,13 +213,13 @@ impl pallet_asset_tx_payment::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Fungibles = Assets;
 	type OnChargeAssetTransaction = FungiblesAdapter<
-		BalanceToAssetBalance<Balances, Runtime, ConvertInto>, 
-		CreditToBlockAuthor
+		BalanceToAssetBalance<Balances, Runtime, ConvertInto>,
+		CreditToBlockAuthor,
 	>;
 }
 
 // Config for consensus support
-// ToDo: Should be filled with something 
+// ToDo: Should be filled with something
 impl pallet_authorship::Config for Runtime {
 	type FindAuthor = ();
 	type EventHandler = ();
@@ -269,15 +257,15 @@ impl pallet_treasury::Config for Runtime {
 }
 
 construct_runtime! {
-    pub enum Runtime where
-        Block = Block,
-        NodeBlock = primitives::Block,
-        UncheckedExtrinsic = UncheckedExtrinsic,
-    {
-        System: frame_system::{Pallet, Call, Storage, Config, Event<T>} = 0,
+	pub enum Runtime where
+		Block = Block,
+		NodeBlock = primitives::Block,
+		UncheckedExtrinsic = UncheckedExtrinsic,
+	{
+		System: frame_system::{Pallet, Call, Storage, Config, Event<T>} = 0,
 		// Runtime Primitives
 		// Balance, Fee payment, etc..
-        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 5,
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 5,
 		Assets: pallet_assets::{Pallet, Call, Storage, Config<T>, Event<T>} = 6,
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 32,
 		AssetTransactionPayment: pallet_asset_tx_payment::{Pallet, Storage, Event<T>} = 33,
@@ -286,7 +274,7 @@ construct_runtime! {
 		Authorship: pallet_authorship::{Pallet, Storage} = 7,
 		// Governance support
 		Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 19,
-    }
+	}
 }
 
 /// All migrations that will run on the next runtime upgrade.
@@ -298,12 +286,12 @@ pub type UncheckedExtrinsic =
 	generic::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
 // Orchestra frame for InfraBlockspace Runtime
 pub type Executive = frame_executive::Executive<
-    Runtime,
-    Block,
-    frame_system::ChainContext<Runtime>,
-    Runtime,
-    AllPalletsWithSystem,
-    Migrations, // Runtime Upgrade
+	Runtime,
+	Block,
+	frame_system::ChainContext<Runtime>,
+	Runtime,
+	AllPalletsWithSystem,
+	Migrations, // Runtime Upgrade
 >;
 
 /// The address format for describing accounts.
@@ -326,9 +314,8 @@ pub type SignedExtra = (
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
 	// Fee in InfraBs will be paid in fiat-based token
-    pallet_asset_tx_payment::ChargeAssetTxPayment<Runtime>
-    // Vote from extrinsic will be checked
-	// pallet_pot::CheckVote<Runtime>
+	pallet_asset_tx_payment::ChargeAssetTxPayment<Runtime>, // Vote from extrinsic will be checked
+	                                                        // pallet_pot::CheckVote<Runtime>
 );
 
 /// The payload being signed in the transactions.
@@ -336,7 +323,7 @@ pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 
 #[cfg(not(feature = "disable-runtime-api"))]
 sp_api::impl_runtime_apis! {
-    impl sp_api::Core<Block> for Runtime {
+	impl sp_api::Core<Block> for Runtime {
 		fn version() -> RuntimeVersion {
 			VERSION
 		}
@@ -350,7 +337,7 @@ sp_api::impl_runtime_apis! {
 		}
 	}
 
-    impl sp_api::Metadata<Block> for Runtime {
+	impl sp_api::Metadata<Block> for Runtime {
 		fn metadata() -> OpaqueMetadata {
 			OpaqueMetadata::new(Runtime::metadata().into())
 		}
