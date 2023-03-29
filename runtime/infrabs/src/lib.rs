@@ -20,30 +20,42 @@ use runtime_common::{
 	SlowAdjustingFeeUpdate, U256ToBalance,
 };
 
-
 // For Runtime 
 use infrablockspace_runtime_constants::{currency::*, fee::*, time::*};
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
-use frame_support::{
-    construct_runtime, parameter_types,
-	traits::{
-		ConstU32, Contains, EitherOf, EitherOfDiverse, InstanceFilter, KeyOwnerProofSystem,
-		LockIdentifier, PrivilegeCmp, StorageMapShim, WithdrawReasons, 
-	}
-};
 use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
 use sp_core::{ConstU128, OpaqueMetadata};
+use sp_io::storage;
 use sp_runtime::{
     create_runtime_str, generic, impl_opaque_keys,
     traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
-		OpaqueKeys, SaturatedConversion, Verify,
+		OpaqueKeys, SaturatedConversion, Verify
 	},
-    ApplyExtrinsicResult, KeyTypeId
+    ApplyExtrinsicResult, KeyTypeId, Permill
 };
 use sp_version::RuntimeVersion;
+pub type AssetId = u32;
 
-// Weights used in the runtime.
+// Frame Imports
+use frame_support::{
+    construct_runtime, parameter_types,
+	traits::{
+		ConstU32, Contains, EitherOf, EitherOfDiverse, InstanceFilter, KeyOwnerProofSystem,
+		LockIdentifier, PrivilegeCmp, StorageMapShim, WithdrawReasons, AsEnsureOriginWithArg,
+		tokens::fungibles::{CreditOf, Balanced},
+	}, 
+	weights::ConstantMultiplier, 
+	PalletId
+};
+use frame_system::{
+	EnsureSigned, EnsureRoot, EnsureRootWithSuccess
+};
+use pallet_transaction_payment::CurrencyAdapter;
+use pallet_asset_tx_payment::{FungiblesAdapter, HandleCredit};
+use pallet_assets::{BalanceToAssetBalance, AssetsCallback};
+
+// Weights used in the Runtime.
 mod weights;
 
 // Basic weights for InfraBs Runtime
@@ -74,7 +86,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("infrabs"),
 	impl_name: create_runtime_str!("bclabs-infrabs"),
 	authoring_version: 2,
-	spec_version: 1000, // ToDO
+	spec_version: 1000, // ToDO: Check this if needed
 	impl_version: 0,
 	#[cfg(not(feature = "disable-runtime-api"))]
 	apis: RUNTIME_API_VERSIONS,
@@ -84,7 +96,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	state_version: 0,
 };
 
-// Frame System
 parameter_types! {
 	pub const Version: RuntimeVersion = VERSION;
 	pub const SS58Prefix: u8 = 2;
@@ -117,6 +128,8 @@ impl frame_system::Config for Runtime {
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
+// Config for system currency
+
 parameter_types! {
 	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
 	pub const MaxLocks: u32 = 50;
@@ -135,6 +148,126 @@ impl pallet_balances::Config for Runtime {
 	type WeightInfo = weights::pallet_balances::WeightInfo<Runtime>;
 }
 
+parameter_types! {
+	pub const RemoveItemsLimit: u32 = 5;
+	pub const ApprovalDeposit: Balance = 1 * DOLLARS;
+	pub const AssetDeposit: Balance = 1 * DOLLARS;
+	pub const AssetAccountDeposit: Balance = 1 * DOLLARS;
+	pub const MetadataDepositBase: Balance = 1 * DOLLARS;
+	pub const MetadataDepositPerByte: Balance = 1 * DOLLARS;
+	pub const StringLimit: u32 = 50;
+}
+
+// ToDo: CallBackHandle should be changed to something else
+pub struct AssetsCallbackHandle;
+impl AssetsCallback<AssetId, AccountId> for AssetsCallbackHandle {
+	fn created(_id: &AssetId, _owner: &AccountId) {
+		storage::set(b"asset_created", &().encode());
+	}
+
+	fn destroyed(_id: &AssetId) {
+		storage::set(b"asset_destroyed", &().encode());
+	}
+}
+
+impl pallet_assets::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type ApprovalDeposit = ApprovalDeposit;
+	type Balance = Balance;
+	type RemoveItemsLimit = RemoveItemsLimit;
+	type AssetId = AssetId;
+	type AssetIdParameter = AssetId;
+	type AssetAccountDeposit = AssetAccountDeposit;
+	type Currency = Balances;
+	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type AssetDeposit = AssetDeposit;
+	type MetadataDepositBase = MetadataDepositBase;
+	type MetadataDepositPerByte = MetadataDepositPerByte;
+	type CallbackHandle = AssetsCallbackHandle;
+	type StringLimit = StringLimit;
+	type Freezer = ();
+	type Extra = ();
+	type WeightInfo = ();
+}
+
+// Config for tx payment
+parameter_types! {
+	pub const TransactionByteFee: Balance = 10 * MILLICENTS;
+	/// This value increases the priority of `Operational` transactions by adding
+	/// a "virtual tip" that's equal to the `OperationalFeeMultiplier * final_fee`.
+	pub const OperationalFeeMultiplier: u8 = 5;
+}
+
+impl pallet_transaction_payment::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type OnChargeTransaction = CurrencyAdapter<Balances, DealWithFees<Runtime>>;
+	type OperationalFeeMultiplier = OperationalFeeMultiplier;
+	type WeightToFee = WeightToFee;
+	type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
+	type FeeMultiplierUpdate = SlowAdjustingFeeUpdate<Self>;
+}
+
+// For Pallet Asset Tx Payment
+// ToDo: Check if this is needed
+pub struct CreditToBlockAuthor;
+impl HandleCredit<AccountId, Assets> for CreditToBlockAuthor {
+	fn handle_credit(credit: CreditOf<AccountId, Assets>) {
+		if let Some(author) = pallet_authorship::Pallet::<Runtime>::author() {
+			// What to do in case paying the author fails (e.g. because `fee < min_balance`)
+			// default: drop the result which will trigger the `OnDrop` of the imbalance.
+			let _ = <Assets as Balanced<AccountId>>::resolve(&author, credit);
+		}
+	}
+}
+
+impl pallet_asset_tx_payment::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Fungibles = Assets;
+	type OnChargeAssetTransaction = FungiblesAdapter<
+		BalanceToAssetBalance<Balances, Runtime, ConvertInto>, 
+		CreditToBlockAuthor
+	>;
+}
+
+// Config for consensus support
+// ToDo: Should be filled with something 
+impl pallet_authorship::Config for Runtime {
+	type FindAuthor = ();
+	type EventHandler = ();
+}
+
+// Config for governance support
+parameter_types! {
+	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
+	pub const ProposalBond: Permill = Permill::from_percent(5);
+	pub const ProposalBondMinimum: Balance = 100 * DOLLARS;
+	pub const ProposalBondMaximum: Balance = 500 * DOLLARS;
+	pub const SpendPeriod: BlockNumber = 24 * DAYS;
+	pub const MaxApprovals: u32 = 100;
+	pub const RootSpendOriginMaxAmount: Balance = Balance::MAX;
+}
+
+// ToDo: `ApproveOrigin` `RejectOrigin` should be changed to something else
+impl pallet_treasury::Config for Runtime {
+	type PalletId = TreasuryPalletId;
+	type Currency = Balances;
+	type ApproveOrigin = EnsureRoot<AccountId>;
+	type RejectOrigin = EnsureRoot<AccountId>;
+	type RuntimeEvent = RuntimeEvent;
+	type ProposalBond = ProposalBond;
+	type ProposalBondMinimum = ProposalBondMinimum;
+	type ProposalBondMaximum = ProposalBondMaximum;
+	type MaxApprovals = MaxApprovals;
+	type SpendPeriod = SpendPeriod;
+	type SpendOrigin = EnsureRootWithSuccess<AccountId, RootSpendOriginMaxAmount>;
+	type OnSlash = ();
+	type Burn = ();
+	type BurnDestination = ();
+	type SpendFunds = ();
+	type WeightInfo = ();
+}
+
 construct_runtime! {
     pub enum Runtime where
         Block = Block,
@@ -142,7 +275,17 @@ construct_runtime! {
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Storage, Config, Event<T>} = 0,
-        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 4,
+		// Runtime Primitives
+		// Balance, Fee payment, etc..
+        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 5,
+		Assets: pallet_assets::{Pallet, Call, Storage, Config<T>, Event<T>} = 6,
+		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 32,
+		AssetTransactionPayment: pallet_asset_tx_payment::{Pallet, Storage, Event<T>} = 33,
+		// Consensus support.
+		// Authorship must be before session in order to note author in the correct session and era
+		Authorship: pallet_authorship::{Pallet, Storage} = 7,
+		// Governance support
+		Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 19,
     }
 }
 
@@ -162,8 +305,6 @@ pub type Executive = frame_executive::Executive<
     AllPalletsWithSystem,
     Migrations, // Runtime Upgrade
 >;
-/// The payload being signed in the transactions.
-pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 
 /// The address format for describing accounts.
 pub type Address = sp_runtime::MultiAddress<AccountId, ()>;
@@ -184,9 +325,14 @@ pub type SignedExtra = (
 	frame_system::CheckMortality<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-    // Pallet Asset Transaction Payament
-    // Pallet PoT Voting 
+	// Fee in InfraBs will be paid in fiat-based token
+    pallet_asset_tx_payment::ChargeAssetTxPayment<Runtime>
+    // Vote from extrinsic will be checked
+	// pallet_pot::CheckVote<Runtime>
 );
+
+/// The payload being signed in the transactions.
+pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 
 #[cfg(not(feature = "disable-runtime-api"))]
 sp_api::impl_runtime_apis! {

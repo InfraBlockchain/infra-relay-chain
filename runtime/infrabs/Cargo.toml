@@ -25,6 +25,7 @@ offchain-primitives = { package = "sp-offchain", git = "https://github.com/Infra
 tx-pool-api = { package = "sp-transaction-pool", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-session = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -43,6 +44,7 @@ frame-system-benchmarking = { git = "https://github.com/InfraBlockchain/infra-su
 pallet-authorship = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-babe = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-balances = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-assets = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-asset-tx-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -53,6 +55,7 @@ pallet-multisig = { git = "https://github.com/InfraBlockchain/infra-substrate", 
 pallet-scheduler = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-session = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-timestamp = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-treasury = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
 
 # Primitives
@@ -94,6 +97,7 @@ std = [
 	"inherents/std",
 	"sp-core/std",
 	"sp-api/std",
+	"sp-io/std",
 	"tx-pool-api/std",
 	"block-builder-api/std",
 	"offchain-primitives/std",
@@ -102,6 +106,7 @@ std = [
 	"frame-executive/std",
 	"pallet-authorship/std",
 	"pallet-balances/std",
+	"pallet-assets/std",
     "pallet-asset-tx-payment/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
@@ -112,6 +117,7 @@ std = [
 	"pallet-scheduler/std",
 	"pallet-session/std",
 	"pallet-timestamp/std",
+	"pallet-treasury/std",
 	"pallet-babe/std",
 	"sp-runtime/std",
 	"frame-system/std",
