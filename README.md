@@ -1,6 +1,5 @@
 # InfraBlockspace
-
-###### tags: `work` 
+ 
 > Substrate-based heterogenous and interoperable blockchain focusing on enterprise
 > Aiming for tokenless blockchain network with using Proof-of-Transaction consensus mechanism 
 
