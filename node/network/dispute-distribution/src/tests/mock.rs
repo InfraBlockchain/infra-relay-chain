@@ -210,7 +210,7 @@ impl MockAuthorityDiscovery {
 impl AuthorityDiscovery for MockAuthorityDiscovery {
 	async fn get_addresses_by_authority_id(
 		&mut self,
-		_authority: infrablockspace-primitives::AuthorityDiscoveryId,
+		_authority: infrablockspace_primitives::AuthorityDiscoveryId,
 	) -> Option<HashSet<sc_network::Multiaddr>> {
 		panic!("Not implemented");
 	}
@@ -218,7 +218,7 @@ impl AuthorityDiscovery for MockAuthorityDiscovery {
 	async fn get_authority_ids_by_peer_id(
 		&mut self,
 		peer_id: infrablockspace_node_network_protocol::PeerId,
-	) -> Option<HashSet<infrablockspace-primitives::AuthorityDiscoveryId>> {
+	) -> Option<HashSet<infrablockspace_primitives::AuthorityDiscoveryId>> {
 		for (a, p) in self.peer_ids.iter() {
 			if p == &peer_id {
 				let result =

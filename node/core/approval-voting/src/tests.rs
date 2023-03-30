@@ -227,7 +227,7 @@ struct MockAssignmentCriteria<Compute, Check>(Compute, Check);
 
 impl<Compute, Check> AssignmentCriteria for MockAssignmentCriteria<Compute, Check>
 where
-	Compute: Fn() -> HashMap<infrablockspace-primitives::CoreIndex, criteria::OurAssignment>,
+	Compute: Fn() -> HashMap<infrablockspace_primitives::CoreIndex, criteria::OurAssignment>,
 	Check: Fn(ValidatorIndex) -> Result<DelayTranche, criteria::InvalidAssignment>,
 {
 	fn compute_assignments(
@@ -237,28 +237,28 @@ where
 		_config: &criteria::Config,
 		_leaving_cores: Vec<(
 			CandidateHash,
-			infrablockspace-primitives::CoreIndex,
-			infrablockspace-primitives::GroupIndex,
+			infrablockspace_primitives::CoreIndex,
+			infrablockspace_primitives::GroupIndex,
 		)>,
-	) -> HashMap<infrablockspace-primitives::CoreIndex, criteria::OurAssignment> {
+	) -> HashMap<infrablockspace_primitives::CoreIndex, criteria::OurAssignment> {
 		self.0()
 	}
 
 	fn check_assignment_cert(
 		&self,
-		_claimed_core_index: infrablockspace-primitives::CoreIndex,
+		_claimed_core_index: infrablockspace_primitives::CoreIndex,
 		validator_index: ValidatorIndex,
 		_config: &criteria::Config,
 		_relay_vrf_story: infrablockspace-node-primitives::approval::RelayVRFStory,
 		_assignment: &infrablockspace-node-primitives::approval::AssignmentCert,
-		_backing_group: infrablockspace-primitives::GroupIndex,
+		_backing_group: infrablockspace_primitives::GroupIndex,
 	) -> Result<infrablockspace-node-primitives::approval::DelayTranche, criteria::InvalidAssignment> {
 		self.1(validator_index)
 	}
 }
 
 impl<F>
-	MockAssignmentCriteria<fn() -> HashMap<infrablockspace-primitives::CoreIndex, criteria::OurAssignment>, F>
+	MockAssignmentCriteria<fn() -> HashMap<infrablockspace_primitives::CoreIndex, criteria::OurAssignment>, F>
 {
 	fn check_only(f: F) -> Self {
 		MockAssignmentCriteria(Default::default, f)
@@ -477,7 +477,7 @@ fn test_harness<T: Future<Output = VirtualOverseer>>(
 
 	let keystore = LocalKeystore::in_memory();
 	let _ = keystore.sr25519_generate_new(
-		infrablockspace-primitives::PARACHAIN_KEY_TYPE_ID,
+		infrablockspace_primitives::PARACHAIN_KEY_TYPE_ID,
 		Some(&Sr25519Keyring::Alice.to_seed()),
 	);
 
