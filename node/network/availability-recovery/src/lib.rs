@@ -37,26 +37,26 @@ use lru::LruCache;
 use rand::seq::SliceRandom;
 
 use fatality::Nested;
-use polkadot_erasure_coding::{branch_hash, branches, obtain_chunks_v1, recovery_threshold};
+use erasure_coding::{branch_hash, branches, obtain_chunks_v1, recovery_threshold};
 #[cfg(not(test))]
-use polkadot_node_network_protocol::request_response::CHUNK_REQUEST_TIMEOUT;
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::request_response::CHUNK_REQUEST_TIMEOUT;
+use infrablockspace_node_network_protocol::{
 	request_response::{
 		self as req_res, outgoing::RequestError, v1 as request_v1, IncomingRequestReceiver,
 		OutgoingRequest, Recipient, Requests,
 	},
 	IfDisconnected, UnifiedReputationChange as Rep,
 };
-use polkadot_node_primitives::{AvailableData, ErasureChunk};
-use polkadot_node_subsystem::{
+use infrablockspace_node_primitives::{AvailableData, ErasureChunk};
+use infrablockspace_node_subsystem::{
 	errors::RecoveryError,
 	jaeger,
 	messages::{AvailabilityRecoveryMessage, AvailabilityStoreMessage, NetworkBridgeTxMessage},
 	overseer, ActiveLeavesUpdate, FromOrchestra, OverseerSignal, SpawnedSubsystem, SubsystemError,
 	SubsystemResult,
 };
-use polkadot_node_subsystem_util::request_session_info;
-use polkadot_primitives::{
+use infrablockspace_node_subsystem_util::request_session_info;
+use infrablockspace_primitives::{
 	AuthorityDiscoveryId, BlakeTwo256, BlockNumber, CandidateHash, CandidateReceipt, GroupIndex,
 	Hash, HashT, IndexedVec, SessionIndex, SessionInfo, ValidatorId, ValidatorIndex,
 };
@@ -536,7 +536,7 @@ impl RequestChunksFromValidators {
 			if self.received_chunks.len() >= params.threshold {
 				let recovery_duration = metrics.time_erasure_recovery();
 
-				return match polkadot_erasure_coding::reconstruct_v1(
+				return match erasure_coding::reconstruct_v1(
 					params.validators.len(),
 					self.received_chunks.values().map(|c| (&c.chunk[..], c.index.0 as usize)),
 				) {

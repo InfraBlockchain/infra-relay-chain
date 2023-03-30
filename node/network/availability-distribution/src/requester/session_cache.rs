@@ -19,9 +19,9 @@ use std::{collections::HashSet, num::NonZeroUsize};
 use lru::LruCache;
 use rand::{seq::SliceRandom, thread_rng};
 
-use polkadot_node_subsystem::overseer;
-use polkadot_node_subsystem_util::runtime::RuntimeInfo;
-use polkadot_primitives::{AuthorityDiscoveryId, GroupIndex, Hash, SessionIndex, ValidatorIndex};
+use infrablockspace_node_subsystem::overseer;
+use infrablockspace_node_subsystem_util::runtime::RuntimeInfo;
+use infrablockspace_primitives::{AuthorityDiscoveryId, GroupIndex, Hash, SessionIndex, ValidatorIndex};
 
 use crate::{
 	error::{Error, Result},

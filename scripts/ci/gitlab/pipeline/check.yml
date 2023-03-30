@@ -98,17 +98,6 @@ check-runtime-migration-kusama:
   variables:
     NETWORK: "kusama"
 
-check-runtime-migration-westend:
-  stage: check
-  extends:
-    - .docker-env
-    - .test-pr-refs
-    - .compiler-info
-    - .check-runtime-migration
-  variables:
-    NETWORK: "westend"
-  allow_failure: true
-
 # is broken, need to fix
 check-no-default-features:
   stage: check
@@ -117,7 +106,7 @@ check-no-default-features:
     - .test-refs
     - .compiler-info
   script:
-    # Check that polkadot-cli will compile no default features.
+    # Check that infrablockspace-cli will compile no default features.
     - pushd ./node/service && cargo check --no-default-features && popd
     - pushd ./cli && cargo check --no-default-features --features "service" && popd
     - exit 0

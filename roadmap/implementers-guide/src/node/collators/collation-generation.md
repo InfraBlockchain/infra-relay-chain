@@ -104,5 +104,5 @@ On `ActiveLeavesUpdate`:
   * Invoke the `collator`, and use its outputs to produce a `CandidateReceipt`, signed with the configuration's `key`.
   * Dispatch a [`CollatorProtocolMessage`][CPM]`::DistributeCollation(receipt, pov)`.
 
-[CP]: collator-protocol.md
+[CP]: infrablockspace-collator-protocol.md
 [CPM]: ../../types/overseer-protocol.md#collatorprotocolmessage

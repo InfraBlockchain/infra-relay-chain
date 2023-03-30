@@ -17,13 +17,13 @@
 //! The Network Bridge Subsystem - handles _outgoing_ messages, from subsystem to the network.
 use super::*;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	peer_set::{CollationVersion, PeerSet, PeerSetProtocolNames, ValidationVersion},
 	request_response::ReqProtocolNames,
 	v1 as protocol_v1, PeerId, Versioned,
 };
 
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::SubsystemError, messages::NetworkBridgeTxMessage, overseer, FromOrchestra,
 	OverseerSignal, SpawnedSubsystem,
 };
@@ -31,7 +31,7 @@ use polkadot_node_subsystem::{
 /// Peer set info for network initialization.
 ///
 /// To be added to [`NetworkConfiguration::extra_sets`].
-pub use polkadot_node_network_protocol::peer_set::{peer_sets_info, IsAuthority};
+pub use infrablockspace_node_network_protocol::peer_set::{peer_sets_info, IsAuthority};
 
 use crate::validator_discovery;
 

@@ -15,7 +15,7 @@
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
 use async_trait::async_trait;
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	runtime_api::ParachainHost, vstaging::ExecutorParams, Block, BlockNumber, CandidateCommitments,
 	CandidateEvent, CandidateHash, CommittedCandidateReceipt, CoreState, DisputeState,
 	GroupRotationInfo, Hash, Id, InboundDownwardMessage, InboundHrmpMessage,

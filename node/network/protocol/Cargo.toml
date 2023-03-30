@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-network-protocol"
+name = "infrablockspace-node-network-protocol"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -8,8 +8,8 @@ description = "Primitives types for the Node-side"
 [dependencies]
 async-trait = "0.1.57"
 hex = "0.4.3"
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-jaeger = { path = "../../jaeger" }
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

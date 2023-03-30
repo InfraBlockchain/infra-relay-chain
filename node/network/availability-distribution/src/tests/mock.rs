@@ -20,9 +20,9 @@ use std::sync::Arc;
 
 use sp_keyring::Sr25519Keyring;
 
-use polkadot_erasure_coding::{branches, obtain_chunks_v1 as obtain_chunks};
-use polkadot_node_primitives::{AvailableData, BlockData, ErasureChunk, PoV, Proof};
-use polkadot_primitives::{
+use erasure_coding::{branches, obtain_chunks_v1 as obtain_chunks};
+use infrablockspace_node_primitives::{AvailableData, BlockData, ErasureChunk, PoV, Proof};
+use infrablockspace_primitives::{
 	CandidateCommitments, CandidateDescriptor, CandidateHash, CommittedCandidateReceipt,
 	GroupIndex, Hash, HeadData, Id as ParaId, IndexedVec, OccupiedCore, PersistedValidationData,
 	SessionInfo, ValidatorIndex,

@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
-use polkadot_erasure_coding::*;
+use erasure_coding::*;
 use primitives::{AvailableData, BlockData, PoV};
 use std::sync::Arc;
 use honggfuzz::fuzz;
-use polkadot_primitives::PersistedValidationData;
+use infrablockspace_primitives::PersistedValidationData;
 
 
 fn main() {

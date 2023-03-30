@@ -29,12 +29,12 @@ use futures::{
 	future::{self, BoxFuture},
 };
 
-use polkadot_node_subsystem_util::database::Database;
+use infrablockspace_node_subsystem_util::database::Database;
 
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	DisputeMessage, DisputeStatus, SignedDisputeStatement, SignedFullStatement, Statement,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::{
 		ApprovalVotingMessage, ChainApiMessage, ChainSelectionMessage, DisputeCoordinatorMessage,
 		DisputeDistributionMessage, ImportStatementsResult,
@@ -43,7 +43,7 @@ use polkadot_node_subsystem::{
 	OverseerSignal,
 };
 
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 use sc_keystore::LocalKeystore;
 use sp_application_crypto::AppKey;
 use sp_core::{sr25519::Pair, testing::TaskExecutor, Pair as PairT};
@@ -51,8 +51,8 @@ use sp_keyring::Sr25519Keyring;
 use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr};
 
 use ::test_helpers::{dummy_candidate_receipt_bad_sig, dummy_digest, dummy_hash};
-use polkadot_node_primitives::{Timestamp, ACTIVE_DURATION_SECS};
-use polkadot_node_subsystem::{
+use infrablockspace_node_primitives::{Timestamp, ACTIVE_DURATION_SECS};
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{AllMessages, BlockDescription, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, ActiveLeavesUpdate, LeafStatus,
@@ -60,7 +60,7 @@ use polkadot_node_subsystem::{
 use polkadot_node_subsystem_test_helpers::{
 	make_buffered_subsystem_context, TestSubsystemContextHandle,
 };
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	ApprovalVote, BlockNumber, CandidateCommitments, CandidateEvent, CandidateHash,
 	CandidateReceipt, CoreIndex, DisputeStatement, GroupIndex, Hash, HeadData, Header, IndexedVec,
 	MultiDisputeStatementSet, ScrapedOnChainVotes, SessionIndex, SessionInfo, SigningContext,
@@ -85,7 +85,7 @@ fn make_keystore(seeds: impl Iterator<Item = String>) -> LocalKeystore {
 
 	for s in seeds {
 		store
-			.sr25519_generate_new(polkadot_primitives::PARACHAIN_KEY_TYPE_ID, Some(&s))
+			.sr25519_generate_new(infrablockspace-primitives::PARACHAIN_KEY_TYPE_ID, Some(&s))
 			.unwrap();
 	}
 
@@ -211,7 +211,7 @@ impl Default for TestState {
 			make_keystore(vec![Sr25519Keyring::Alice.to_seed()].into_iter()).into();
 
 		let db = kvdb_memorydb::create(1);
-		let db = polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
+		let db = infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
 		let db = Arc::new(db);
 		let config = Config { col_dispute_data: 0, col_session_data: 1 };
 
@@ -1803,7 +1803,7 @@ fn supermajority_valid_dispute_may_be_finalized() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,
@@ -1942,7 +1942,7 @@ fn concluded_supermajority_for_non_active_after_time() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,
@@ -2059,7 +2059,7 @@ fn concluded_supermajority_against_non_active_after_time() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,
@@ -3339,7 +3339,7 @@ fn informs_chain_selection_when_dispute_concluded_against() {
 				.await;
 
 			let supermajority_threshold =
-				polkadot_primitives::supermajority_threshold(test_state.validators.len());
+				infrablockspace-primitives::supermajority_threshold(test_state.validators.len());
 
 			let (valid_vote, invalid_vote) = generate_opposing_votes_pair(
 				&test_state,

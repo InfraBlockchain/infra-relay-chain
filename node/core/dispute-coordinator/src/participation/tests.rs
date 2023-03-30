@@ -16,7 +16,7 @@
 
 use assert_matches::assert_matches;
 use futures::StreamExt;
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 use std::{sync::Arc, time::Duration};
 
 use sp_core::testing::TaskExecutor;
@@ -26,8 +26,8 @@ use ::test_helpers::{
 	dummy_candidate_commitments, dummy_candidate_receipt_bad_sig, dummy_digest, dummy_hash,
 };
 use parity_scale_codec::Encode;
-use polkadot_node_primitives::{AvailableData, BlockData, InvalidCandidate, PoV};
-use polkadot_node_subsystem::{
+use infrablockspace_node_primitives::{AvailableData, BlockData, InvalidCandidate, PoV};
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		AllMessages, ChainApiMessage, DisputeCoordinatorMessage, RuntimeApiMessage,
@@ -38,7 +38,7 @@ use polkadot_node_subsystem::{
 use polkadot_node_subsystem_test_helpers::{
 	make_subsystem_context, TestSubsystemContext, TestSubsystemContextHandle,
 };
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	BlakeTwo256, CandidateCommitments, HashT, Header, PersistedValidationData, ValidationCode,
 };
 

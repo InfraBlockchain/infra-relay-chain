@@ -1,12 +1,12 @@
 [package]
-name = "polkadot-rpc"
+name = "infrablockspace-rpc"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
 jsonrpsee = { version = "0.16.2", features = ["server"] }
-polkadot-primitives = { path = "../primitives" }
+infrablockspace-primitives = { path = "../primitives" }
 sc-client-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-blockchain = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

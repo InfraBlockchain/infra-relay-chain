@@ -16,7 +16,7 @@
 
 use ::test_helpers::{dummy_digest, dummy_hash};
 use futures::{channel::oneshot, future::BoxFuture, prelude::*};
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		AllMessages, CandidateValidationMessage, PreCheckOutcome, PvfCheckerMessage,
@@ -25,7 +25,7 @@ use polkadot_node_subsystem::{
 	ActivatedLeaf, ActiveLeavesUpdate, FromOrchestra, LeafStatus, OverseerSignal, RuntimeApiError,
 };
 use polkadot_node_subsystem_test_helpers::{make_subsystem_context, TestSubsystemContextHandle};
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	BlockNumber, Hash, Header, PvfCheckStatement, SessionIndex, ValidationCode, ValidationCodeHash,
 	ValidatorId,
 };

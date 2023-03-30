@@ -21,16 +21,16 @@ use futures::{
 	SinkExt,
 };
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	request_response::{
 		v1::{StatementFetchingRequest, StatementFetchingResponse},
 		OutgoingRequest, Recipient, Requests,
 	},
 	PeerId, UnifiedReputationChange,
 };
-use polkadot_node_subsystem::{Span, Stage};
-use polkadot_node_subsystem_util::TimeoutExt;
-use polkadot_primitives::{CandidateHash, CommittedCandidateReceipt, Hash};
+use infrablockspace_node_subsystem::{Span, Stage};
+use infrablockspace_node_subsystem_util::TimeoutExt;
+use infrablockspace_primitives::{CandidateHash, CommittedCandidateReceipt, Hash};
 
 use crate::{metrics::Metrics, COST_WRONG_HASH, LOG_TARGET};
 

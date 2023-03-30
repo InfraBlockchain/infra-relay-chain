@@ -20,17 +20,17 @@
 
 use futures::{channel::mpsc, future::FutureExt, join, select, sink::SinkExt, stream::StreamExt};
 use parity_scale_codec::Encode;
-use polkadot_node_primitives::{AvailableData, CollationGenerationConfig, PoV};
-use polkadot_node_subsystem::{
+use infrablockspace_node_primitives::{AvailableData, CollationGenerationConfig, PoV};
+use infrablockspace_node_subsystem::{
 	messages::{CollationGenerationMessage, CollatorProtocolMessage},
 	overseer, ActiveLeavesUpdate, FromOrchestra, OverseerSignal, SpawnedSubsystem,
 	SubsystemContext, SubsystemError, SubsystemResult,
 };
-use polkadot_node_subsystem_util::{
+use infrablockspace_node_subsystem_util::{
 	request_availability_cores, request_persisted_validation_data, request_validation_code,
 	request_validation_code_hash, request_validators,
 };
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	collator_signature_payload, CandidateCommitments, CandidateDescriptor, CandidateReceipt,
 	CoreState, Hash, Id as ParaId, OccupiedCoreAssumption, PersistedValidationData,
 	ValidationCodeHash,
@@ -411,7 +411,7 @@ async fn obtain_current_validation_code_hash(
 	assumption: OccupiedCoreAssumption,
 	sender: &mut impl overseer::CollationGenerationSenderTrait,
 ) -> Result<Option<ValidationCodeHash>, crate::error::Error> {
-	use polkadot_node_subsystem::RuntimeApiError;
+	use infrablockspace_node_subsystem::RuntimeApiError;
 
 	match request_validation_code_hash(relay_parent, para_id, assumption, sender)
 		.await
@@ -442,6 +442,6 @@ fn erasure_root(
 	let available_data =
 		AvailableData { validation_data: persisted_validation, pov: Arc::new(pov) };
 
-	let chunks = polkadot_erasure_coding::obtain_chunks_v1(n_validators, &available_data)?;
-	Ok(polkadot_erasure_coding::branches(&chunks).root())
+	let chunks = erasure_coding::obtain_chunks_v1(n_validators, &available_data)?;
+	Ok(erasure_coding::branches(&chunks).root())
 }

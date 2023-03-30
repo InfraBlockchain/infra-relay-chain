@@ -135,7 +135,7 @@ Dispatch a [`StatementDistributionMessage`][SDM]`::Share(relay_parent, SignedFul
 [OverseerSignal]: ../../types/overseer-protocol.md#overseer-signal
 [Statement]: ../../types/backing.md#statement-type
 [STMT]: ../../types/backing.md#statement-type
-[CPM]: ../../types/overseer-protocol.md#collator-protocol-message
+[CPM]: ../../types/overseer-protocol.md#infrablockspace-collator-protocol-message
 [RAM]: ../../types/overseer-protocol.md#runtime-api-message
 [CVM]: ../../types/overseer-protocol.md#validation-request-type
 [PM]: ../../types/overseer-protocol.md#provisioner-message

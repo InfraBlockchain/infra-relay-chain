@@ -29,9 +29,8 @@ sp-tracing = { branch = "master", git = "https://github.com/InfraBlockchain/infr
 xcm = { path = ".." }
 # temp
 pallet-xcm = { path = "../pallet-xcm" }
-polkadot-runtime-common = { path = "../../runtime/common" }
-# westend-runtime = { path = "../../runtime/westend", features = ["runtime-benchmarks"] }
-polkadot-primitives = { path = "../../primitives" }
+infrablockspace-runtime-common = { path = "../../runtime/common" }
+infrablockspace-primitives = { path = "../../primitives" }
 
 [features]
 default = ["std"]

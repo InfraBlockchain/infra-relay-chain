@@ -30,8 +30,8 @@ use futures::{
 	stream::{FuturesUnordered, StreamExt as _},
 	Future, FutureExt,
 };
-use polkadot_node_primitives::BACKING_EXECUTION_TIMEOUT;
-use polkadot_primitives::vstaging::{ExecutorParams, ExecutorParamsHash};
+use infrablockspace_node_primitives::BACKING_EXECUTION_TIMEOUT;
+use infrablockspace_primitives::vstaging::{ExecutorParams, ExecutorParamsHash};
 use slotmap::HopSlotMap;
 use std::{
 	collections::VecDeque,

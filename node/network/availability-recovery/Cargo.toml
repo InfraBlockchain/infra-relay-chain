@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-availability-recovery"
+name = "infrablockspace-availability-recovery"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -12,12 +12,12 @@ fatality = "0.0.6"
 thiserror = "1.0.31"
 gum = { package = "tracing-gum", path = "../../gum" }
 
-polkadot-erasure-coding = { path = "../../../erasure-coding" }
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem = {path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-network-protocol = { path = "../../network/protocol" }
+erasure-coding = { path = "../../../erasure-coding" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
+infrablockspace-node-subsystem = {path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-network-protocol = { path = "../../network/protocol" }
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
@@ -32,5 +32,5 @@ sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
-polkadot-primitives-test-helpers = { path = "../../../primitives/test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-primitives-test-helpers = { path = "../../../primitives/test-helpers" }

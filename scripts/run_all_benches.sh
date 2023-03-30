@@ -7,7 +7,6 @@
 runtimes=(
   polkadot
   kusama
-  westend
 )
 
 for runtime in "${runtimes[@]}"; do

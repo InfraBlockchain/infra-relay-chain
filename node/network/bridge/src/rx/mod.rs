@@ -25,7 +25,7 @@ use parity_scale_codec::{Decode, DecodeAll};
 use sc_network::Event as NetworkEvent;
 use sp_consensus::SyncOracle;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	self as net_protocol,
 	grid_topology::{SessionGridTopology, TopologyPeerInfo},
 	peer_set::{
@@ -35,7 +35,7 @@ use polkadot_node_network_protocol::{
 	v1 as protocol_v1, ObservedRole, OurView, PeerId, UnifiedReputationChange as Rep, View,
 };
 
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::SubsystemError,
 	messages::{
 		network_bridge_event::NewGossipTopology, ApprovalDistributionMessage,
@@ -45,12 +45,12 @@ use polkadot_node_subsystem::{
 	overseer, ActivatedLeaf, ActiveLeavesUpdate, FromOrchestra, OverseerSignal, SpawnedSubsystem,
 };
 
-use polkadot_primitives::{AuthorityDiscoveryId, BlockNumber, Hash, ValidatorIndex};
+use infrablockspace_primitives::{AuthorityDiscoveryId, BlockNumber, Hash, ValidatorIndex};
 
 /// Peer set info for network initialization.
 ///
 /// To be added to [`NetworkConfiguration::extra_sets`].
-pub use polkadot_node_network_protocol::peer_set::{peer_sets_info, IsAuthority};
+pub use infrablockspace_node_network_protocol::peer_set::{peer_sets_info, IsAuthority};
 
 use std::{
 	collections::{hash_map, HashMap},

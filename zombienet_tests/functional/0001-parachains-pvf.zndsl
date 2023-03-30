@@ -66,7 +66,7 @@ two: reports histogram polkadot_pvf_preparation_time has 0 samples in buckets ["
 # Check execution time.
 # There are two different timeout conditions: BACKING_EXECUTION_TIMEOUT(2s) and
 # APPROVAL_EXECUTION_TIMEOUT(6s). Currently these are not differentiated by metrics
-# because the metrics are defined in `polkadot-node-core-pvf` which is a level below
+# because the metrics are defined in `infrablockspace-node-core-pvf` which is a level below
 # the relevant subsystems.
 # That being said, we will take the simplifying assumption of testing only the
 # 2s timeout.

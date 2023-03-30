@@ -30,7 +30,6 @@ use westend_runtime::Runtime as WestendRuntime;
 #[derive(Clone, Debug, ValueEnum)]
 #[value(rename_all = "PascalCase")]
 enum Runtime {
-	Westend,
 	Kusama,
 	Polkadot,
 }
@@ -40,7 +39,6 @@ impl Runtime {
 		&self,
 	) -> Box<dyn FnOnce(usize, &Path, u128, u128) -> Result<(), std::io::Error>> {
 		match self {
-			Runtime::Westend => Box::new(generate_thresholds::<WestendRuntime>),
 			Runtime::Kusama => Box::new(generate_thresholds::<KusamaRuntime>),
 			Runtime::Polkadot => Box::new(generate_thresholds::<PolkadotRuntime>),
 		}

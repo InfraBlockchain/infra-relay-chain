@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-collator-protocol"
+name = "infrablockspace-collator-protocol"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -15,11 +15,11 @@ sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch =
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-node-network-protocol = { path = "../../network/protocol" }
-polkadot-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-subsystem = {path = "../../subsystem" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-node-network-protocol = { path = "../../network/protocol" }
+infrablockspace-node-primitives = { path = "../../primitives" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-node-subsystem = {path = "../../subsystem" }
 fatality = "0.0.6"
 thiserror = "1.0.31"
 
@@ -33,5 +33,5 @@ sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 parity-scale-codec = { version = "3.3.0", features = ["std"] }
 
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
-polkadot-primitives-test-helpers = { path = "../../../primitives/test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-primitives-test-helpers = { path = "../../../primitives/test-helpers" }

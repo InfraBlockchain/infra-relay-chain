@@ -19,19 +19,19 @@ use assert_matches::assert_matches;
 use bitvec::bitvec;
 use futures::executor;
 use maplit::hashmap;
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	grid_topology::{SessionBoundGridTopologyStorage, SessionGridTopology, TopologyPeerInfo},
 	our_view,
 	peer_set::ValidationVersion,
 	view, ObservedRole,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	jaeger::{PerLeafSpan, Span},
 };
 use polkadot_node_subsystem_test_helpers::make_subsystem_context;
-use polkadot_node_subsystem_util::TimeoutExt;
-use polkadot_primitives::{AvailabilityBitfield, Signed, ValidatorIndex};
+use infrablockspace_node_subsystem_util::TimeoutExt;
+use infrablockspace_primitives::{AvailabilityBitfield, Signed, ValidatorIndex};
 use rand_chacha::ChaCha12Rng;
 use sp_application_crypto::AppKey;
 use sp_authority_discovery::AuthorityPair as AuthorityDiscoveryPair;

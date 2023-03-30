@@ -21,7 +21,7 @@ use std::{
 };
 
 use polkadot_node_subsystem_test_helpers::TestSubsystemContextHandle;
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 
 use futures::{
 	channel::{mpsc, oneshot},
@@ -34,12 +34,12 @@ use sc_network::{config as netconfig, config::RequestResponseConfig, IfDisconnec
 use sp_core::{testing::TaskExecutor, traits::SpawnNamed};
 use sp_keystore::SyncCryptoStorePtr;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	jaeger,
 	request_response::{v1, IncomingRequest, OutgoingRequest, Requests},
 };
-use polkadot_node_primitives::ErasureChunk;
-use polkadot_node_subsystem::{
+use infrablockspace_node_primitives::ErasureChunk;
+use infrablockspace_node_subsystem::{
 	messages::{
 		AllMessages, AvailabilityDistributionMessage, AvailabilityStoreMessage, ChainApiMessage,
 		NetworkBridgeTxMessage, RuntimeApiMessage, RuntimeApiRequest,
@@ -47,7 +47,7 @@ use polkadot_node_subsystem::{
 	ActivatedLeaf, ActiveLeavesUpdate, FromOrchestra, LeafStatus, OverseerSignal,
 };
 use polkadot_node_subsystem_test_helpers as test_helpers;
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	CandidateHash, CoreState, GroupIndex, Hash, Id as ParaId, ScheduledCore, SessionInfo,
 	ValidatorIndex,
 };

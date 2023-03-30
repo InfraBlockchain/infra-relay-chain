@@ -20,7 +20,7 @@
 #![warn(missing_docs)]
 
 use parity_scale_codec::{Decode, Encode};
-use polkadot_primitives::{BlockNumber, Hash};
+use infrablockspace_primitives::{BlockNumber, Hash};
 use std::{collections::HashMap, fmt};
 
 #[doc(hidden)]
@@ -138,8 +138,8 @@ impl std::ops::Deref for OurView {
 /// # Example
 ///
 /// ```
-/// # use polkadot_node_network_protocol::our_view;
-/// # use polkadot_primitives::Hash;
+/// # use infrablockspace_node_network_protocol::our_view;
+/// # use infrablockspace_primitives::Hash;
 /// let our_view = our_view![Hash::repeat_byte(1), Hash::repeat_byte(2)];
 /// ```
 #[macro_export]
@@ -172,8 +172,8 @@ pub struct View {
 /// # Example
 ///
 /// ```
-/// # use polkadot_node_network_protocol::view;
-/// # use polkadot_primitives::Hash;
+/// # use infrablockspace_node_network_protocol::view;
+/// # use infrablockspace_primitives::Hash;
 /// let view = view![Hash::repeat_byte(1), Hash::repeat_byte(2)];
 /// ```
 #[macro_export]
@@ -398,12 +398,12 @@ impl_versioned_try_from!(
 pub mod v1 {
 	use parity_scale_codec::{Decode, Encode};
 
-	use polkadot_primitives::{
+	use infrablockspace_primitives::{
 		CandidateHash, CandidateIndex, CollatorId, CollatorSignature, CompactStatement, Hash,
 		Id as ParaId, UncheckedSignedAvailabilityBitfield, ValidatorIndex, ValidatorSignature,
 	};
 
-	use polkadot_node_primitives::{
+	use infrablockspace_node_primitives::{
 		approval::{IndirectAssignmentCert, IndirectSignedApprovalVote},
 		UncheckedSignedFullStatement,
 	};

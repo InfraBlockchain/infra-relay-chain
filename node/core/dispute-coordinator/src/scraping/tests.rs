@@ -23,8 +23,8 @@ use parity_scale_codec::Encode;
 use sp_core::testing::TaskExecutor;
 
 use ::test_helpers::{dummy_collator, dummy_collator_signature, dummy_hash};
-use polkadot_node_primitives::DISPUTE_CANDIDATE_LIFETIME_AFTER_FINALIZATION;
-use polkadot_node_subsystem::{
+use infrablockspace_node_primitives::DISPUTE_CANDIDATE_LIFETIME_AFTER_FINALIZATION;
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		AllMessages, ChainApiMessage, DisputeCoordinatorMessage, RuntimeApiMessage,
@@ -35,8 +35,8 @@ use polkadot_node_subsystem::{
 use polkadot_node_subsystem_test_helpers::{
 	make_subsystem_context, TestSubsystemContext, TestSubsystemContextHandle, TestSubsystemSender,
 };
-use polkadot_node_subsystem_util::{reexports::SubsystemContext, TimeoutExt};
-use polkadot_primitives::{
+use infrablockspace_node_subsystem_util::{reexports::SubsystemContext, TimeoutExt};
+use infrablockspace_primitives::{
 	BlakeTwo256, BlockNumber, CandidateDescriptor, CandidateEvent, CandidateReceipt, CoreIndex,
 	GroupIndex, Hash, HashT, HeadData, Id as ParaId,
 };

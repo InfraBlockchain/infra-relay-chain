@@ -94,9 +94,9 @@ frame-system-benchmarking = { git = "https://github.com/InfraBlockchain/infra-su
 pallet-election-provider-support-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 hex-literal = { version = "0.3.4", optional = true }
 
-runtime-common = { package = "polkadot-runtime-common", path = "../common", default-features = false }
-runtime-parachains = { package = "polkadot-runtime-parachains", path = "../parachains", default-features = false }
-primitives = { package = "polkadot-primitives", path = "../../primitives", default-features = false }
+runtime-common = { package = "infrablockspace-runtime-common", path = "../common", default-features = false }
+runtime-parachains = { package = "infrablockspace-runtime-parachains", path = "../parachains", default-features = false }
+primitives = { package = "infrablockspace-primitives", path = "../../primitives", default-features = false }
 
 xcm = { package = "xcm", path = "../../xcm", default-features = false }
 xcm-executor = { package = "xcm-executor", path = "../../xcm/xcm-executor", default-features = false }

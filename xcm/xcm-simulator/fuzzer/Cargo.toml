@@ -24,9 +24,9 @@ xcm-simulator = { path = "../" }
 xcm-executor = { path = "../../xcm-executor" }
 xcm-builder = { path = "../../xcm-builder" }
 pallet-xcm = { path = "../../pallet-xcm" }
-polkadot-core-primitives = { path = "../../../core-primitives" }
-polkadot-runtime-parachains = { path = "../../../runtime/parachains" }
-polkadot-parachain = { path = "../../../parachain" }
+infrablockspace-core-primitives = { path = "../../../core-primitives" }
+infrablockspace-runtime-parachains = { path = "../../../runtime/parachains" }
+infrablockspace-parachain = { path = "../../../parachain" }
 
 [features]
 runtime-benchmarks = [

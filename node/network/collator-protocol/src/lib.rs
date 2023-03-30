@@ -30,13 +30,13 @@ use futures::{
 
 use sp_keystore::SyncCryptoStorePtr;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	request_response::{v1 as request_v1, IncomingRequestReceiver},
 	PeerId, UnifiedReputationChange as Rep,
 };
-use polkadot_primitives::CollatorPair;
+use infrablockspace_primitives::CollatorPair;
 
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::SubsystemError, messages::NetworkBridgeTxMessage, overseer, SpawnedSubsystem,
 };
 
@@ -45,7 +45,7 @@ mod error;
 mod collator_side;
 mod validator_side;
 
-const LOG_TARGET: &'static str = "parachain::collator-protocol";
+const LOG_TARGET: &'static str = "parachain::infrablockspace-collator-protocol";
 
 /// A collator eviction policy - how fast to evict collators which are inactive.
 #[derive(Debug, Clone, Copy)]
@@ -115,10 +115,10 @@ impl<Context> CollatorProtocolSubsystem {
 	fn start(self, ctx: Context) -> SpawnedSubsystem {
 		let future = self
 			.run(ctx)
-			.map_err(|e| SubsystemError::with_origin("collator-protocol", e))
+			.map_err(|e| SubsystemError::with_origin("infrablockspace-collator-protocol", e))
 			.boxed();
 
-		SpawnedSubsystem { name: "collator-protocol-subsystem", future }
+		SpawnedSubsystem { name: "infrablockspace-collator-protocol-subsystem", future }
 	}
 }
 

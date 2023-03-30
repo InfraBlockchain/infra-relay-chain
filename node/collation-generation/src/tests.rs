@@ -22,17 +22,17 @@ mod handle_new_activations {
 		task::{Context as FuturesContext, Poll},
 		Future,
 	};
-	use polkadot_node_primitives::{
+	use infrablockspace_node_primitives::{
 		BlockData, Collation, CollationResult, MaybeCompressedPoV, PoV,
 	};
-	use polkadot_node_subsystem::{
+	use infrablockspace_node_subsystem::{
 		errors::RuntimeApiError,
 		messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	};
 	use polkadot_node_subsystem_test_helpers::{
 		subsystem_test_harness, TestSubsystemContextHandle,
 	};
-	use polkadot_primitives::{
+	use infrablockspace_primitives::{
 		CollatorPair, Id as ParaId, PersistedValidationData, ScheduledCore, ValidationCode,
 	};
 	use std::pin::Pin;

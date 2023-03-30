@@ -16,7 +16,7 @@
 
 use super::*;
 use futures::{executor, stream::BoxStream};
-use polkadot_node_subsystem_util::TimeoutExt;
+use infrablockspace_node_subsystem_util::TimeoutExt;
 
 use async_trait::async_trait;
 use parking_lot::Mutex;
@@ -24,15 +24,15 @@ use std::collections::HashSet;
 
 use sc_network::{Event as NetworkEvent, IfDisconnected, ProtocolName};
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	peer_set::PeerSetProtocolNames,
 	request_response::{outgoing::Requests, ReqProtocolNames},
 	ObservedRole, Versioned,
 };
-use polkadot_node_subsystem::{FromOrchestra, OverseerSignal};
+use infrablockspace_node_subsystem::{FromOrchestra, OverseerSignal};
 use polkadot_node_subsystem_test_helpers::TestSubsystemContextHandle;
-use polkadot_node_subsystem_util::metered;
-use polkadot_primitives::{AuthorityDiscoveryId, Hash};
+use infrablockspace_node_subsystem_util::metered;
+use infrablockspace_primitives::{AuthorityDiscoveryId, Hash};
 use polkadot_primitives_test_helpers::dummy_collator_signature;
 use sc_network::Multiaddr;
 use sp_keyring::Sr25519Keyring;

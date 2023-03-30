@@ -21,13 +21,13 @@ pallet-transaction-payment = { git = "https://github.com/InfraBlockchain/infra-s
 log = { version = "0.4.17", default-features = false }
 
 # Polkadot dependencies
-polkadot-parachain = { path = "../../parachain", default-features = false }
+infrablockspace-parachain = { path = "../../parachain", default-features = false }
 
 [dev-dependencies]
 primitive-types = "0.12.1"
 pallet-balances = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 pallet-xcm = { path = "../pallet-xcm" }
-polkadot-runtime-parachains = { path = "../../runtime/parachains" }
+infrablockspace-runtime-parachains = { path = "../../runtime/parachains" }
 assert_matches = "1.5.0"
 
 [features]
@@ -48,6 +48,6 @@ std = [
 	"sp-runtime/std",
 	"frame-support/std",
 	"frame-system/std",
-	"polkadot-parachain/std",
+	"infrablockspace-parachain/std",
 	"pallet-transaction-payment/std",
 ]

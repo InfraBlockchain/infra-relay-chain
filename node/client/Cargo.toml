@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-client"
+name = "infrablockspace-client"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -38,26 +38,27 @@ sc-executor = { git = "https://github.com/InfraBlockchain/infra-substrate", bran
 sc-client-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-service = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
+# Infrablockspace Runtimes
+infrablockspace-runtime = { path = "../../runtime/infrabs", optional = true }
+
 # Polkadot Runtimes
 polkadot-runtime = { path = "../../runtime/polkadot", optional = true }
 kusama-runtime = { path = "../../runtime/kusama", optional = true }
-westend-runtime = { path = "../../runtime/westend", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
-polkadot-core-primitives = { path = "../../core-primitives" }
-polkadot-primitives = { path = "../../primitives" }
-polkadot-node-core-parachains-inherent = { path = "../core/parachains-inherent" }
-polkadot-runtime-common = { path = "../../runtime/common" }
+infrablockspace-core-primitives = { path = "../../core-primitives" }
+infrablockspace-primitives = { path = "../../primitives" }
+infrablockspace-node-core-parachains-inherent = { path = "../core/parachains-inherent" }
+infrablockspace-runtime-common = { path = "../../runtime/common" }
 
 [features]
 default = ["polkadot"]
+infrablockspace = ["infrablockspace-runtime"]
 polkadot = ["polkadot-runtime"]
 kusama = ["kusama-runtime"]
 rococo = ["rococo-runtime"]
-westend = ["westend-runtime"]
 runtime-metrics = [
     "rococo-runtime/runtime-metrics",
     "kusama-runtime/runtime-metrics",
-    "westend-runtime/runtime-metrics",
     "polkadot-runtime/runtime-metrics",
 ]

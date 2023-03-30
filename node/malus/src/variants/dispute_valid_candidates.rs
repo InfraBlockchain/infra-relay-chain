@@ -22,7 +22,7 @@
 
 #![allow(missing_docs)]
 
-use polkadot_cli::{
+use infrablockspace_cli::{
 	prepared_overseer_builder,
 	service::{
 		AuthorityDiscoveryApi, AuxStore, BabeApi, Block, Error, HeaderBackend, Overseer,
@@ -31,7 +31,7 @@ use polkadot_cli::{
 	},
 	Cli,
 };
-use polkadot_node_subsystem::SpawnGlue;
+use infrablockspace_node_subsystem::SpawnGlue;
 use sp_core::traits::SpawnNamed;
 
 // Filter wrapping related types.

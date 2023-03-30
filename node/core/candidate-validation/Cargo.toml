@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-candidate-validation"
+name = "infrablockspace-node-core-candidate-validation"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -13,20 +13,20 @@ gum = { package = "tracing-gum", path = "../../gum" }
 sp-maybe-compressed-blob = { package = "sp-maybe-compressed-blob", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["bit-vec", "derive"] }
 
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-parachain = { path = "../../../parachain" }
-polkadot-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-parachain = { path = "../../../parachain" }
+infrablockspace-node-primitives = { path = "../../primitives" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 polkadot-node-metrics = { path = "../../metrics" }
 
 [target.'cfg(not(any(target_os = "android", target_os = "unknown")))'.dependencies]
-polkadot-node-core-pvf = { path = "../pvf" }
+infrablockspace-node-core-pvf = { path = "../pvf" }
 
 [dev-dependencies]
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 futures = { version = "0.3.21", features = ["thread-pool"] }
 assert_matches = "1.4.0"
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../../primitives/test-helpers" }
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

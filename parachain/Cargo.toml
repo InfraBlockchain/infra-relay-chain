@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-parachain"
+name = "infrablockspace-parachain"
 description = "Types and utilities for creating and working with parachains"
 authors.workspace = true
 edition.workspace = true
@@ -15,7 +15,7 @@ sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = 
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-polkadot-core-primitives = { path = "../core-primitives", default-features = false }
+infrablockspace-core-primitives = { path = "../core-primitives", default-features = false }
 derive_more = "0.99.11"
 bounded-collections = { version = "0.1.5", default-features = false }
 
@@ -33,7 +33,7 @@ std = [
 	"sp-std/std",
 	"sp-runtime/std",
 	"sp-core/std",
-	"polkadot-core-primitives/std",
+	"infrablockspace-core-primitives/std",
 	"frame-support/std",
 ]
 runtime-benchmarks = []

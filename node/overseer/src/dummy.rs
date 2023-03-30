@@ -21,7 +21,7 @@ use crate::{
 };
 use lru::LruCache;
 use orchestra::{FromOrchestra, SpawnedSubsystem, Subsystem, SubsystemContext};
-use polkadot_node_subsystem_types::{errors::SubsystemError, messages::*};
+use infrablockspace_node_subsystem_types::{errors::SubsystemError, messages::*};
 // Generated dummy messages
 use crate::messages::*;
 
@@ -174,7 +174,7 @@ where
 		.pvf_checker(subsystem.clone())
 		.chain_api(subsystem.clone())
 		.collation_generation(subsystem.clone())
-		.collator_protocol(subsystem.clone())
+		.infrablockspace_collator_protocol(subsystem.clone())
 		.network_bridge_tx(subsystem.clone())
 		.network_bridge_rx(subsystem.clone())
 		.provisioner(subsystem.clone())

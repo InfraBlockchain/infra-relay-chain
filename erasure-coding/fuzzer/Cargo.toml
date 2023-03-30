@@ -5,10 +5,10 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-polkadot-erasure-coding = { path = ".." }
+erasure-coding = { path = ".." }
 honggfuzz = "0.5"
-polkadot-primitives = { path = "../../primitives" }
-primitives = { package = "polkadot-node-primitives", path = "../../node/primitives/" }
+infrablockspace-primitives = { path = "../../primitives" }
+primitives = { package = "infrablockspace-node-primitives", path = "../../node/primitives/" }
 
 [[bin]]
 name = "reconstruct"

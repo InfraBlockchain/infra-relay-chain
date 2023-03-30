@@ -17,7 +17,7 @@
 use super::*;
 use ::test_helpers::{dummy_candidate_descriptor, dummy_hash};
 use bitvec::bitvec;
-use polkadot_primitives::{OccupiedCore, ScheduledCore};
+use infrablockspace_primitives::{OccupiedCore, ScheduledCore};
 
 pub fn occupied_core(para_id: u32) -> CoreState {
 	CoreState::Occupied(OccupiedCore {
@@ -57,7 +57,7 @@ pub fn scheduled_core(id: u32) -> ScheduledCore {
 mod select_availability_bitfields {
 	use super::{super::*, default_bitvec, occupied_core};
 	use futures::executor::block_on;
-	use polkadot_primitives::{ScheduledCore, SigningContext, ValidatorId, ValidatorIndex};
+	use infrablockspace_primitives::{ScheduledCore, SigningContext, ValidatorId, ValidatorIndex};
 	use sp_application_crypto::AppKey;
 	use sp_keystore::{testing::KeyStore, CryptoStore, SyncCryptoStorePtr};
 	use std::sync::Arc;
@@ -214,7 +214,7 @@ mod select_availability_bitfields {
 pub(crate) mod common {
 	use super::super::*;
 	use futures::channel::mpsc;
-	use polkadot_node_subsystem::messages::AllMessages;
+	use infrablockspace_node_subsystem::messages::AllMessages;
 	use polkadot_node_subsystem_test_helpers::TestSubsystemSender;
 
 	pub fn test_harness<OverseerFactory, Overseer, TestFactory, Test>(
@@ -243,14 +243,14 @@ mod select_candidates {
 	};
 	use ::test_helpers::{dummy_candidate_descriptor, dummy_hash};
 	use futures::channel::mpsc;
-	use polkadot_node_subsystem::messages::{
+	use infrablockspace_node_subsystem::messages::{
 		AllMessages, RuntimeApiMessage,
 		RuntimeApiRequest::{
 			AvailabilityCores, PersistedValidationData as PersistedValidationDataReq,
 		},
 	};
 	use polkadot_node_subsystem_test_helpers::TestSubsystemSender;
-	use polkadot_primitives::{
+	use infrablockspace_primitives::{
 		BlockNumber, CandidateCommitments, CommittedCandidateReceipt, PersistedValidationData,
 	};
 

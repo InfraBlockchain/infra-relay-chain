@@ -31,12 +31,12 @@ use sc_network_common::{
 	service::{NetworkEventStream, NetworkNotification, NetworkPeers, NetworkRequest},
 };
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	peer_set::{PeerSet, PeerSetProtocolNames, ProtocolVersion},
 	request_response::{OutgoingRequest, Recipient, ReqProtocolNames, Requests},
 	PeerId, UnifiedReputationChange as Rep,
 };
-use polkadot_primitives::{AuthorityDiscoveryId, Block, Hash};
+use infrablockspace_primitives::{AuthorityDiscoveryId, Block, Hash};
 
 use crate::validator_discovery::AuthorityDiscovery;
 
@@ -122,7 +122,7 @@ pub trait Network: Clone + Send + 'static {
 #[async_trait]
 impl Network for Arc<NetworkService<Block, Hash>> {
 	fn event_stream(&mut self) -> BoxStream<'static, NetworkEvent> {
-		NetworkService::event_stream(self, "polkadot-network-bridge").boxed()
+		NetworkService::event_stream(self, "infrablockspace-network-bridge").boxed()
 	}
 
 	async fn set_reserved_peers(
