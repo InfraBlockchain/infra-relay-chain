@@ -25,7 +25,7 @@ infrablockspace-primitives-test-helpers = { path = "../../../primitives/test-hel
 
 assert_matches = "1.4.0"
 schnorrkel = { version = "0.9.1", default-features = false }
-rand_core = "0.5.1" # should match schnorrkel
+rand_core = "0.6.4" # should match schnorrkel
 rand_chacha = "0.3.1"
 env_logger = "0.9.0"
 log = "0.4.17"

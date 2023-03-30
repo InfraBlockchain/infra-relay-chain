@@ -33,7 +33,7 @@ sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 [dev-dependencies]
 async-trait = "0.1.57"
 parking_lot = "0.12.0"
-rand_core = "0.5.1" #                                                                       should match schnorrkel
+rand_core = "0.6.4" #                                                                       should match schnorrkel
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
