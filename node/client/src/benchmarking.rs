@@ -16,7 +16,7 @@
 
 //! Code related to benchmarking a [`crate::Client`].
 
-use polkadot_primitives::{AccountId, Balance};
+use infrablockspace_primitives::{AccountId, Balance};
 use sp_core::{Pair, H256};
 use sp_keyring::Sr25519Keyring;
 use sp_runtime::OpaqueExtrinsic;
@@ -54,7 +54,7 @@ impl frame_benchmarking_cli::ExtrinsicBuilder for RemarkBuilder {
 				let call = RuntimeCall::System(SystemCall::remark { remark: vec![] });
 				let signer = Sr25519Keyring::Bob.pair();
 
-				let period = polkadot_runtime_common::BlockHashCount::get().checked_next_power_of_two().map(|c| c / 2).unwrap_or(2) as u64;
+				let period = infrablockspace_runtime_common::BlockHashCount::get().checked_next_power_of_two().map(|c| c / 2).unwrap_or(2) as u64;
 				let genesis = client.usage_info().chain.best_hash;
 
 				Ok(client.sign_call(call, nonce, 0, period, genesis, signer))
@@ -100,7 +100,7 @@ impl frame_benchmarking_cli::ExtrinsicBuilder for TransferKeepAliveBuilder {
 				});
 				let signer = Sr25519Keyring::Bob.pair();
 
-				let period = polkadot_runtime_common::BlockHashCount::get().checked_next_power_of_two().map(|c| c / 2).unwrap_or(2) as u64;
+				let period = infrablockspace_runtime_common::BlockHashCount::get().checked_next_power_of_two().map(|c| c / 2).unwrap_or(2) as u64;
 				let genesis = client.usage_info().chain.best_hash;
 
 				Ok(client.sign_call(call, nonce, 0, period, genesis, signer))
@@ -155,7 +155,7 @@ impl BenchmarkCallSigner<polkadot_runtime::RuntimeCall, sp_core::sr25519::Pair>
 			frame_system::CheckNonce::<runtime::Runtime>::from(nonce),
 			frame_system::CheckWeight::<runtime::Runtime>::new(),
 			pallet_transaction_payment::ChargeTransactionPayment::<runtime::Runtime>::from(0),
-			polkadot_runtime_common::claims::PrevalidateAttests::<runtime::Runtime>::new(),
+			infrablockspace_runtime_common::claims::PrevalidateAttests::<runtime::Runtime>::new(),
 		);
 
 		let payload = runtime::SignedPayload::from_raw(
@@ -178,61 +178,7 @@ impl BenchmarkCallSigner<polkadot_runtime::RuntimeCall, sp_core::sr25519::Pair>
 		runtime::UncheckedExtrinsic::new_signed(
 			call,
 			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
-			extra,
-		)
-		.into()
-	}
-}
-
-#[cfg(feature = "westend")]
-impl BenchmarkCallSigner<westend_runtime::RuntimeCall, sp_core::sr25519::Pair>
-	for FullClient<westend_runtime::RuntimeApi, WestendExecutorDispatch>
-{
-	fn sign_call(
-		&self,
-		call: westend_runtime::RuntimeCall,
-		nonce: u32,
-		current_block: u64,
-		period: u64,
-		genesis: H256,
-		acc: sp_core::sr25519::Pair,
-	) -> OpaqueExtrinsic {
-		use westend_runtime as runtime;
-
-		let extra: runtime::SignedExtra = (
-			frame_system::CheckNonZeroSender::<runtime::Runtime>::new(),
-			frame_system::CheckSpecVersion::<runtime::Runtime>::new(),
-			frame_system::CheckTxVersion::<runtime::Runtime>::new(),
-			frame_system::CheckGenesis::<runtime::Runtime>::new(),
-			frame_system::CheckMortality::<runtime::Runtime>::from(
-				sp_runtime::generic::Era::mortal(period, current_block),
-			),
-			frame_system::CheckNonce::<runtime::Runtime>::from(nonce),
-			frame_system::CheckWeight::<runtime::Runtime>::new(),
-			pallet_transaction_payment::ChargeTransactionPayment::<runtime::Runtime>::from(0),
-		);
-
-		let payload = runtime::SignedPayload::from_raw(
-			call.clone(),
-			extra.clone(),
-			(
-				(),
-				runtime::VERSION.spec_version,
-				runtime::VERSION.transaction_version,
-				genesis,
-				genesis,
-				(),
-				(),
-				(),
-			),
-		);
-
-		let signature = payload.using_encoded(|p| acc.sign(p));
-		runtime::UncheckedExtrinsic::new_signed(
-			call,
-			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
+			infrablockspace_core_primitives::Signature::Sr25519(signature.clone()),
 			extra,
 		)
 		.into()
@@ -286,7 +232,7 @@ impl BenchmarkCallSigner<kusama_runtime::RuntimeCall, sp_core::sr25519::Pair>
 		runtime::UncheckedExtrinsic::new_signed(
 			call,
 			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
+			infrablockspace_core_primitives::Signature::Sr25519(signature.clone()),
 			extra,
 		)
 		.into()
@@ -340,18 +286,18 @@ impl BenchmarkCallSigner<rococo_runtime::RuntimeCall, sp_core::sr25519::Pair>
 		runtime::UncheckedExtrinsic::new_signed(
 			call,
 			sp_runtime::AccountId32::from(acc.public()).into(),
-			polkadot_core_primitives::Signature::Sr25519(signature.clone()),
+			infrablockspace_core_primitives::Signature::Sr25519(signature.clone()),
 			extra,
 		)
 		.into()
 	}
 }
 
-/// Generates inherent data for benchmarking Polkadot, Kusama, Westend and Rococo.
+/// Generates inherent data for benchmarking Polkadot, Kusama and Rococo.
 ///
 /// Not to be used outside of benchmarking since it returns mocked values.
 pub fn benchmark_inherent_data(
-	header: polkadot_core_primitives::Header,
+	header: infrablockspace_core_primitives::Header,
 ) -> std::result::Result<sp_inherents::InherentData, sp_inherents::Error> {
 	use sp_inherents::InherentDataProvider;
 	let mut inherent_data = sp_inherents::InherentData::new();
@@ -361,14 +307,14 @@ pub fn benchmark_inherent_data(
 	let timestamp = sp_timestamp::InherentDataProvider::new(d.into());
 	futures::executor::block_on(timestamp.provide_inherent_data(&mut inherent_data))?;
 
-	let para_data = polkadot_primitives::InherentData {
+	let para_data = infrablockspace_primitives::InherentData {
 		bitfields: Vec::new(),
 		backed_candidates: Vec::new(),
 		disputes: Vec::new(),
 		parent_header: header,
 	};
 
-	inherent_data.put_data(polkadot_primitives::PARACHAINS_INHERENT_IDENTIFIER, &para_data)?;
+	inherent_data.put_data(infrablockspace_primitives::PARACHAINS_INHERENT_IDENTIFIER, &para_data)?;
 
 	Ok(inherent_data)
 }

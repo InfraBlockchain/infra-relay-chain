@@ -92,7 +92,7 @@
 //! Let's introduce two types of `ParachainHost` API implementation:
 //! * stable - used on stable production networks like Polkadot and Kusama. There is only one
 //!   stable API at a single point in time.
-//! * staging - used on test networks like Westend or Rococo. Depending on the development needs
+//! * staging - used on test networks like Rococo. Depending on the development needs
 //!   there can be zero, one or multiple staging APIs.
 //!
 //! The stable version of `ParachainHost` is indicated by the base version of the API. Any staging
@@ -117,8 +117,8 @@ use crate::{
 	ValidatorId, ValidatorIndex, ValidatorSignature,
 };
 use parity_scale_codec::{Decode, Encode};
-use polkadot_core_primitives as pcp;
-use polkadot_parachain::primitives as ppp;
+use infrablockspace_core_primitives as pcp;
+use infrablockspace_parachain::primitives as ppp;
 use sp_std::{collections::btree_map::BTreeMap, prelude::*};
 
 sp_api::decl_runtime_apis! {

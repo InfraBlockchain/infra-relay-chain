@@ -17,8 +17,8 @@
 use fatality::Nested;
 use futures::channel::oneshot;
 
-use polkadot_node_subsystem::{errors::ChainApiError, SubsystemError};
-use polkadot_node_subsystem_util::{rolling_session_window::SessionsUnavailable, runtime};
+use infrablockspace_node_subsystem::{errors::ChainApiError, SubsystemError};
+use infrablockspace_node_subsystem_util::{rolling_session_window::SessionsUnavailable, runtime};
 
 use crate::{db, participation, LOG_TARGET};
 use parity_scale_codec::Error as CodecError;

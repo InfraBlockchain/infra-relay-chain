@@ -362,7 +362,7 @@ mod tests {
 	fn test_rocksdb_migrate_1_to_2() {
 		use kvdb::{DBKey, DBOp};
 		use kvdb_rocksdb::{Database, DatabaseConfig};
-		use polkadot_node_subsystem_util::database::{
+		use infrablockspace_node_subsystem_util::database::{
 			kvdb_impl::DbAdapter, DBTransaction, KeyValueDB,
 		};
 

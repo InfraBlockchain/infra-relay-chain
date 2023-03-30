@@ -20,7 +20,7 @@ use frame_support::{
 	traits::{Everything, Nothing},
 	weights::Weight,
 };
-use polkadot_parachain::primitives::Id as ParaId;
+use infrablockspace_parachain::primitives::Id as ParaId;
 use polkadot_runtime_parachains::origin;
 use sp_core::H256;
 use sp_runtime::{testing::Header, traits::IdentityLookup, AccountId32};

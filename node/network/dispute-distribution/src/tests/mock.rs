@@ -26,14 +26,14 @@ use std::{
 use async_trait::async_trait;
 use lazy_static::lazy_static;
 
-use polkadot_node_network_protocol::{authority_discovery::AuthorityDiscovery, PeerId};
+use infrablockspace_node_network_protocol::{authority_discovery::AuthorityDiscovery, PeerId};
 use sc_keystore::LocalKeystore;
 use sp_application_crypto::AppKey;
 use sp_keyring::Sr25519Keyring;
 use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr};
 
-use polkadot_node_primitives::{DisputeMessage, SignedDisputeStatement};
-use polkadot_primitives::{
+use infrablockspace_node_primitives::{DisputeMessage, SignedDisputeStatement};
+use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateHash, CandidateReceipt, Hash, SessionIndex, SessionInfo,
 	ValidatorId, ValidatorIndex,
 };
@@ -210,15 +210,15 @@ impl MockAuthorityDiscovery {
 impl AuthorityDiscovery for MockAuthorityDiscovery {
 	async fn get_addresses_by_authority_id(
 		&mut self,
-		_authority: polkadot_primitives::AuthorityDiscoveryId,
+		_authority: infrablockspace-primitives::AuthorityDiscoveryId,
 	) -> Option<HashSet<sc_network::Multiaddr>> {
 		panic!("Not implemented");
 	}
 
 	async fn get_authority_ids_by_peer_id(
 		&mut self,
-		peer_id: polkadot_node_network_protocol::PeerId,
-	) -> Option<HashSet<polkadot_primitives::AuthorityDiscoveryId>> {
+		peer_id: infrablockspace_node_network_protocol::PeerId,
+	) -> Option<HashSet<infrablockspace-primitives::AuthorityDiscoveryId>> {
 		for (a, p) in self.peer_ids.iter() {
 			if p == &peer_id {
 				let result =

@@ -17,9 +17,9 @@
 use fatality::Nested;
 use futures::channel::{mpsc, oneshot};
 
-use polkadot_node_subsystem::{messages::ValidationFailed, SubsystemError};
-use polkadot_node_subsystem_util::Error as UtilError;
-use polkadot_primitives::BackedCandidate;
+use infrablockspace_node_subsystem::{messages::ValidationFailed, SubsystemError};
+use infrablockspace_node_subsystem_util::Error as UtilError;
+use infrablockspace_primitives::BackedCandidate;
 
 use crate::LOG_TARGET;
 

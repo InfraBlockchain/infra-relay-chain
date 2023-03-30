@@ -46,12 +46,8 @@ pub enum NetworkId {
 	Polkadot,
 	/// The Kusama canary-net Relay-chain.
 	Kusama,
-	/// The Westend testnet Relay-chain.
-	Westend,
 	/// The Rococo testnet Relay-chain.
 	Rococo,
-	/// The Wococo testnet Relay-chain.
-	Wococo,
 	/// An Ethereum network specified by its chain ID.
 	Ethereum {
 		/// The EIP-155 chain ID.

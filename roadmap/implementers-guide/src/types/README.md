@@ -31,8 +31,8 @@ digraph {
     CandidateDescriptor:collator -> CollatorId:w
     CandidateDescriptor:persisted_validation_data_hash -> PersistedValidationDataHash
 
-    Id [label="polkadot_parachain::primitives::Id"]
-    CollatorId [label="polkadot_primitives::v2::CollatorId"]
+    Id [label="infrablockspace_parachain::primitives::Id"]
+    CollatorId [label="infrablockspace-primitives::v2::CollatorId"]
 
     PoVHash [label = "Hash", shape="doublecircle", fill="gray90"]
 
@@ -114,7 +114,7 @@ digraph {
         </table>
     >]
 
-    TransientValidationData:balance -> "polkadot_core_primitives::v2::Balance":w
+    TransientValidationData:balance -> "infrablockspace_core_primitives::v2::Balance":w
 
     CandidateCommitments [label = <
         <table>
@@ -128,11 +128,11 @@ digraph {
         </table>
     >]
 
-    CandidateCommitments:upward_messages -> "polkadot_parachain::primitives::UpwardMessage":w
-    CandidateCommitments:horizontal_messages -> "polkadot_core_primitives::v2::OutboundHrmpMessage":w
+    CandidateCommitments:upward_messages -> "infrablockspace_parachain::primitives::UpwardMessage":w
+    CandidateCommitments:horizontal_messages -> "infrablockspace_core_primitives::v2::OutboundHrmpMessage":w
     CandidateCommitments:head_data -> HeadData:w
-    CandidateCommitments:horizontal_messages -> "polkadot_parachain::primitives::Id":w
-    CandidateCommitments:new_validation_code -> "polkadot_parachain::primitives::ValidationCode":w
+    CandidateCommitments:horizontal_messages -> "infrablockspace_parachain::primitives::Id":w
+    CandidateCommitments:new_validation_code -> "infrablockspace_parachain::primitives::ValidationCode":w
 
     PoV [label = <
         <table>
@@ -141,7 +141,7 @@ digraph {
         </table>
     >]
 
-    PoV:block_data -> "polkadot_parachain::primitives::BlockData":w
+    PoV:block_data -> "infrablockspace_parachain::primitives::BlockData":w
 
     BackedCandidate [label = <
         <table>
@@ -153,9 +153,9 @@ digraph {
     >]
 
     BackedCandidate:candidate -> CommittedCandidateReceipt:name
-    BackedCandidate:validity_votes  -> "polkadot_primitives:v0:ValidityAttestation":w
+    BackedCandidate:validity_votes  -> "infrablockspace-primitives:v0:ValidityAttestation":w
 
-    HeadData [label = "polkadot_parachain::primitives::HeadData"]
+    HeadData [label = "infrablockspace_parachain::primitives::HeadData"]
 
     CoreIndex [label = <
         <table>
@@ -302,9 +302,9 @@ digraph {
     SessionInfo:discovery_keys -> AuthorityDiscoveryId:w
     SessionInfo:validator_groups -> ValidatorIndex:w
 
-    ValidatorId [label = "polkadot_primitives::v2::ValidatorId"]
+    ValidatorId [label = "infrablockspace-primitives::v2::ValidatorId"]
     AuthorityDiscoveryId [label = "sp_authority_discovery::AuthorityId"]
-    ValidatorIndex [label = "polkadot_primitives::v2::ValidatorIndex"]
+    ValidatorIndex [label = "infrablockspace-primitives::v2::ValidatorIndex"]
 
     AbridgedHostConfiguration [label = <
         <table>
@@ -405,7 +405,7 @@ digraph {
     ValidationParams:block_data -> BlockData:name
     ValidationParams:relay_parent_number -> RelayChainBlockNumber:w
 
-    RelayChainBlockNumber [label = "polkadot_core_primitives::BlockNumber"]
+    RelayChainBlockNumber [label = "infrablockspace_core_primitives::BlockNumber"]
 
     ValidationResult [label = <
         <table>
@@ -427,6 +427,6 @@ digraph {
     ValidationResult:hrmp_watermark -> RelayChainBlockNumber:w
 
     UpwardMessage [label = "Vec<u8>"]
-    OutboundHrmpMessage [label = "polkadot_core_primitives::OutboundHrmpMessage"]
+    OutboundHrmpMessage [label = "infrablockspace_core_primitives::OutboundHrmpMessage"]
 }
 ```

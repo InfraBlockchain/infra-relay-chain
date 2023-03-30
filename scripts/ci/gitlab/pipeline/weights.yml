@@ -28,11 +28,6 @@ update_kusama_weights:
   variables:
     RUNTIME: kusama
 
-update_westend_weights:
-  <<: *update-weights
-  variables:
-    RUNTIME: westend
-
 update_rococo_weights:
   <<: *update-weights
   variables:

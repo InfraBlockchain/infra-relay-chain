@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-dispute-coordinator"
+name = "infrablockspace-node-core-dispute-coordinator"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -13,22 +13,22 @@ thiserror = "1.0.31"
 lru = "0.9.0"
 fatality = "0.0.6"
 
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 
 [dev-dependencies]
 kvdb-memorydb = "0.13.0"
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 assert_matches = "1.4.0"
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../../primitives/test-helpers" }
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }
 futures-timer = "3.0.2"
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-tracing = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

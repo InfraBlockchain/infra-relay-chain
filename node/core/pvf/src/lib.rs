@@ -32,7 +32,7 @@
 //! (a) PVF pre-checking. This takes the PVF [code][`Pvf`] and tries to prepare it (verify and
 //! compile) in order to pre-check its validity.
 //!
-//! (b) PVF execution. This accepts the PVF [`params`][`polkadot_parachain::primitives::ValidationParams`]
+//! (b) PVF execution. This accepts the PVF [`params`][`infrablockspace_parachain::primitives::ValidationParams`]
 //!     and the PVF [code][`Pvf`], prepares (verifies and compiles) the code, and then executes PVF
 //!     with the `params`.
 //!
@@ -88,7 +88,7 @@
 //!
 //! The execute workers will be fed by the requests from the execution queue, which is basically a
 //! combination of a path to the compiled artifact and the
-//! [`params`][`polkadot_parachain::primitives::ValidationParams`].
+//! [`params`][`infrablockspace_parachain::primitives::ValidationParams`].
 
 mod artifacts;
 mod error;

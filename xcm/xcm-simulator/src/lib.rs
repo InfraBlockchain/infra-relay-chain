@@ -23,8 +23,8 @@ pub use frame_support::{traits::Get, weights::Weight};
 pub use sp_io::{hashing::blake2_256, TestExternalities};
 pub use sp_std::{cell::RefCell, collections::vec_deque::VecDeque, marker::PhantomData};
 
-pub use polkadot_core_primitives::BlockNumber as RelayBlockNumber;
-pub use polkadot_parachain::primitives::{
+pub use infrablockspace_core_primitives::BlockNumber as RelayBlockNumber;
+pub use infrablockspace_parachain::primitives::{
 	DmpMessageHandler as DmpMessageHandlerT, Id as ParaId, XcmpMessageFormat,
 	XcmpMessageHandler as XcmpMessageHandlerT,
 };

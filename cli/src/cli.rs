@@ -93,10 +93,6 @@ pub struct RunCmd {
 	#[arg(long = "force-kusama")]
 	pub force_kusama: bool,
 
-	/// Force using Westend native runtime.
-	#[arg(long = "force-westend")]
-	pub force_westend: bool,
-
 	/// Force using Rococo native runtime.
 	#[arg(long = "force-rococo")]
 	pub force_rococo: bool,
@@ -110,7 +106,7 @@ pub struct RunCmd {
 	#[arg(long = "grandpa-pause", num_args = 2)]
 	pub grandpa_pause: Vec<u32>,
 
-	/// Enable the BEEFY gadget (only on Rococo or Wococo for now).
+	/// Enable the BEEFY gadget (only on Rococo for now).
 	#[arg(long)]
 	pub beefy: bool,
 

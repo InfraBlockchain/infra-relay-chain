@@ -25,7 +25,7 @@ use futures::{
 };
 use sp_core::Pair;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	self as net_protocol,
 	peer_set::PeerSet,
 	request_response::{
@@ -35,19 +35,19 @@ use polkadot_node_network_protocol::{
 	},
 	v1 as protocol_v1, OurView, PeerId, UnifiedReputationChange as Rep, Versioned, View,
 };
-use polkadot_node_primitives::{CollationSecondedSignal, PoV, Statement};
-use polkadot_node_subsystem::{
+use infrablockspace_node_primitives::{CollationSecondedSignal, PoV, Statement};
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		CollatorProtocolMessage, NetworkBridgeEvent, NetworkBridgeTxMessage, RuntimeApiMessage,
 	},
 	overseer, FromOrchestra, OverseerSignal, PerLeafSpan,
 };
-use polkadot_node_subsystem_util::{
+use infrablockspace_node_subsystem_util::{
 	runtime::{get_availability_cores, get_group_rotation_info, RuntimeInfo},
 	TimeoutExt,
 };
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateHash, CandidateReceipt, CollatorPair, CoreIndex, CoreState,
 	GroupIndex, Hash, Id as ParaId, SessionIndex,
 };

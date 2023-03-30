@@ -32,8 +32,8 @@ use futures::{
 	channel::{mpsc, oneshot},
 	Future, FutureExt, SinkExt, StreamExt,
 };
-use polkadot_parachain::primitives::ValidationResult;
-use polkadot_primitives::vstaging::ExecutorParams;
+use infrablockspace_parachain::primitives::ValidationResult;
+use infrablockspace_primitives::vstaging::ExecutorParams;
 use std::{
 	collections::HashMap,
 	path::{Path, PathBuf},

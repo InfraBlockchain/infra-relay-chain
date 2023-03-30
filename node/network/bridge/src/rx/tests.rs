@@ -16,8 +16,8 @@
 
 use super::*;
 use futures::{channel::oneshot, executor, stream::BoxStream};
-use polkadot_node_network_protocol::{self as net_protocol, OurView};
-use polkadot_node_subsystem::{messages::NetworkBridgeEvent, ActivatedLeaf};
+use infrablockspace_node_network_protocol::{self as net_protocol, OurView};
+use infrablockspace_node_subsystem::{messages::NetworkBridgeEvent, ActivatedLeaf};
 
 use assert_matches::assert_matches;
 use async_trait::async_trait;
@@ -29,12 +29,12 @@ use std::{
 
 use sc_network::{Event as NetworkEvent, IfDisconnected, ProtocolName};
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	peer_set::PeerSetProtocolNames,
 	request_response::{outgoing::Requests, ReqProtocolNames},
 	view, ObservedRole, Versioned,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{
 		AllMessages, ApprovalDistributionMessage, BitfieldDistributionMessage,
@@ -45,8 +45,8 @@ use polkadot_node_subsystem::{
 use polkadot_node_subsystem_test_helpers::{
 	SingleItemSink, SingleItemStream, TestSubsystemContextHandle,
 };
-use polkadot_node_subsystem_util::metered;
-use polkadot_primitives::{AuthorityDiscoveryId, Hash};
+use infrablockspace_node_subsystem_util::metered;
+use infrablockspace_primitives::{AuthorityDiscoveryId, Hash};
 
 use sc_network::Multiaddr;
 use sp_keyring::Sr25519Keyring;

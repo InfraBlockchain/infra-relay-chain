@@ -16,10 +16,10 @@
 
 //! Collator for the `Undying` test parachain.
 
-use polkadot_cli::{Error, Result};
-use polkadot_node_primitives::CollationGenerationConfig;
-use polkadot_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
-use polkadot_primitives::Id as ParaId;
+use infrablockspace_cli::{Error, Result};
+use infrablockspace_node_primitives::CollationGenerationConfig;
+use infrablockspace_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
+use infrablockspace_primitives::Id as ParaId;
 use sc_cli::{Error as SubstrateCliError, SubstrateCli};
 use sp_core::hexdisplay::HexDisplay;
 use test_parachain_undying_collator::Collator;
@@ -56,15 +56,15 @@ fn main() -> Result<()> {
 			runner.run_node_until_exit(|config| async move {
 				let collator = Collator::new(cli.run.pov_size, cli.run.pvf_complexity);
 
-				let full_node = polkadot_service::build_full(
+				let full_node = infrablockspace_service::build_full(
 					config,
-					polkadot_service::IsCollator::Yes(collator.collator_key()),
+					infrablockspace_service::IsCollator::Yes(collator.collator_key()),
 					None,
 					false,
 					None,
 					None,
 					false,
-					polkadot_service::RealOverseerGen,
+					infrablockspace_service::RealOverseerGen,
 					None,
 					None,
 					None,

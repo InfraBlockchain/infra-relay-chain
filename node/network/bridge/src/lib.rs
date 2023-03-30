@@ -27,7 +27,7 @@ use parking_lot::Mutex;
 
 use sp_consensus::SyncOracle;
 
-use polkadot_node_network_protocol::{
+use infrablockspace_node_network_protocol::{
 	peer_set::{PeerSet, ProtocolVersion},
 	PeerId, UnifiedReputationChange as Rep, View,
 };
@@ -35,7 +35,7 @@ use polkadot_node_network_protocol::{
 /// Peer set info for network initialization.
 ///
 /// To be added to [`NetworkConfiguration::extra_sets`].
-pub use polkadot_node_network_protocol::peer_set::{peer_sets_info, IsAuthority};
+pub use infrablockspace_node_network_protocol::peer_set::{peer_sets_info, IsAuthority};
 
 use std::{collections::HashMap, sync::Arc};
 

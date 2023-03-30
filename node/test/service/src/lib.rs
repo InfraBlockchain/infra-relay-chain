@@ -22,13 +22,13 @@ pub mod chain_spec;
 
 pub use chain_spec::*;
 use futures::future::Future;
-use polkadot_node_primitives::{CollationGenerationConfig, CollatorFn};
-use polkadot_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
-use polkadot_overseer::Handle;
-use polkadot_primitives::{Balance, CollatorPair, HeadData, Id as ParaId, ValidationCode};
-use polkadot_runtime_common::BlockHashCount;
+use infrablockspace_node_primitives::{CollationGenerationConfig, CollatorFn};
+use infrablockspace_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
+use infrablockspace_overseer::Handle;
+use infrablockspace_primitives::{Balance, CollatorPair, HeadData, Id as ParaId, ValidationCode};
+use infrablockspace_runtime_common::BlockHashCount;
 use polkadot_runtime_parachains::paras::{ParaGenesisArgs, ParaKind};
-use polkadot_service::{
+use infrablockspace_service::{
 	ClientHandle, Error, ExecuteWithClient, FullClient, IsCollator, NewFull, PrometheusConfig,
 };
 use polkadot_test_runtime::{
@@ -79,7 +79,7 @@ impl sc_executor::NativeExecutionDispatch for PolkadotTestExecutorDispatch {
 /// The client type being used by the test service.
 pub type Client = FullClient<polkadot_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch>;
 
-pub use polkadot_service::FullBackend;
+pub use infrablockspace_service::FullBackend;
 
 /// Create a new full node.
 #[sc_tracing::logging::prefix_logs_with(config.network.node_name.as_str())]
@@ -88,7 +88,7 @@ pub fn new_full(
 	is_collator: IsCollator,
 	worker_program_path: Option<PathBuf>,
 ) -> Result<NewFull<Arc<Client>>, Error> {
-	polkadot_service::new_full::<polkadot_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch, _>(
+	infrablockspace_service::new_full::<polkadot_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch, _>(
 		config,
 		is_collator,
 		None,
@@ -97,7 +97,7 @@ pub fn new_full(
 		None,
 		worker_program_path,
 		false,
-		polkadot_service::RealOverseerGen,
+		infrablockspace_service::RealOverseerGen,
 		None,
 		None,
 		None,
@@ -109,7 +109,7 @@ pub struct TestClient(pub Arc<Client>);
 
 impl ClientHandle for TestClient {
 	fn execute_with<T: ExecuteWithClient>(&self, t: T) -> T::Output {
-		T::execute_with_client::<_, _, polkadot_service::FullBackend>(t, self.0.clone())
+		T::execute_with_client::<_, _, infrablockspace_service::FullBackend>(t, self.0.clone())
 	}
 }
 
@@ -381,7 +381,7 @@ pub fn construct_extrinsic(
 	UncheckedExtrinsic::new_signed(
 		function.clone(),
 		polkadot_test_runtime::Address::Id(caller.public().into()),
-		polkadot_primitives::Signature::Sr25519(signature.clone()),
+		infrablockspace-primitives::Signature::Sr25519(signature.clone()),
 		extra.clone(),
 	)
 }

@@ -10,8 +10,8 @@ parity-scale-codec = { version = "3.3.0", default-features = false, features = [
 # Polkadot dependencies
 polkadot-test-runtime = { path = "../../../runtime/test-runtime" }
 polkadot-test-service = { path = "../service" }
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
 
 # Substrate dependencies
 substrate-test-client = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

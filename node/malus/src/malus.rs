@@ -39,11 +39,11 @@ enum NemesisVariant {
 
 	#[allow(missing_docs)]
 	#[command(name = "prepare-worker", hide = true)]
-	PvfPrepareWorker(polkadot_cli::ValidationWorkerCommand),
+	PvfPrepareWorker(infrablockspace_cli::ValidationWorkerCommand),
 
 	#[allow(missing_docs)]
 	#[command(name = "execute-worker", hide = true)]
-	PvfExecuteWorker(polkadot_cli::ValidationWorkerCommand),
+	PvfExecuteWorker(infrablockspace_cli::ValidationWorkerCommand),
 }
 
 #[derive(Debug, Parser)]
@@ -63,12 +63,12 @@ impl MalusCli {
 			NemesisVariant::BackGarbageCandidate(opts) => {
 				let BackGarbageCandidateOptions { percentage, cli } = opts;
 
-				polkadot_cli::run_node(cli, BackGarbageCandidates { percentage }, finality_delay)?
+				infrablockspace_cli::run_node(cli, BackGarbageCandidates { percentage }, finality_delay)?
 			},
 			NemesisVariant::SuggestGarbageCandidate(opts) => {
 				let SuggestGarbageCandidateOptions { percentage, cli } = opts;
 
-				polkadot_cli::run_node(
+				infrablockspace_cli::run_node(
 					cli,
 					SuggestGarbageCandidates { percentage },
 					finality_delay,
@@ -82,7 +82,7 @@ impl MalusCli {
 					cli,
 				} = opts;
 
-				polkadot_cli::run_node(
+				infrablockspace_cli::run_node(
 					cli,
 					DisputeValidCandidates { fake_validation, fake_validation_error, percentage },
 					finality_delay,
@@ -97,7 +97,7 @@ impl MalusCli {
 
 				#[cfg(not(target_os = "android"))]
 				{
-					polkadot_node_core_pvf::prepare_worker_entrypoint(&cmd.socket_path);
+					infrablockspace_node_core_pvf::prepare_worker_entrypoint(&cmd.socket_path);
 				}
 			},
 			NemesisVariant::PvfExecuteWorker(cmd) => {
@@ -108,7 +108,7 @@ impl MalusCli {
 
 				#[cfg(not(target_os = "android"))]
 				{
-					polkadot_node_core_pvf::execute_worker_entrypoint(&cmd.socket_path);
+					infrablockspace_node_core_pvf::execute_worker_entrypoint(&cmd.socket_path);
 				}
 			},
 		}

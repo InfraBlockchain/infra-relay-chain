@@ -17,8 +17,8 @@
 use std::{cmp::Ordering, collections::BTreeMap};
 
 use futures::channel::oneshot;
-use polkadot_node_subsystem::{messages::ChainApiMessage, overseer};
-use polkadot_primitives::{BlockNumber, CandidateHash, CandidateReceipt, Hash, SessionIndex};
+use infrablockspace_node_subsystem::{messages::ChainApiMessage, overseer};
+use infrablockspace_primitives::{BlockNumber, CandidateHash, CandidateReceipt, Hash, SessionIndex};
 
 use crate::{
 	error::{FatalError, FatalResult, Result},

@@ -23,12 +23,12 @@ use super::database::{DBTransaction, Database};
 use kvdb::{DBKey, DBOp};
 
 use parity_scale_codec::{Decode, Encode};
-pub use polkadot_node_primitives::{new_session_window_size, SessionWindowSize};
-use polkadot_primitives::{BlockNumber, Hash, SessionIndex, SessionInfo};
+pub use infrablockspace_node_primitives::{new_session_window_size, SessionWindowSize};
+use infrablockspace_primitives::{BlockNumber, Hash, SessionIndex, SessionInfo};
 use std::sync::Arc;
 
 use futures::channel::oneshot;
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	errors::{ChainApiError, RuntimeApiError},
 	messages::{ChainApiMessage, RuntimeApiMessage, RuntimeApiRequest},
 	overseer,
@@ -589,12 +589,12 @@ mod tests {
 	use super::*;
 	use crate::database::kvdb_impl::DbAdapter;
 	use assert_matches::assert_matches;
-	use polkadot_node_subsystem::{
+	use infrablockspace_node_subsystem::{
 		messages::{AllMessages, AvailabilityRecoveryMessage},
 		SubsystemContext,
 	};
 	use polkadot_node_subsystem_test_helpers::make_subsystem_context;
-	use polkadot_primitives::Header;
+	use infrablockspace_primitives::Header;
 	use sp_core::testing::TaskExecutor;
 
 	const SESSION_DATA_COL: u32 = 0;

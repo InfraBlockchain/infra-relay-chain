@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-subsystem-test-helpers"
+name = "infrablockspace-node-subsystem-test-helpers"
 description = "Subsystem traits and message definitions"
 version.workspace = true
 authors.workspace = true
@@ -9,9 +9,9 @@ edition.workspace = true
 async-trait = "0.1.57"
 futures = "0.3.21"
 parking_lot = "0.12.0"
-polkadot-node-subsystem = { path = "../subsystem" }
-polkadot-node-subsystem-util = { path = "../subsystem-util" }
-polkadot-primitives = { path = "../../primitives" }
+infrablockspace-node-subsystem = { path = "../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../subsystem-util" }
+infrablockspace-primitives = { path = "../../primitives" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -19,4 +19,4 @@ sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 [dev-dependencies]
-polkadot-overseer = { path = "../overseer" }
+infrablockspace-overseer = { path = "../overseer" }

@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-approval-voting"
+name = "infrablockspace-node-core-approval-voting"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -17,11 +17,11 @@ kvdb = "0.13.0"
 derive_more = "0.99.17"
 thiserror = "1.0.31"
 
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-overseer = { path = "../../overseer" }
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-overseer = { path = "../../overseer" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-node-jaeger = { path = "../../jaeger" }
 
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -38,7 +38,7 @@ sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-consensus-babe = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
 assert_matches = "1.4.0"
 kvdb-memorydb = "0.13.0"
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../../primitives/test-helpers" }
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }

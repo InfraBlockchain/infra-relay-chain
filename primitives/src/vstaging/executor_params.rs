@@ -19,11 +19,11 @@
 //! Parameter set is encoded as an opaque vector which structure depends on the execution
 //! environment itself (except for environment type/version which is always represented
 //! by the first element of the vector). Decoding to a usable semantics structure is
-//! done in `polkadot-node-core-pvf`.
+//! done in `infrablockspace-node-core-pvf`.
 
 use crate::{BlakeTwo256, HashT as _};
 use parity_scale_codec::{Decode, Encode};
-use polkadot_core_primitives::Hash;
+use infrablockspace_core_primitives::Hash;
 use scale_info::TypeInfo;
 use sp_std::{ops::Deref, vec, vec::Vec};
 

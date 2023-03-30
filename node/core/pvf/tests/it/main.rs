@@ -16,12 +16,12 @@
 
 use assert_matches::assert_matches;
 use parity_scale_codec::Encode as _;
-use polkadot_node_core_pvf::{
+use infrablockspace_node_core_pvf::{
 	start, Config, InvalidCandidate, Metrics, PvfWithExecutorParams, ValidationError,
 	ValidationHost, JOB_TIMEOUT_WALL_CLOCK_FACTOR,
 };
-use polkadot_parachain::primitives::{BlockData, ValidationParams, ValidationResult};
-use polkadot_primitives::vstaging::{ExecutorParam, ExecutorParams};
+use infrablockspace_parachain::primitives::{BlockData, ValidationParams, ValidationResult};
+use infrablockspace_primitives::vstaging::{ExecutorParam, ExecutorParams};
 use std::time::Duration;
 use tokio::sync::Mutex;
 
@@ -72,7 +72,7 @@ impl TestHost {
 				PvfWithExecutorParams::from_code(code.into(), executor_params),
 				TEST_EXECUTION_TIMEOUT,
 				params.encode(),
-				polkadot_node_core_pvf::Priority::Normal,
+				infrablockspace_node_core_pvf::Priority::Normal,
 				result_tx,
 			)
 			.await

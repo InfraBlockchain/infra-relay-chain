@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-node-core-pvf-checker"
+name = "infrablockspace-node-core-pvf-checker"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -9,11 +9,11 @@ futures = "0.3.21"
 thiserror = "1.0.31"
 gum = { package = "tracing-gum", path = "../../gum" }
 
-polkadot-node-primitives = { path = "../../primitives" }
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-overseer = { path = "../../overseer" }
+infrablockspace-node-primitives = { path = "../../primitives" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
+infrablockspace-overseer = { path = "../../overseer" }
 
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
@@ -22,7 +22,7 @@ sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch =
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-polkadot-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers"}
-test-helpers = { package = "polkadot-primitives-test-helpers", path = "../../../primitives/test-helpers" }
+infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers"}
+test-helpers = { package = "infrablockspace-primitives-test-helpers", path = "../../../primitives/test-helpers" }
 sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 futures-timer = "3.0.2"

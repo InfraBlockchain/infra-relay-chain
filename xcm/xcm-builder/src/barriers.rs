@@ -20,7 +20,7 @@ use frame_support::{
 	ensure,
 	traits::{Contains, Get},
 };
-use polkadot_parachain::primitives::IsSystem;
+use infrablockspace_parachain::primitives::IsSystem;
 use sp_std::{cell::Cell, marker::PhantomData, ops::ControlFlow, result::Result};
 use xcm::{
 	latest::{

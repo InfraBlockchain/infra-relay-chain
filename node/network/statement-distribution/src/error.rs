@@ -17,10 +17,10 @@
 
 //! Error handling related code and Error/Result definitions.
 
-use polkadot_node_network_protocol::PeerId;
-use polkadot_node_subsystem::SubsystemError;
-use polkadot_node_subsystem_util::runtime;
-use polkadot_primitives::{CandidateHash, Hash};
+use infrablockspace_node_network_protocol::PeerId;
+use infrablockspace_node_subsystem::SubsystemError;
+use infrablockspace_node_subsystem_util::runtime;
+use infrablockspace_primitives::{CandidateHash, Hash};
 
 use crate::LOG_TARGET;
 

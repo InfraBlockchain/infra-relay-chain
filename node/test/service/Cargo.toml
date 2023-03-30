@@ -13,17 +13,17 @@ tempfile = "3.2.0"
 tokio = "1.24.2"
 
 # Polkadot dependencies
-polkadot-overseer = { path = "../../overseer" }
-polkadot-primitives = { path = "../../../primitives" }
-polkadot-parachain = { path = "../../../parachain" }
-polkadot-rpc = { path = "../../../rpc" }
-polkadot-runtime-common = { path = "../../../runtime/common" }
-polkadot-service = { path = "../../service" }
-polkadot-node-subsystem = { path = "../../subsystem" }
-polkadot-node-primitives = { path = "../../primitives" }
+infrablockspace-overseer = { path = "../../overseer" }
+infrablockspace-primitives = { path = "../../../primitives" }
+infrablockspace-parachain = { path = "../../../parachain" }
+infrablockspace-rpc = { path = "../../../rpc" }
+infrablockspace-runtime-common = { path = "../../../runtime/common" }
+infrablockspace-service = { path = "../../service" }
+infrablockspace-node-subsystem = { path = "../../subsystem" }
+infrablockspace-node-primitives = { path = "../../primitives" }
 polkadot-test-runtime = { path = "../../../runtime/test-runtime" }
 test-runtime-constants = { path = "../../../runtime/test-runtime/constants" }
-polkadot-runtime-parachains = { path = "../../../runtime/parachains" }
+infrablockspace-runtime-parachains = { path = "../../../runtime/parachains" }
 
 # Substrate dependencies
 sp-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

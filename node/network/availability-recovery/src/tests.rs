@@ -21,22 +21,22 @@ use futures::{executor, future};
 use futures_timer::Delay;
 
 use parity_scale_codec::Encode;
-use polkadot_node_network_protocol::request_response::{IncomingRequest, ReqProtocolNames};
+use infrablockspace_node_network_protocol::request_response::{IncomingRequest, ReqProtocolNames};
 
 use super::*;
 
 use sc_network::config::RequestResponseConfig;
 
-use polkadot_erasure_coding::{branches, obtain_chunks_v1 as obtain_chunks};
-use polkadot_node_primitives::{BlockData, PoV, Proof};
-use polkadot_node_subsystem::{
+use erasure_coding::{branches, obtain_chunks_v1 as obtain_chunks};
+use infrablockspace_node_primitives::{BlockData, PoV, Proof};
+use infrablockspace_node_subsystem::{
 	jaeger,
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, LeafStatus,
 };
 use polkadot_node_subsystem_test_helpers::{make_subsystem_context, TestSubsystemContextHandle};
-use polkadot_node_subsystem_util::TimeoutExt;
-use polkadot_primitives::{
+use infrablockspace_node_subsystem_util::TimeoutExt;
+use infrablockspace_primitives::{
 	AuthorityDiscoveryId, Hash, HeadData, IndexedVec, PersistedValidationData, ValidatorId,
 };
 use polkadot_primitives_test_helpers::{dummy_candidate_receipt, dummy_hash};
@@ -51,7 +51,7 @@ fn test_harness_fast_path<T: Future<Output = (VirtualOverseer, RequestResponseCo
 ) {
 	let _ = env_logger::builder()
 		.is_test(true)
-		.filter(Some("polkadot_availability_recovery"), log::LevelFilter::Trace)
+		.filter(Some("infrablockspace_availability_recovery"), log::LevelFilter::Trace)
 		.try_init();
 
 	let pool = sp_core::testing::TaskExecutor::new();
@@ -86,7 +86,7 @@ fn test_harness_chunks_only<T: Future<Output = (VirtualOverseer, RequestResponse
 ) {
 	let _ = env_logger::builder()
 		.is_test(true)
-		.filter(Some("polkadot_availability_recovery"), log::LevelFilter::Trace)
+		.filter(Some("infrablockspace_availability_recovery"), log::LevelFilter::Trace)
 		.try_init();
 
 	let pool = sp_core::testing::TaskExecutor::new();

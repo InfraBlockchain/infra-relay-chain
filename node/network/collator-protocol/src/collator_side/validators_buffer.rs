@@ -37,7 +37,7 @@ use std::{
 
 use bitvec::{bitvec, vec::BitVec};
 
-use polkadot_primitives::{AuthorityDiscoveryId, GroupIndex, Hash, SessionIndex};
+use infrablockspace_primitives::{AuthorityDiscoveryId, GroupIndex, Hash, SessionIndex};
 
 /// The ring buffer stores at most this many unique validator groups.
 ///

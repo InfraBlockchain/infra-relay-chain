@@ -18,27 +18,27 @@ use super::{AuthorityDiscoveryApi, Block, Error, Hash, IsCollator, Registry};
 use sp_core::traits::SpawnNamed;
 
 use lru::LruCache;
-use polkadot_availability_distribution::IncomingRequestReceivers;
-use polkadot_node_core_approval_voting::Config as ApprovalVotingConfig;
-use polkadot_node_core_av_store::Config as AvailabilityConfig;
-use polkadot_node_core_candidate_validation::Config as CandidateValidationConfig;
-use polkadot_node_core_chain_selection::Config as ChainSelectionConfig;
-use polkadot_node_core_dispute_coordinator::Config as DisputeCoordinatorConfig;
-use polkadot_node_network_protocol::{
+use infrablockspace_availability_distribution::IncomingRequestReceivers;
+use infrablockspace_node_core_approval_voting::Config as ApprovalVotingConfig;
+use infrablockspace_node_core_av_store::Config as AvailabilityConfig;
+use infrablockspace_node_core_candidate_validation::Config as CandidateValidationConfig;
+use infrablockspace_node_core_chain_selection::Config as ChainSelectionConfig;
+use infrablockspace_node_core_dispute_coordinator::Config as DisputeCoordinatorConfig;
+use infrablockspace_node_network_protocol::{
 	peer_set::PeerSetProtocolNames,
 	request_response::{v1 as request_v1, IncomingRequestReceiver, ReqProtocolNames},
 };
 #[cfg(any(feature = "malus", test))]
-pub use polkadot_overseer::{
+pub use infrablockspace_overseer::{
 	dummy::{dummy_overseer_builder, DummySubsystem},
 	HeadSupportsParachains,
 };
-use polkadot_overseer::{
+use infrablockspace_overseer::{
 	metrics::Metrics as OverseerMetrics, InitializedOverseerBuilder, MetricsTrait, Overseer,
 	OverseerConnector, OverseerHandle, SpawnGlue,
 };
 
-use polkadot_primitives::runtime_api::ParachainHost;
+use infrablockspace_primitives::runtime_api::ParachainHost;
 use sc_authority_discovery::Service as AuthorityDiscoveryService;
 use sc_client_api::AuxStore;
 use sc_keystore::LocalKeystore;
@@ -48,31 +48,31 @@ use sp_blockchain::HeaderBackend;
 use sp_consensus_babe::BabeApi;
 use std::sync::Arc;
 
-pub use polkadot_approval_distribution::ApprovalDistribution as ApprovalDistributionSubsystem;
-pub use polkadot_availability_bitfield_distribution::BitfieldDistribution as BitfieldDistributionSubsystem;
-pub use polkadot_availability_distribution::AvailabilityDistributionSubsystem;
-pub use polkadot_availability_recovery::AvailabilityRecoverySubsystem;
-pub use polkadot_collator_protocol::{CollatorProtocolSubsystem, ProtocolSide};
-pub use polkadot_dispute_distribution::DisputeDistributionSubsystem;
-pub use polkadot_gossip_support::GossipSupport as GossipSupportSubsystem;
-pub use polkadot_network_bridge::{
+pub use infrablockspace_approval_distribution::ApprovalDistribution as ApprovalDistributionSubsystem;
+pub use infrablockspace_availability_bitfield_distribution::BitfieldDistribution as BitfieldDistributionSubsystem;
+pub use infrablockspace_availability_distribution::AvailabilityDistributionSubsystem;
+pub use infrablockspace_availability_recovery::AvailabilityRecoverySubsystem;
+pub use infrablockspace_collator_protocol::{CollatorProtocolSubsystem, ProtocolSide};
+pub use infrablockspace_dispute_distribution::DisputeDistributionSubsystem;
+pub use infrablockspace_gossip_support::GossipSupport as GossipSupportSubsystem;
+pub use infrablockspace_network_bridge::{
 	Metrics as NetworkBridgeMetrics, NetworkBridgeRx as NetworkBridgeRxSubsystem,
 	NetworkBridgeTx as NetworkBridgeTxSubsystem,
 };
-pub use polkadot_node_collation_generation::CollationGenerationSubsystem;
-pub use polkadot_node_core_approval_voting::ApprovalVotingSubsystem;
-pub use polkadot_node_core_av_store::AvailabilityStoreSubsystem;
-pub use polkadot_node_core_backing::CandidateBackingSubsystem;
-pub use polkadot_node_core_bitfield_signing::BitfieldSigningSubsystem;
-pub use polkadot_node_core_candidate_validation::CandidateValidationSubsystem;
-pub use polkadot_node_core_chain_api::ChainApiSubsystem;
-pub use polkadot_node_core_chain_selection::ChainSelectionSubsystem;
-pub use polkadot_node_core_dispute_coordinator::DisputeCoordinatorSubsystem;
-pub use polkadot_node_core_provisioner::ProvisionerSubsystem;
-pub use polkadot_node_core_pvf_checker::PvfCheckerSubsystem;
-pub use polkadot_node_core_runtime_api::RuntimeApiSubsystem;
-use polkadot_node_subsystem_util::rand::{self, SeedableRng};
-pub use polkadot_statement_distribution::StatementDistributionSubsystem;
+pub use infrablockspace_node_collation_generation::CollationGenerationSubsystem;
+pub use infrablockspace_node_core_approval_voting::ApprovalVotingSubsystem;
+pub use infrablockspace_node_core_av_store::AvailabilityStoreSubsystem;
+pub use infrablockspace_node_core_backing::CandidateBackingSubsystem;
+pub use infrablockspace_node_core_bitfield_signing::BitfieldSigningSubsystem;
+pub use infrablockspace_node_core_candidate_validation::CandidateValidationSubsystem;
+pub use infrablockspace_node_core_chain_api::ChainApiSubsystem;
+pub use infrablockspace_node_core_chain_selection::ChainSelectionSubsystem;
+pub use infrablockspace_node_core_dispute_coordinator::DisputeCoordinatorSubsystem;
+pub use infrablockspace_node_core_provisioner::ProvisionerSubsystem;
+pub use infrablockspace_node_core_pvf_checker::PvfCheckerSubsystem;
+pub use infrablockspace_node_core_runtime_api::RuntimeApiSubsystem;
+use infrablockspace_node_subsystem_util::rand::{self, SeedableRng};
+pub use infrablockspace_statement_distribution::StatementDistributionSubsystem;
 
 /// Arguments passed for overseer construction.
 pub struct OverseerGenArgs<'a, Spawner, RuntimeClient>
@@ -86,7 +86,7 @@ where
 	/// Runtime client generic, providing the `ProvieRuntimeApi` trait besides others.
 	pub runtime_client: Arc<RuntimeClient>,
 	/// The underlying key value store for the parachains.
-	pub parachains_db: Arc<dyn polkadot_node_subsystem_util::database::Database>,
+	pub parachains_db: Arc<dyn infrablockspace_node_subsystem_util::database::Database>,
 	/// Underlying network service implementation.
 	pub network_service: Arc<sc_network::NetworkService<Block, Hash>>,
 	/// Underlying syncing service implementation.
@@ -196,7 +196,7 @@ where
 	RuntimeClient::Api: ParachainHost<Block> + BabeApi<Block> + AuthorityDiscoveryApi<Block>,
 	Spawner: 'static + SpawnNamed + Clone + Unpin,
 {
-	use polkadot_node_subsystem_util::metrics::Metrics;
+	use infrablockspace_node_subsystem_util::metrics::Metrics;
 
 	let metrics = <OverseerMetrics as MetricsTrait>::register(registry)?;
 
@@ -255,7 +255,7 @@ where
 		))
 		.chain_api(ChainApiSubsystem::new(runtime_client.clone(), Metrics::register(registry)?))
 		.collation_generation(CollationGenerationSubsystem::new(Metrics::register(registry)?))
-		.collator_protocol({
+		.infrablockspace_collator_protocol({
 			let side = match is_collator {
 				IsCollator::Yes(collator_pair) => ProtocolSide::Collator(
 					network_service.local_peer_id(),
@@ -348,7 +348,7 @@ pub trait OverseerGen {
 	// as consequence make this rather annoying to implement and use.
 }
 
-use polkadot_overseer::KNOWN_LEAVES_CACHE_SIZE;
+use infrablockspace_overseer::KNOWN_LEAVES_CACHE_SIZE;
 
 /// The regular set of subsystems.
 pub struct RealOverseerGen;

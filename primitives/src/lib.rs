@@ -53,7 +53,7 @@ pub use v2::{
 	UncheckedSigned, UncheckedSignedAvailabilityBitfield, UncheckedSignedAvailabilityBitfields,
 	UncheckedSignedStatement, UpgradeGoAhead, UpgradeRestriction, UpwardMessage,
 	ValidDisputeStatementKind, ValidationCode, ValidationCodeHash, ValidatorId, ValidatorIndex,
-	ValidatorSignature, ValidityAttestation, ValidityError, ASSIGNMENT_KEY_TYPE_ID,
+	ValidatorSignature, ValidityAttestation, ValidityError, Vote, VoteWeight, ASSIGNMENT_KEY_TYPE_ID,
 	LOWEST_PUBLIC_ID, MAX_CODE_SIZE, MAX_HEAD_DATA_SIZE, MAX_POV_SIZE,
 	PARACHAINS_INHERENT_IDENTIFIER, PARACHAIN_KEY_TYPE_ID,
 };

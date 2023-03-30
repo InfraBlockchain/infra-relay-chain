@@ -16,8 +16,8 @@
 
 use crate::{error::PrepareError, host::PrepareResultSender, prepare::PrepareStats};
 use always_assert::always;
-use polkadot_parachain::primitives::ValidationCodeHash;
-use polkadot_primitives::vstaging::ExecutorParamsHash;
+use infrablockspace_parachain::primitives::ValidationCodeHash;
+use infrablockspace_primitives::vstaging::ExecutorParamsHash;
 use std::{
 	collections::HashMap,
 	path::{Path, PathBuf},
@@ -56,7 +56,7 @@ impl ArtifactId {
 	/// Tries to recover the artifact id from the given file name.
 	#[cfg(test)]
 	pub fn from_file_name(file_name: &str) -> Option<Self> {
-		use polkadot_core_primitives::Hash;
+		use infrablockspace_core_primitives::Hash;
 		use std::str::FromStr as _;
 
 		let file_name = file_name.strip_prefix(Self::PREFIX)?;
@@ -219,7 +219,7 @@ impl Artifacts {
 #[cfg(test)]
 mod tests {
 	use super::{ArtifactId, Artifacts};
-	use polkadot_primitives::vstaging::ExecutorParamsHash;
+	use infrablockspace_primitives::vstaging::ExecutorParamsHash;
 	use sp_core::H256;
 	use std::{path::Path, str::FromStr};
 

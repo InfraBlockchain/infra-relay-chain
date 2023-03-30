@@ -29,22 +29,22 @@
 //! We maintain a rolling window of session indices. This starts as empty
 
 use polkadot_node_jaeger as jaeger;
-use polkadot_node_primitives::{
+use infrablockspace_node_primitives::{
 	approval::{self as approval_types, BlockApprovalMeta, RelayVRFStory},
 	MAX_FINALITY_LAG,
 };
-use polkadot_node_subsystem::{
+use infrablockspace_node_subsystem::{
 	messages::{
 		ApprovalDistributionMessage, ChainApiMessage, ChainSelectionMessage, RuntimeApiMessage,
 		RuntimeApiRequest,
 	},
 	overseer, RuntimeApiError, SubsystemError, SubsystemResult,
 };
-use polkadot_node_subsystem_util::{
+use infrablockspace_node_subsystem_util::{
 	determine_new_blocks,
 	rolling_session_window::{RollingSessionWindow, SessionWindowUpdate},
 };
-use polkadot_primitives::{
+use infrablockspace_primitives::{
 	BlockNumber, CandidateEvent, CandidateHash, CandidateReceipt, ConsensusLog, CoreIndex,
 	GroupIndex, Hash, Header, SessionIndex,
 };
@@ -613,11 +613,11 @@ pub(crate) mod tests {
 	use ::test_helpers::{dummy_candidate_receipt, dummy_hash};
 	use assert_matches::assert_matches;
 	use merlin::Transcript;
-	use polkadot_node_primitives::approval::{VRFOutput, VRFProof};
-	use polkadot_node_subsystem::messages::{AllMessages, ApprovalVotingMessage};
+	use infrablockspace_node_primitives::approval::{VRFOutput, VRFProof};
+	use infrablockspace_node_subsystem::messages::{AllMessages, ApprovalVotingMessage};
 	use polkadot_node_subsystem_test_helpers::make_subsystem_context;
-	use polkadot_node_subsystem_util::database::Database;
-	use polkadot_primitives::{Id as ParaId, IndexedVec, SessionInfo, ValidatorId, ValidatorIndex};
+	use infrablockspace_node_subsystem_util::database::Database;
+	use infrablockspace_primitives::{Id as ParaId, IndexedVec, SessionInfo, ValidatorId, ValidatorIndex};
 	pub(crate) use sp_consensus_babe::{
 		digests::{CompatibleDigestItem, PreDigest, SecondaryVRFPreDigest},
 		AllowedSlots, BabeEpochConfiguration, Epoch as BabeEpoch,
@@ -651,7 +651,7 @@ pub(crate) mod tests {
 
 	fn blank_state() -> State {
 		let db = kvdb_memorydb::create(NUM_COLUMNS);
-		let db = polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
+		let db = infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
 		let db: Arc<dyn Database> = Arc::new(db);
 		State {
 			session_window: None,
@@ -677,26 +677,26 @@ pub(crate) mod tests {
 		fn compute_assignments(
 			&self,
 			_keystore: &LocalKeystore,
-			_relay_vrf_story: polkadot_node_primitives::approval::RelayVRFStory,
+			_relay_vrf_story: infrablockspace_node_primitives::approval::RelayVRFStory,
 			_config: &criteria::Config,
 			_leaving_cores: Vec<(
 				CandidateHash,
-				polkadot_primitives::CoreIndex,
-				polkadot_primitives::GroupIndex,
+				infrablockspace_primitives::CoreIndex,
+				infrablockspace_primitives::GroupIndex,
 			)>,
-		) -> HashMap<polkadot_primitives::CoreIndex, criteria::OurAssignment> {
+		) -> HashMap<infrablockspace_primitives::CoreIndex, criteria::OurAssignment> {
 			HashMap::new()
 		}
 
 		fn check_assignment_cert(
 			&self,
-			_claimed_core_index: polkadot_primitives::CoreIndex,
-			_validator_index: polkadot_primitives::ValidatorIndex,
+			_claimed_core_index: infrablockspace_primitives::CoreIndex,
+			_validator_index: infrablockspace_primitives::ValidatorIndex,
 			_config: &criteria::Config,
-			_relay_vrf_story: polkadot_node_primitives::approval::RelayVRFStory,
-			_assignment: &polkadot_node_primitives::approval::AssignmentCert,
-			_backing_group: polkadot_primitives::GroupIndex,
-		) -> Result<polkadot_node_primitives::approval::DelayTranche, criteria::InvalidAssignment> {
+			_relay_vrf_story: infrablockspace_node_primitives::approval::RelayVRFStory,
+			_assignment: &infrablockspace_node_primitives::approval::AssignmentCert,
+			_backing_group: infrablockspace_primitives::GroupIndex,
+		) -> Result<infrablockspace_node_primitives::approval::DelayTranche, criteria::InvalidAssignment> {
 			Ok(0)
 		}
 	}
@@ -1153,7 +1153,7 @@ pub(crate) mod tests {
 	#[test]
 	fn insta_approval_works() {
 		let db = kvdb_memorydb::create(NUM_COLUMNS);
-		let db = polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
+		let db = infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[]);
 		let db_writer: Arc<dyn Database> = Arc::new(db);
 		let mut db = DbBackend::new(db_writer.clone(), TEST_CONFIG);
 		let mut overlay_db = OverlayedBackend::new(&db);

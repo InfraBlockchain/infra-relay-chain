@@ -36,17 +36,17 @@ mod tests;
 use {
 	grandpa::{self, FinalityProofProvider as GrandpaFinalityProofProvider},
 	gum::info,
-	polkadot_node_core_approval_voting::{
+	infrablockspace_node_core_approval_voting::{
 		self as approval_voting_subsystem, Config as ApprovalVotingConfig,
 	},
-	polkadot_node_core_av_store::Config as AvailabilityConfig,
-	polkadot_node_core_av_store::Error as AvailabilityError,
-	polkadot_node_core_candidate_validation::Config as CandidateValidationConfig,
-	polkadot_node_core_chain_selection::{
+	infrablockspace_node_core_av_store::Config as AvailabilityConfig,
+	infrablockspace_node_core_av_store::Error as AvailabilityError,
+	infrablockspace_node_core_candidate_validation::Config as CandidateValidationConfig,
+	infrablockspace_node_core_chain_selection::{
 		self as chain_selection_subsystem, Config as ChainSelectionConfig,
 	},
-	polkadot_node_core_dispute_coordinator::Config as DisputeCoordinatorConfig,
-	polkadot_node_network_protocol::{
+	infrablockspace_node_core_dispute_coordinator::Config as DisputeCoordinatorConfig,
+	infrablockspace_node_network_protocol::{
 		peer_set::PeerSetProtocolNames, request_response::ReqProtocolNames,
 	},
 	sc_client_api::BlockBackend,
@@ -54,12 +54,12 @@ use {
 	sp_trie::PrefixedMemoryDB,
 };
 
-use polkadot_node_subsystem_util::database::Database;
+use infrablockspace_node_subsystem_util::database::Database;
 
 #[cfg(feature = "full-node")]
 pub use {
-	polkadot_overseer::{Handle, Overseer, OverseerConnector, OverseerHandle},
-	polkadot_primitives::runtime_api::ParachainHost,
+	infrablockspace_overseer::{Handle, Overseer, OverseerConnector, OverseerHandle},
+	infrablockspace_primitives::runtime_api::ParachainHost,
 	relay_chain_selection::SelectRelayChain,
 	sc_client_api::AuxStore,
 	sp_authority_discovery::AuthorityDiscoveryApi,
@@ -68,7 +68,7 @@ pub use {
 };
 
 #[cfg(feature = "full-node")]
-use polkadot_node_subsystem::jaeger;
+use infrablockspace_node_subsystem::jaeger;
 
 use std::{sync::Arc, time::Duration};
 
@@ -81,27 +81,24 @@ use telemetry::TelemetryWorker;
 use telemetry::{Telemetry, TelemetryWorkerHandle};
 
 #[cfg(feature = "rococo-native")]
-pub use polkadot_client::RococoExecutorDispatch;
-
-#[cfg(feature = "westend-native")]
-pub use polkadot_client::WestendExecutorDispatch;
+pub use infrablockspace_client::RococoExecutorDispatch;
 
 #[cfg(feature = "kusama-native")]
-pub use polkadot_client::KusamaExecutorDispatch;
+pub use infrablockspace_client::KusamaExecutorDispatch;
 
 #[cfg(feature = "polkadot-native")]
-pub use polkadot_client::PolkadotExecutorDispatch;
+pub use infrablockspace_client::PolkadotExecutorDispatch;
 
-pub use chain_spec::{KusamaChainSpec, PolkadotChainSpec, RococoChainSpec, WestendChainSpec};
+pub use chain_spec::{KusamaChainSpec, PolkadotChainSpec, RococoChainSpec};
 pub use consensus_common::{block_validation::Chain, Proposal, SelectChain};
 use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
 use mmr_gadget::MmrGadget;
 #[cfg(feature = "full-node")]
-pub use polkadot_client::{
+pub use infrablockspace_client::{
 	AbstractClient, Client, ClientHandle, ExecuteWithClient, FullBackend, FullClient,
 	RuntimeApiCollection,
 };
-pub use polkadot_primitives::{Block, BlockId, BlockNumber, CollatorPair, Hash, Id as ParaId};
+pub use infrablockspace_primitives::{Block, BlockId, BlockNumber, CollatorPair, Hash, Id as ParaId};
 pub use sc_client_api::{Backend, CallExecutor, ExecutionStrategy};
 pub use sc_consensus::{BlockImport, LongestChain};
 use sc_executor::NativeElseWasmExecutor;
@@ -119,14 +116,17 @@ pub use sp_runtime::{
 	},
 };
 
+// Infrablockspace Native Runtimes
+#[cfg(feature = "infrablockspace-native")]
+pub use {infrablockspace_runtime, infrablocksapce_runtime_constants};
+
+// Polkadot Native Runtimes
 #[cfg(feature = "kusama-native")]
 pub use {kusama_runtime, kusama_runtime_constants};
 #[cfg(feature = "polkadot-native")]
 pub use {polkadot_runtime, polkadot_runtime_constants};
 #[cfg(feature = "rococo-native")]
 pub use {rococo_runtime, rococo_runtime_constants};
-#[cfg(feature = "westend-native")]
-pub use {westend_runtime, westend_runtime_constants};
 
 /// Provides the header and block number for a hash.
 ///
@@ -210,7 +210,7 @@ pub enum Error {
 	Consensus(#[from] consensus_common::Error),
 
 	#[error("Failed to create an overseer")]
-	Overseer(#[from] polkadot_overseer::SubsystemError),
+	Overseer(#[from] infrablockspace_overseer::SubsystemError),
 
 	#[error(transparent)]
 	Prometheus(#[from] prometheus_endpoint::PrometheusError),
@@ -219,7 +219,7 @@ pub enum Error {
 	Telemetry(#[from] telemetry::Error),
 
 	#[error(transparent)]
-	Jaeger(#[from] polkadot_node_subsystem::jaeger::JaegerError),
+	Jaeger(#[from] infrablockspace_node_subsystem::jaeger::JaegerError),
 
 	#[cfg(feature = "full-node")]
 	#[error(transparent)]
@@ -233,7 +233,7 @@ pub enum Error {
 	DatabasePathRequired,
 
 	#[cfg(feature = "full-node")]
-	#[error("Expected at least one of polkadot, kusama, westend or rococo runtime feature")]
+	#[error("Expected at least one of polkadot, kusama or rococo runtime feature")]
 	NoRuntime,
 }
 
@@ -245,17 +245,8 @@ pub trait IdentifyVariant {
 	/// Returns if this is a configuration for the `Kusama` network.
 	fn is_kusama(&self) -> bool;
 
-	/// Returns if this is a configuration for the `Westend` network.
-	fn is_westend(&self) -> bool;
-
 	/// Returns if this is a configuration for the `Rococo` network.
 	fn is_rococo(&self) -> bool;
-
-	/// Returns if this is a configuration for the `Wococo` test network.
-	fn is_wococo(&self) -> bool;
-
-	/// Returns if this is a configuration for the `Versi` test network.
-	fn is_versi(&self) -> bool;
 
 	/// Returns true if this configuration is for a development network.
 	fn is_dev(&self) -> bool;
@@ -268,17 +259,8 @@ impl IdentifyVariant for Box<dyn ChainSpec> {
 	fn is_kusama(&self) -> bool {
 		self.id().starts_with("kusama") || self.id().starts_with("ksm")
 	}
-	fn is_westend(&self) -> bool {
-		self.id().starts_with("westend") || self.id().starts_with("wnd")
-	}
 	fn is_rococo(&self) -> bool {
 		self.id().starts_with("rococo") || self.id().starts_with("rco")
-	}
-	fn is_wococo(&self) -> bool {
-		self.id().starts_with("wococo") || self.id().starts_with("wco")
-	}
-	fn is_versi(&self) -> bool {
-		self.id().starts_with("versi") || self.id().starts_with("vrs")
 	}
 	fn is_dev(&self) -> bool {
 		self.id().ends_with("dev")
@@ -452,9 +434,9 @@ fn new_partial<RuntimeApi, ExecutorDispatch, ChainSelection>(
 		sc_transaction_pool::FullPool<Block, FullClient<RuntimeApi, ExecutorDispatch>>,
 		(
 			impl Fn(
-				polkadot_rpc::DenyUnsafe,
-				polkadot_rpc::SubscriptionTaskExecutor,
-			) -> Result<polkadot_rpc::RpcExtension, SubstrateServiceError>,
+				infrablockspace_rpc::DenyUnsafe,
+				infrablockspace_rpc::SubscriptionTaskExecutor,
+			) -> Result<infrablockspace_rpc::RpcExtension, SubstrateServiceError>,
 			(
 				babe::BabeBlockImport<
 					Block,
@@ -567,34 +549,34 @@ where
 		let backend = backend.clone();
 
 		move |deny_unsafe,
-		      subscription_executor: polkadot_rpc::SubscriptionTaskExecutor|
-		      -> Result<polkadot_rpc::RpcExtension, service::Error> {
-			let deps = polkadot_rpc::FullDeps {
+		      subscription_executor: infrablockspace_rpc::SubscriptionTaskExecutor|
+		      -> Result<infrablockspace_rpc::RpcExtension, service::Error> {
+			let deps = infrablockspace_rpc::FullDeps {
 				client: client.clone(),
 				pool: transaction_pool.clone(),
 				select_chain: select_chain.clone(),
 				chain_spec: chain_spec.cloned_box(),
 				deny_unsafe,
-				babe: polkadot_rpc::BabeDeps {
+				babe: infrablockspace_rpc::BabeDeps {
 					babe_config: babe_config.clone(),
 					shared_epoch_changes: shared_epoch_changes.clone(),
 					keystore: keystore.clone(),
 				},
-				grandpa: polkadot_rpc::GrandpaDeps {
+				grandpa: infrablockspace_rpc::GrandpaDeps {
 					shared_voter_state: shared_voter_state.clone(),
 					shared_authority_set: shared_authority_set.clone(),
 					justification_stream: justification_stream.clone(),
 					subscription_executor: subscription_executor.clone(),
 					finality_provider: finality_proof_provider.clone(),
 				},
-				beefy: polkadot_rpc::BeefyDeps {
+				beefy: infrablockspace_rpc::BeefyDeps {
 					beefy_finality_proof_stream: beefy_rpc_links.from_voter_justif_stream.clone(),
 					beefy_best_block_stream: beefy_rpc_links.from_voter_best_beefy_stream.clone(),
 					subscription_executor,
 				},
 			};
 
-			polkadot_rpc::create_full(deps, backend.clone()).map_err(Into::into)
+			infrablockspace_rpc::create_full(deps, backend.clone()).map_err(Into::into)
 		}
 	};
 
@@ -704,7 +686,7 @@ where
 	ExecutorDispatch: NativeExecutionDispatch + 'static,
 	OverseerGenerator: OverseerGen,
 {
-	use polkadot_node_network_protocol::request_response::IncomingRequest;
+	use infrablockspace_node_network_protocol::request_response::IncomingRequest;
 	use sc_network_common::sync::warp::WarpSyncParams;
 
 	let is_offchain_indexing_enabled = config.offchain_worker.indexing_enabled;
@@ -713,9 +695,7 @@ where
 	let backoff_authoring_blocks = {
 		let mut backoff = sc_consensus_slots::BackoffAuthoringOnFinalizedHeadLagging::default();
 
-		if config.chain_spec.is_rococo() ||
-			config.chain_spec.is_wococo() ||
-			config.chain_spec.is_versi()
+		if config.chain_spec.is_rococo()
 		{
 			// it's a testnet that's in flux, finality has stalled sometimes due
 			// to operational issues and it's annoying to slow down block
@@ -728,9 +708,7 @@ where
 
 	// If not on a known test network, warn the user that BEEFY is still experimental.
 	if enable_beefy &&
-		!config.chain_spec.is_rococo() &&
-		!config.chain_spec.is_wococo() &&
-		!config.chain_spec.is_versi()
+		!config.chain_spec.is_rococo()
 	{
 		gum::warn!("BEEFY is still experimental, usage on a production network is discouraged.");
 	}
@@ -749,7 +727,7 @@ where
 	let overseer_connector = OverseerConnector::default();
 	let overseer_handle = Handle::new(overseer_connector.handle());
 
-	let chain_spec = config.chain_spec.cloned_box();
+	let _chain_spec = config.chain_spec.cloned_box();
 
 	let local_keystore = basics.keystore_container.local_keystore();
 	let auth_or_collator = role.is_authority() || is_collator.is_collator();
@@ -759,7 +737,7 @@ where
 
 	let select_chain = if requires_overseer_for_chain_sel {
 		let metrics =
-			polkadot_node_subsystem_util::metrics::Metrics::register(prometheus_registry.as_ref())?;
+			infrablockspace_node_subsystem_util::metrics::Metrics::register(prometheus_registry.as_ref())?;
 
 		SelectRelayChain::new_with_overseer(
 			basics.backend.clone(),
@@ -822,7 +800,7 @@ where
 		PeerSetProtocolNames::new(genesis_hash, config.chain_spec.fork_id());
 
 	{
-		use polkadot_network_bridge::{peer_sets_info, IsAuthority};
+		use infrablockspace_network_bridge::{peer_sets_info, IsAuthority};
 		let is_authority = if role.is_authority() { IsAuthority::Yes } else { IsAuthority::No };
 		config
 			.network
@@ -1053,7 +1031,7 @@ where
 				Box::pin(async move {
 					use futures::{pin_mut, select, FutureExt};
 
-					let forward = polkadot_overseer::forward_events(overseer_client, handle);
+					let forward = infrablockspace_overseer::forward_events(overseer_client, handle);
 
 					let forward = forward.fuse();
 					let overseer_fut = overseer.run().fuse();
@@ -1105,7 +1083,7 @@ where
 
 				async move {
 					let parachain =
-						polkadot_node_core_parachains_inherent::ParachainsInherentDataProvider::new(
+						infrablockspace_node_core_parachains_inherent::ParachainsInherentDataProvider::new(
 							client_clone,
 							overseer_handle,
 							parent,
@@ -1156,7 +1134,7 @@ where
 			runtime: client.clone(),
 			key_store: keystore_opt.clone(),
 			network_params,
-			min_block_delta: if chain_spec.is_wococo() { 4 } else { 8 },
+			min_block_delta: 8,
 			prometheus_registry: prometheus_registry.clone(),
 			links: beefy_links,
 			on_demand_justifications_handler: beefy_on_demand_justifications_handler,
@@ -1166,13 +1144,15 @@ where
 
 		// Wococo's purpose is to be a testbed for BEEFY, so if it fails we'll
 		// bring the node down with it to make sure it is noticed.
-		if chain_spec.is_wococo() {
-			task_manager
-				.spawn_essential_handle()
-				.spawn_blocking("beefy-gadget", None, gadget);
-		} else {
-			task_manager.spawn_handle().spawn_blocking("beefy-gadget", None, gadget);
-		}
+		// if chain_spec.is_wococo() {
+		// 	task_manager
+		// 		.spawn_essential_handle()
+		// 		.spawn_blocking("beefy-gadget", None, gadget);
+		// } else {
+		// 	task_manager.spawn_handle().spawn_blocking("beefy-gadget", None, gadget);
+		// }
+		
+		task_manager.spawn_handle().spawn_blocking("beefy-gadget", None, gadget);
 
 		if is_offchain_indexing_enabled {
 			task_manager.spawn_handle().spawn_blocking(
@@ -1312,9 +1292,7 @@ pub fn new_chain_ops(
 	config.keystore = service::config::KeystoreConfig::InMemory;
 
 	#[cfg(feature = "rococo-native")]
-	if config.chain_spec.is_rococo() ||
-		config.chain_spec.is_wococo() ||
-		config.chain_spec.is_versi()
+	if config.chain_spec.is_rococo()
 	{
 		return chain_ops!(config, jaeger_agent, None; rococo_runtime, RococoExecutorDispatch, Rococo)
 	}
@@ -1322,11 +1300,6 @@ pub fn new_chain_ops(
 	#[cfg(feature = "kusama-native")]
 	if config.chain_spec.is_kusama() {
 		return chain_ops!(config, jaeger_agent, None; kusama_runtime, KusamaExecutorDispatch, Kusama)
-	}
-
-	#[cfg(feature = "westend-native")]
-	if config.chain_spec.is_westend() {
-		return chain_ops!(config, jaeger_agent, None; westend_runtime, WestendExecutorDispatch, Westend)
 	}
 
 	#[cfg(feature = "polkadot-native")]
@@ -1366,9 +1339,7 @@ pub fn build_full(
 	hwbench: Option<sc_sysinfo::HwBench>,
 ) -> Result<NewFull<Client>, Error> {
 	#[cfg(feature = "rococo-native")]
-	if config.chain_spec.is_rococo() ||
-		config.chain_spec.is_wococo() ||
-		config.chain_spec.is_versi()
+	if config.chain_spec.is_rococo()
 	{
 		return new_full::<rococo_runtime::RuntimeApi, RococoExecutorDispatch, _>(
 			config,
@@ -1404,25 +1375,6 @@ pub fn build_full(
 			hwbench,
 		)
 		.map(|full| full.with_client(Client::Kusama))
-	}
-
-	#[cfg(feature = "westend-native")]
-	if config.chain_spec.is_westend() {
-		return new_full::<westend_runtime::RuntimeApi, WestendExecutorDispatch, _>(
-			config,
-			is_collator,
-			grandpa_pause,
-			enable_beefy,
-			jaeger_agent,
-			telemetry_worker_handle,
-			None,
-			overseer_enable_anyways,
-			overseer_gen,
-			overseer_message_channel_override,
-			malus_finality_delay,
-			hwbench,
-		)
-		.map(|full| full.with_client(Client::Westend))
 	}
 
 	#[cfg(feature = "polkadot-native")]
@@ -1552,7 +1504,7 @@ impl ExecuteWithClient for RevertConsensus {
 		<Api as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<BlakeTwo256>,
 		Backend: sc_client_api::Backend<Block> + 'static,
 		Backend::State: sp_api::StateBackend<BlakeTwo256>,
-		Api: polkadot_client::RuntimeApiCollection<StateBackend = Backend::State>,
+		Api: infrablockspace_client::RuntimeApiCollection<StateBackend = Backend::State>,
 		Client: AbstractClient<Block, Backend, Api = Api> + 'static,
 	{
 		// Revert consensus-related components.

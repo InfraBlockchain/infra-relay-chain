@@ -18,7 +18,7 @@
 
 use frame_support::traits::{EnsureOrigin, Get, GetBacking, OriginTrait};
 use frame_system::RawOrigin as SystemRawOrigin;
-use polkadot_parachain::primitives::IsSystem;
+use infrablockspace_parachain::primitives::IsSystem;
 use sp_std::marker::PhantomData;
 use xcm::latest::{BodyId, BodyPart, Junction, Junctions::*, MultiLocation, NetworkId, OriginKind};
 use xcm_executor::traits::{Convert, ConvertOrigin};

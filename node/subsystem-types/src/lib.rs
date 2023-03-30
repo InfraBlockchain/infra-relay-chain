@@ -24,7 +24,7 @@
 
 use std::{fmt, sync::Arc};
 
-pub use polkadot_primitives::{BlockNumber, Hash};
+pub use infrablockspace_primitives::{BlockNumber, Hash};
 use smallvec::SmallVec;
 
 pub mod errors;
