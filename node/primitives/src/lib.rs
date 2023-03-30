@@ -310,7 +310,11 @@ impl MaybeCompressedPoV {
 /// - contains a proof of validity.
 #[derive(Clone, Encode, Decode)]
 #[cfg(not(target_os = "unknown"))]
-pub struct Collation<BlockNumber = infrablockspace_primitives::BlockNumber> {
+pub struct Collation<
+	BlockNumber = infrablockspace_primitives::BlockNumber, 
+	Vote = infrablockspace_primitives::Vote, 
+	MaxValidator = usize,
+> {
 	/// Messages destined to be interpreted by the Relay chain itself.
 	pub upward_messages: UpwardMessages,
 	/// The horizontal messages sent by the parachain.
@@ -325,6 +329,8 @@ pub struct Collation<BlockNumber = infrablockspace_primitives::BlockNumber> {
 	pub processed_downward_messages: u32,
 	/// The mark which specifies the block number up to which all inbound HRMP messages are processed.
 	pub hrmp_watermark: BlockNumber,
+	/// Vote information from the collator.
+	pub vote_info: frame_support::BoundedVec<Vote, MaxValidator>,
 }
 
 /// Signal that is being returned when a collation was seconded by a validator.
