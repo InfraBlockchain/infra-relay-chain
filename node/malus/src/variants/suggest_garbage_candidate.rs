@@ -169,13 +169,14 @@ where
 						use sp_core::crypto::Pair;
 
 						let collator_pair = CollatorPair::generate().0;
-						let signature_payload = infrablockspace-primitives::collator_signature_payload(
-							&relay_parent,
-							&candidate.descriptor().para_id,
-							&validation_data_hash,
-							&pov_hash,
-							&validation_code_hash,
-						);
+						let signature_payload =
+							infrablockspace_primitives::collator_signature_payload(
+								&relay_parent,
+								&candidate.descriptor().para_id,
+								&validation_data_hash,
+								&pov_hash,
+								&validation_code_hash,
+							);
 
 						(collator_pair.public(), collator_pair.sign(&signature_payload))
 					};
