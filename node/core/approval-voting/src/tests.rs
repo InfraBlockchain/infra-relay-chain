@@ -233,7 +233,7 @@ where
 	fn compute_assignments(
 		&self,
 		_keystore: &LocalKeystore,
-		_relay_vrf_story: infrablockspace-node-primitives::approval::RelayVRFStory,
+		_relay_vrf_story: infrablockspace_node_primitives::approval::RelayVRFStory,
 		_config: &criteria::Config,
 		_leaving_cores: Vec<(
 			CandidateHash,
@@ -249,10 +249,10 @@ where
 		_claimed_core_index: infrablockspace_primitives::CoreIndex,
 		validator_index: ValidatorIndex,
 		_config: &criteria::Config,
-		_relay_vrf_story: infrablockspace-node-primitives::approval::RelayVRFStory,
-		_assignment: &infrablockspace-node-primitives::approval::AssignmentCert,
+		_relay_vrf_story: infrablockspace_node_primitives::approval::RelayVRFStory,
+		_assignment: &infrablockspace_node_primitives::approval::AssignmentCert,
 		_backing_group: infrablockspace_primitives::GroupIndex,
-	) -> Result<infrablockspace-node-primitives::approval::DelayTranche, criteria::InvalidAssignment> {
+	) -> Result<infrablockspace_node_primitives::approval::DelayTranche, criteria::InvalidAssignment> {
 		self.1(validator_index)
 	}
 }
