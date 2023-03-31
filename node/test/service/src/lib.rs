@@ -23,11 +23,13 @@ pub mod chain_spec;
 pub use chain_spec::*;
 use futures::future::Future;
 use infrablockspace_node_primitives::{CollationGenerationConfig, CollatorFn};
-use infrablockspace_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
+use infrablockspace_node_subsystem::messages::{
+	CollationGenerationMessage, CollatorProtocolMessage,
+};
 use infrablockspace_overseer::Handle;
 use infrablockspace_primitives::{Balance, CollatorPair, HeadData, Id as ParaId, ValidationCode};
 use infrablockspace_runtime_common::BlockHashCount;
-use polkadot_runtime_parachains::paras::{ParaGenesisArgs, ParaKind};
+use infrablockspace_runtime_parachains::paras::{ParaGenesisArgs, ParaKind};
 use infrablockspace_service::{
 	ClientHandle, Error, ExecuteWithClient, FullClient, IsCollator, NewFull, PrometheusConfig,
 };
@@ -88,7 +90,11 @@ pub fn new_full(
 	is_collator: IsCollator,
 	worker_program_path: Option<PathBuf>,
 ) -> Result<NewFull<Arc<Client>>, Error> {
-	infrablockspace_service::new_full::<polkadot_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch, _>(
+	infrablockspace_service::new_full::<
+		polkadot_test_runtime::RuntimeApi,
+		PolkadotTestExecutorDispatch,
+		_,
+	>(
 		config,
 		is_collator,
 		None,
@@ -381,7 +387,7 @@ pub fn construct_extrinsic(
 	UncheckedExtrinsic::new_signed(
 		function.clone(),
 		polkadot_test_runtime::Address::Id(caller.public().into()),
-		infrablockspace-primitives::Signature::Sr25519(signature.clone()),
+		infrablockspace_primitives::Signature::Sr25519(signature.clone()),
 		extra.clone(),
 	)
 }

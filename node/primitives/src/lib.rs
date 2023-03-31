@@ -16,7 +16,7 @@
 
 //! Primitive types used on the node-side.
 //!
-//! Unlike the `infrablockspace-primitives` crate, these primitives are only used on the node-side,
+//! Unlike the `infrablockspace_primitives` crate, these primitives are only used on the node-side,
 //! not shared between the node and the runtime. This crate builds on top of the primitives defined
 //! there.
 
@@ -311,8 +311,8 @@ impl MaybeCompressedPoV {
 #[derive(Clone, Encode, Decode)]
 #[cfg(not(target_os = "unknown"))]
 pub struct Collation<
-	BlockNumber = infrablockspace_primitives::BlockNumber, 
-	Vote = infrablockspace_primitives::Vote, 
+	BlockNumber = infrablockspace_primitives::BlockNumber,
+	Vote = infrablockspace_primitives::Vote,
 	MaxValidator = usize,
 > {
 	/// Messages destined to be interpreted by the Relay chain itself.

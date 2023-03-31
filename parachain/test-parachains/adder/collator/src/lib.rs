@@ -181,7 +181,7 @@ impl Collator {
 				hrmp_watermark: validation_data.relay_parent_number,
 			};
 
-			let compressed_pov = infrablockspace-node-primitives::maybe_compress_pov(pov);
+			let compressed_pov = infrablockspace_node_primitives::maybe_compress_pov(pov);
 
 			let (result_sender, recv) = oneshot::channel::<CollationSecondedSignal>();
 			let seconded_collations = seconded_collations.clone();

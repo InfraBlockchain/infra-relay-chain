@@ -21,7 +21,7 @@ use frame_support::{
 	weights::Weight,
 };
 use infrablockspace_parachain::primitives::Id as ParaId;
-use polkadot_runtime_parachains::origin;
+use infrablockspace_runtime_parachains::origin;
 use sp_core::H256;
 use sp_runtime::{testing::Header, traits::IdentityLookup, AccountId32};
 pub use sp_std::{cell::RefCell, fmt::Debug, marker::PhantomData};

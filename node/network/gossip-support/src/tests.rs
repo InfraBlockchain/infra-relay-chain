@@ -35,9 +35,9 @@ use infrablockspace_node_subsystem::{
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, LeafStatus,
 };
-use polkadot_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::TimeoutExt as _;
 use infrablockspace_primitives::{GroupIndex, IndexedVec};
+use polkadot_node_subsystem_test_helpers as test_helpers;
 use test_helpers::mock::make_ferdie_keystore;
 
 use super::*;
@@ -121,14 +121,14 @@ impl MockAuthorityDiscovery {
 impl AuthorityDiscovery for MockAuthorityDiscovery {
 	async fn get_addresses_by_authority_id(
 		&mut self,
-		authority: infrablockspace-primitives::AuthorityDiscoveryId,
+		authority: infrablockspace_primitives::AuthorityDiscoveryId,
 	) -> Option<HashSet<sc_network::Multiaddr>> {
 		self.addrs.get(&authority).cloned()
 	}
 	async fn get_authority_ids_by_peer_id(
 		&mut self,
 		peer_id: infrablockspace_node_network_protocol::PeerId,
-	) -> Option<HashSet<infrablockspace-primitives::AuthorityDiscoveryId>> {
+	) -> Option<HashSet<infrablockspace_primitives::AuthorityDiscoveryId>> {
 		self.authorities.get(&peer_id).cloned()
 	}
 }
