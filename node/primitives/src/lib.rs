@@ -314,7 +314,7 @@ pub struct Collation<
 	BlockNumber = infrablockspace_primitives::BlockNumber,
 	AccountId = infrablockspace_primitives::AccountId,
 	Weight = infrablockspace_primitives::VoteWeight,
-	MaxValidator = u32,
+	MaxValidator = infrablockspace_primitives::MaxValidators,
 > {
 	/// Messages destined to be interpreted by the Relay chain itself.
 	pub upward_messages: UpwardMessages,

@@ -38,7 +38,7 @@ pub use runtime_primitives::traits::{BlakeTwo256, Hash as HashT};
 pub use infrablockspace_core_primitives::v2::{
 	AccountId, AccountIndex, AccountPublic, Balance, Block, BlockId, BlockNumber, CandidateHash,
 	ChainId, DownwardMessage, Hash, Header, InboundDownwardMessage, InboundHrmpMessage, Moment,
-	Nonce, OutboundHrmpMessage, Remark, Signature, UncheckedExtrinsic, Vote, VoteWeight
+	Nonce, OutboundHrmpMessage, Remark, Signature, UncheckedExtrinsic, Vote, VoteWeight, MaxValidators
 };
 
 // Export some infrablockspace-parachain primitives

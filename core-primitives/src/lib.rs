@@ -28,7 +28,7 @@ use sp_runtime::{
 	MultiSignature,
 };
 
-pub use sp_runtime::traits::{BlakeTwo256, Hash as HashT};
+pub use sp_runtime::traits::{BlakeTwo256, Hash as HashT, ConstU32};
 
 /// The block number type used by Polkadot.
 /// 32-bits will allow for 136 years of blocks assuming 1 block per second.
@@ -150,6 +150,10 @@ pub struct OutboundHrmpMessage<Id> {
 	/// The message payload.
 	pub data: sp_std::vec::Vec<u8>,
 }
+
+/// Bounded size for vote vectors.
+/// Same for all InfraBs & InfraBc
+pub type MaxValidators = ConstU32<1024>;
 
 /// Weight for InfraBs runtime
 pub type VoteWeight = u64;
