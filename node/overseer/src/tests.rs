@@ -1094,7 +1094,7 @@ fn context_holds_onto_message_until_enough_signals_received() {
 		network_bridge_tx: network_bridge_tx_bounded_tx.clone(),
 		network_bridge_rx: network_bridge_rx_bounded_tx.clone(),
 		chain_api: chain_api_bounded_tx.clone(),
-		infrablockspace_collator_protocol: collator_protocol_bounded_tx.clone(),
+		collator_protocol: collator_protocol_bounded_tx.clone(),
 		collation_generation: collation_generation_bounded_tx.clone(),
 		approval_distribution: approval_distribution_bounded_tx.clone(),
 		approval_voting: approval_voting_bounded_tx.clone(),

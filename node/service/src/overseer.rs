@@ -52,7 +52,7 @@ pub use infrablockspace_approval_distribution::ApprovalDistribution as ApprovalD
 pub use infrablockspace_availability_bitfield_distribution::BitfieldDistribution as BitfieldDistributionSubsystem;
 pub use infrablockspace_availability_distribution::AvailabilityDistributionSubsystem;
 pub use infrablockspace_availability_recovery::AvailabilityRecoverySubsystem;
-pub use infrablockspace_collator_protocol::{CollatorProtocolSubsystem, ProtocolSide};
+pub use collator_protocol::{CollatorProtocolSubsystem, ProtocolSide};
 pub use infrablockspace_dispute_distribution::DisputeDistributionSubsystem;
 pub use infrablockspace_gossip_support::GossipSupport as GossipSupportSubsystem;
 pub use infrablockspace_network_bridge::{
@@ -255,7 +255,7 @@ where
 		))
 		.chain_api(ChainApiSubsystem::new(runtime_client.clone(), Metrics::register(registry)?))
 		.collation_generation(CollationGenerationSubsystem::new(Metrics::register(registry)?))
-		.infrablockspace_collator_protocol({
+		.collator_protocol({
 			let side = match is_collator {
 				IsCollator::Yes(collator_pair) => ProtocolSide::Collator(
 					network_service.local_peer_id(),

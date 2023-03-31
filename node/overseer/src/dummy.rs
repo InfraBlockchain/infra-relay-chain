@@ -174,7 +174,7 @@ where
 		.pvf_checker(subsystem.clone())
 		.chain_api(subsystem.clone())
 		.collation_generation(subsystem.clone())
-		.infrablockspace_collator_protocol(subsystem.clone())
+		.collator_protocol(subsystem.clone())
 		.network_bridge_tx(subsystem.clone())
 		.network_bridge_rx(subsystem.clone())
 		.provisioner(subsystem.clone())
