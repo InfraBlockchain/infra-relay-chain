@@ -312,8 +312,9 @@ impl MaybeCompressedPoV {
 #[cfg(not(target_os = "unknown"))]
 pub struct Collation<
 	BlockNumber = infrablockspace_primitives::BlockNumber,
-	Vote = infrablockspace_primitives::Vote,
-	MaxValidator = usize,
+	AccountId = infrablockspace_primitives::AccountId,
+	Weight = infrablockspace_primitives::VoteWeight,
+	MaxValidator = u32,
 > {
 	/// Messages destined to be interpreted by the Relay chain itself.
 	pub upward_messages: UpwardMessages,
@@ -330,7 +331,7 @@ pub struct Collation<
 	/// The mark which specifies the block number up to which all inbound HRMP messages are processed.
 	pub hrmp_watermark: BlockNumber,
 	/// Vote information from the collator.
-	pub vote_info: frame_support::BoundedVec<Vote, MaxValidator>,
+	pub vote_info: frame_support::BoundedVec<(AccountId, Weight), MaxValidator>,
 }
 
 /// Signal that is being returned when a collation was seconded by a validator.
