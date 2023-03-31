@@ -52,7 +52,7 @@ pub use infrablockspace_approval_distribution::ApprovalDistribution as ApprovalD
 pub use infrablockspace_availability_bitfield_distribution::BitfieldDistribution as BitfieldDistributionSubsystem;
 pub use infrablockspace_availability_distribution::AvailabilityDistributionSubsystem;
 pub use infrablockspace_availability_recovery::AvailabilityRecoverySubsystem;
-pub use collator_protocol::{CollatorProtocolSubsystem, ProtocolSide};
+pub use infrablockspace_collator_protocol::{CollatorProtocolSubsystem, ProtocolSide};
 pub use infrablockspace_dispute_distribution::DisputeDistributionSubsystem;
 pub use infrablockspace_gossip_support::GossipSupport as GossipSupportSubsystem;
 pub use infrablockspace_network_bridge::{

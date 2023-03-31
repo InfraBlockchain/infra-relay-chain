@@ -557,7 +557,7 @@ pub struct Overseer<SupportsParachains> {
 		RuntimeApiMessage,
 		CandidateBackingMessage,
 	])]
-	infrablockspace_collator_protocol: CollatorProtocol,
+	collator_protocol: CollatorProtocol,
 
 	#[subsystem(ApprovalDistributionMessage, sends: [
 		NetworkBridgeTxMessage,
