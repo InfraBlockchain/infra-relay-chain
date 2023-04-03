@@ -39,7 +39,7 @@ fn construct_availability_bitfield_works() {
 		let relay_parent = Hash::default();
 		let validator_index = ValidatorIndex(1u32);
 
-		let (mut sender, mut receiver) = polkadot_node_subsystem_test_helpers::sender_receiver();
+		let (mut sender, mut receiver) = infrablockspace_node_subsystem_test_helpers::sender_receiver();
 		let future = construct_availability_bitfield(
 			relay_parent,
 			&jaeger::Span::Disabled,

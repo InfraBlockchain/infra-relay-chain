@@ -29,7 +29,7 @@ mod handle_new_activations {
 		errors::RuntimeApiError,
 		messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	};
-	use polkadot_node_subsystem_test_helpers::{
+	use infrablockspace_node_subsystem_test_helpers::{
 		subsystem_test_harness, TestSubsystemContextHandle,
 	};
 	use infrablockspace_primitives::{

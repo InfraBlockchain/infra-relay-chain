@@ -25,7 +25,6 @@ use generate_bags::generate_thresholds;
 use kusama_runtime::Runtime as KusamaRuntime;
 use polkadot_runtime::Runtime as PolkadotRuntime;
 use std::path::{Path, PathBuf};
-use westend_runtime::Runtime as WestendRuntime;
 
 #[derive(Clone, Debug, ValueEnum)]
 #[value(rename_all = "PascalCase")]

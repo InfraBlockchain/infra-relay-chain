@@ -27,7 +27,7 @@ use infrablockspace_primitives::{
 	GroupIndex, Hash, HeadData, Id as ParaId, IndexedVec, OccupiedCore, PersistedValidationData,
 	SessionInfo, ValidatorIndex,
 };
-use polkadot_primitives_test_helpers::{
+use infrablockspace_primitives_test_helpers::{
 	dummy_collator, dummy_collator_signature, dummy_hash, dummy_validation_code,
 };
 

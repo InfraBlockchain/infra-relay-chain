@@ -18,13 +18,13 @@ use async_trait::async_trait;
 use futures::{executor, pending, pin_mut, poll, select, stream, FutureExt};
 use std::{collections::HashMap, sync::atomic, task::Poll};
 
-use ::test_helpers::{dummy_candidate_descriptor, dummy_candidate_receipt, dummy_hash};
+use test_helpers::{dummy_candidate_descriptor, dummy_candidate_receipt, dummy_hash};
 use infrablockspace_node_network_protocol::{PeerId, UnifiedReputationChange};
 use infrablockspace_node_primitives::{
 	BlockData, CollationGenerationConfig, CollationResult, DisputeMessage, InvalidDisputeVote, PoV,
 	UncheckedDisputeMessage, ValidDisputeVote,
 };
-use polkadot_node_subsystem_types::{
+use infrablockspace_node_subsystem_types::{
 	jaeger,
 	messages::{NetworkBridgeEvent, RuntimeApiRequest},
 	ActivatedLeaf, LeafStatus,

@@ -215,7 +215,7 @@ pub(crate) mod common {
 	use super::super::*;
 	use futures::channel::mpsc;
 	use infrablockspace_node_subsystem::messages::AllMessages;
-	use polkadot_node_subsystem_test_helpers::TestSubsystemSender;
+	use infrablockspace_node_subsystem_test_helpers::TestSubsystemSender;
 
 	pub fn test_harness<OverseerFactory, Overseer, TestFactory, Test>(
 		overseer_factory: OverseerFactory,
@@ -226,7 +226,7 @@ pub(crate) mod common {
 		TestFactory: FnOnce(TestSubsystemSender) -> Test,
 		Test: Future<Output = ()>,
 	{
-		let (tx, rx) = polkadot_node_subsystem_test_helpers::sender_receiver();
+		let (tx, rx) = infrablockspace_node_subsystem_test_helpers::sender_receiver();
 		let overseer = overseer_factory(rx);
 		let test = test_factory(tx);
 
@@ -249,7 +249,7 @@ mod select_candidates {
 			AvailabilityCores, PersistedValidationData as PersistedValidationDataReq,
 		},
 	};
-	use polkadot_node_subsystem_test_helpers::TestSubsystemSender;
+	use infrablockspace_node_subsystem_test_helpers::TestSubsystemSender;
 	use infrablockspace_primitives::{
 		BlockNumber, CandidateCommitments, CommittedCandidateReceipt, PersistedValidationData,
 	};

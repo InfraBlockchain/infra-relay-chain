@@ -140,7 +140,7 @@ mod tests {
 	use infrablockspace_node_subsystem::messages::{
 		AllMessages, AvailabilityDistributionMessage, RuntimeApiMessage, RuntimeApiRequest,
 	};
-	use polkadot_node_subsystem_test_helpers as test_helpers;
+	use infrablockspace_node_subsystem_test_helpers as test_helpers;
 	use infrablockspace_primitives::{CandidateHash, Hash, ValidatorIndex};
 	use test_helpers::mock::make_ferdie_keystore;
 

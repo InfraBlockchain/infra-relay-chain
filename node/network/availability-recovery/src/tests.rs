@@ -34,12 +34,12 @@ use infrablockspace_node_subsystem::{
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, LeafStatus,
 };
-use polkadot_node_subsystem_test_helpers::{make_subsystem_context, TestSubsystemContextHandle};
+use infrablockspace_node_subsystem_test_helpers::{make_subsystem_context, TestSubsystemContextHandle};
 use infrablockspace_node_subsystem_util::TimeoutExt;
 use infrablockspace_primitives::{
 	AuthorityDiscoveryId, Hash, HeadData, IndexedVec, PersistedValidationData, ValidatorId,
 };
-use polkadot_primitives_test_helpers::{dummy_candidate_receipt, dummy_hash};
+use infrablockspace_primitives_test_helpers::{dummy_candidate_receipt, dummy_hash};
 
 type VirtualOverseer = TestSubsystemContextHandle<AvailabilityRecoveryMessage>;
 

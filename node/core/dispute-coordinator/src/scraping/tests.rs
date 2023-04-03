@@ -32,7 +32,7 @@ use infrablockspace_node_subsystem::{
 	},
 	ActivatedLeaf, ActiveLeavesUpdate, LeafStatus, SpawnGlue,
 };
-use polkadot_node_subsystem_test_helpers::{
+use infrablockspace_node_subsystem_test_helpers::{
 	make_subsystem_context, TestSubsystemContext, TestSubsystemContextHandle, TestSubsystemSender,
 };
 use infrablockspace_node_subsystem_util::{reexports::SubsystemContext, TimeoutExt};

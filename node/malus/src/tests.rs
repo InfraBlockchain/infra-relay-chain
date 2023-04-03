@@ -16,7 +16,7 @@
 
 use super::*;
 
-use polkadot_node_subsystem_test_helpers::*;
+use infrablockspace_node_subsystem_test_helpers::*;
 
 use infrablockspace_node_subsystem::{
 	messages::AvailabilityStoreMessage,

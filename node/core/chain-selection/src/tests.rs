@@ -38,7 +38,7 @@ use sp_core::testing::TaskExecutor;
 use infrablockspace_node_subsystem::{
 	jaeger, messages::AllMessages, ActivatedLeaf, ActiveLeavesUpdate, LeafStatus,
 };
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_primitives::{BlakeTwo256, ConsensusLog, HashT};
 
 #[derive(Default)]

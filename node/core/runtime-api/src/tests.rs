@@ -26,7 +26,7 @@ use infrablockspace_primitives::{
 	ScrapedOnChainVotes, SessionIndex, SessionInfo, ValidationCode, ValidationCodeHash,
 	ValidatorId, ValidatorIndex, ValidatorSignature,
 };
-use polkadot_node_subsystem_test_helpers::make_subsystem_context;
+use infrablockspace_node_subsystem_test_helpers::make_subsystem_context;
 use sp_api::ProvideRuntimeApi;
 use sp_authority_discovery::AuthorityDiscoveryApi;
 use sp_consensus_babe::BabeApi;

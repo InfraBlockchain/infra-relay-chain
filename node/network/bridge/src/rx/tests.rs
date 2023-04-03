@@ -42,7 +42,7 @@ use infrablockspace_node_subsystem::{
 	},
 	ActiveLeavesUpdate, FromOrchestra, LeafStatus, OverseerSignal,
 };
-use polkadot_node_subsystem_test_helpers::{
+use infrablockspace_node_subsystem_test_helpers::{
 	SingleItemSink, SingleItemStream, TestSubsystemContextHandle,
 };
 use infrablockspace_node_subsystem_util::metered;
@@ -85,7 +85,7 @@ struct TestNetworkHandle {
 fn new_test_network(
 	protocol_names: PeerSetProtocolNames,
 ) -> (TestNetwork, TestNetworkHandle, TestAuthorityDiscovery) {
-	let (net_tx, net_rx) = polkadot_node_subsystem_test_helpers::single_item_sink();
+	let (net_tx, net_rx) = infrablockspace_node_subsystem_test_helpers::single_item_sink();
 	let (action_tx, action_rx) = metered::unbounded();
 
 	(
@@ -304,7 +304,7 @@ fn test_harness<T: Future<Output = VirtualOverseer>>(
 	let pool = sp_core::testing::TaskExecutor::new();
 	let (mut network, network_handle, discovery) = new_test_network(peerset_protocol_names.clone());
 	let (context, virtual_overseer) =
-		polkadot_node_subsystem_test_helpers::make_subsystem_context(pool);
+		infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
 	let network_stream = network.event_stream();
 
 	let bridge = NetworkBridgeRx {

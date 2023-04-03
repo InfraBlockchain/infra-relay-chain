@@ -24,7 +24,7 @@ use infrablockspace_node_primitives::{CandidateVotes, DisputeStatus, ACTIVE_DURA
 use infrablockspace_node_subsystem::messages::{
 	AllMessages, DisputeCoordinatorMessage, RuntimeApiMessage, RuntimeApiRequest,
 };
-use polkadot_node_subsystem_test_helpers::TestSubsystemSender;
+use infrablockspace_node_subsystem_test_helpers::TestSubsystemSender;
 use infrablockspace_primitives::{
 	CandidateHash, DisputeState, InvalidDisputeStatementKind, SessionIndex,
 	ValidDisputeStatementKind, ValidatorSignature,

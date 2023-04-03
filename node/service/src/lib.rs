@@ -118,7 +118,7 @@ pub use sp_runtime::{
 
 // Infrablockspace Native Runtimes
 #[cfg(feature = "infrablockspace-native")]
-pub use {infrablockspace_runtime, infrablocksapce_runtime_constants};
+pub use {infrablockspace_runtime, infrablockspace_runtime_constants};
 
 // Polkadot Native Runtimes
 #[cfg(feature = "kusama-native")]

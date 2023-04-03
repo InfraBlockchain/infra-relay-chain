@@ -53,7 +53,7 @@ use infrablockspace_node_subsystem::{
 	},
 	ActivatedLeaf, ActiveLeavesUpdate, FromOrchestra, LeafStatus, OverseerSignal, Span,
 };
-use polkadot_node_subsystem_test_helpers::{
+use infrablockspace_node_subsystem_test_helpers::{
 	mock::make_ferdie_keystore, subsystem_test_harness, TestSubsystemContextHandle,
 };
 use infrablockspace_primitives::{

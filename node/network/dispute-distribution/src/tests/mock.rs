@@ -37,7 +37,7 @@ use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateHash, CandidateReceipt, Hash, SessionIndex, SessionInfo,
 	ValidatorId, ValidatorIndex,
 };
-use polkadot_primitives_test_helpers::dummy_candidate_descriptor;
+use infrablockspace_primitives_test_helpers::dummy_candidate_descriptor;
 
 use crate::LOG_TARGET;
 

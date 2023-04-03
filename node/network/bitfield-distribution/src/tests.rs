@@ -29,7 +29,7 @@ use infrablockspace_node_subsystem::{
 	jaeger,
 	jaeger::{PerLeafSpan, Span},
 };
-use polkadot_node_subsystem_test_helpers::make_subsystem_context;
+use infrablockspace_node_subsystem_test_helpers::make_subsystem_context;
 use infrablockspace_node_subsystem_util::TimeoutExt;
 use infrablockspace_primitives::{AvailabilityBitfield, Signed, ValidatorIndex};
 use rand_chacha::ChaCha12Rng;

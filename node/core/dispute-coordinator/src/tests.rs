@@ -63,7 +63,7 @@ use infrablockspace_primitives::{
 	MultiDisputeStatementSet, ScrapedOnChainVotes, SessionIndex, SessionInfo, SigningContext,
 	ValidDisputeStatementKind, ValidatorId, ValidatorIndex, ValidatorSignature,
 };
-use polkadot_node_subsystem_test_helpers::{
+use infrablockspace_node_subsystem_test_helpers::{
 	make_buffered_subsystem_context, TestSubsystemContextHandle,
 };
 

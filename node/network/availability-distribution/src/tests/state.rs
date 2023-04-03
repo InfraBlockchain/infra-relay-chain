@@ -20,7 +20,7 @@ use std::{
 	time::Duration,
 };
 
-use polkadot_node_subsystem_test_helpers::TestSubsystemContextHandle;
+use infrablockspace_node_subsystem_test_helpers::TestSubsystemContextHandle;
 use infrablockspace_node_subsystem_util::TimeoutExt;
 
 use futures::{
@@ -46,7 +46,7 @@ use infrablockspace_node_subsystem::{
 	},
 	ActivatedLeaf, ActiveLeavesUpdate, FromOrchestra, LeafStatus, OverseerSignal,
 };
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_primitives::{
 	CandidateHash, CoreState, GroupIndex, Hash, Id as ParaId, ScheduledCore, SessionInfo,
 	ValidatorIndex,

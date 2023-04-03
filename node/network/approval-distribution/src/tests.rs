@@ -27,10 +27,10 @@ use infrablockspace_node_primitives::approval::{
 	AssignmentCertKind, VRFOutput, VRFProof, RELAY_VRF_MODULO_CONTEXT,
 };
 use infrablockspace_node_subsystem::messages::{network_bridge_event, AllMessages, ApprovalCheckError};
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::TimeoutExt as _;
 use infrablockspace_primitives::{AuthorityDiscoveryId, BlakeTwo256, HashT};
-use polkadot_primitives_test_helpers::dummy_signature;
+use infrablockspace_primitives_test_helpers::dummy_signature;
 use rand::SeedableRng;
 use sp_authority_discovery::AuthorityPair as AuthorityDiscoveryPair;
 use sp_core::crypto::Pair as PairT;

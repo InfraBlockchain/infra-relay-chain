@@ -20,7 +20,7 @@ use assert_matches::assert_matches;
 use futures::executor;
 use infrablockspace_node_core_pvf::PrepareError;
 use infrablockspace_node_subsystem::messages::AllMessages;
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::reexports::SubsystemContext;
 use infrablockspace_primitives::{HeadData, Id as ParaId, UpwardMessage};
 use sp_core::testing::TaskExecutor;

@@ -30,7 +30,7 @@ use infrablockspace_node_subsystem::{
 	},
 	ActivatedLeaf, ActiveLeavesUpdate, LeafStatus,
 };
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::TimeoutExt;
 use infrablockspace_overseer::HeadSupportsParachains;
 use infrablockspace_primitives::{

@@ -25,7 +25,7 @@ use std::time::Duration;
 
 use ::test_helpers::{dummy_candidate_descriptor, dummy_hash};
 use infrablockspace_node_primitives::{BlockData, PoV};
-use polkadot_node_subsystem_types::messages::CandidateValidationMessage;
+use infrablockspace_node_subsystem_types::messages::CandidateValidationMessage;
 use infrablockspace_overseer::{
 	self as overseer,
 	dummy::dummy_overseer_builder,

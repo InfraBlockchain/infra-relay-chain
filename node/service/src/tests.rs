@@ -19,7 +19,7 @@ use super::{relay_chain_selection::*, *};
 use futures::channel::oneshot::Receiver;
 use infrablockspace_node_primitives::approval::{VRFOutput, VRFProof};
 use infrablockspace_node_subsystem::messages::{AllMessages, BlockDescription};
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::TimeoutExt;
 use polkadot_test_client::Sr25519Keyring;
 use sp_consensus_babe::{
@@ -42,7 +42,7 @@ use infrablockspace_node_subsystem::messages::{
 };
 use infrablockspace_primitives::{Block, BlockNumber, Hash, Header};
 
-use polkadot_node_subsystem_test_helpers::TestSubsystemSender;
+use infrablockspace_node_subsystem_test_helpers::TestSubsystemSender;
 use infrablockspace_overseer::{SubsystemContext, SubsystemSender};
 
 type VirtualOverseer = test_helpers::TestSubsystemContextHandle<ApprovalVotingMessage>;

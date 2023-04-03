@@ -28,7 +28,7 @@ use infrablockspace_node_subsystem::{
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, ActiveLeavesUpdate, LeafStatus,
 };
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::{database::Database, TimeoutExt};
 use infrablockspace_primitives::{
 	CandidateHash, CandidateReceipt, CoreIndex, GroupIndex, HeadData, Header,

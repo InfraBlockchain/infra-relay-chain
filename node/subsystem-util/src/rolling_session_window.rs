@@ -593,7 +593,7 @@ mod tests {
 		messages::{AllMessages, AvailabilityRecoveryMessage},
 		SubsystemContext,
 	};
-	use polkadot_node_subsystem_test_helpers::make_subsystem_context;
+	use infrablockspace_node_subsystem_test_helpers::make_subsystem_context;
 	use infrablockspace_primitives::Header;
 	use sp_core::testing::TaskExecutor;
 

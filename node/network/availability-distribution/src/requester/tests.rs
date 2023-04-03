@@ -34,7 +34,7 @@ use infrablockspace_node_subsystem::{
 	},
 	ActivatedLeaf, ActiveLeavesUpdate, LeafStatus, SpawnGlue,
 };
-use polkadot_node_subsystem_test_helpers::{
+use infrablockspace_node_subsystem_test_helpers::{
 	make_subsystem_context, mock::make_ferdie_keystore, TestSubsystemContext,
 	TestSubsystemContextHandle,
 };

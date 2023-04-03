@@ -35,8 +35,8 @@ use infrablockspace_primitives::{
 	CollatorPair, CoreState, GroupIndex, GroupRotationInfo, OccupiedCore, ScheduledCore,
 	ValidatorId, ValidatorIndex,
 };
-use polkadot_node_subsystem_test_helpers as test_helpers;
-use polkadot_primitives_test_helpers::{
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_primitives_test_helpers::{
 	dummy_candidate_descriptor, dummy_candidate_receipt_bad_sig, dummy_hash,
 };
 

@@ -22,7 +22,7 @@ use infrablockspace_node_network_protocol::request_response::{IncomingRequest, R
 use infrablockspace_primitives::{CoreState, Hash};
 use sp_keystore::SyncCryptoStorePtr;
 
-use polkadot_node_subsystem_test_helpers as test_helpers;
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 
 use super::*;
 

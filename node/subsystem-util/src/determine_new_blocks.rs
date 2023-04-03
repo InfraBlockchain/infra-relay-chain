@@ -163,7 +163,7 @@ where
 mod tests {
 	use super::*;
 	use assert_matches::assert_matches;
-	use polkadot_node_subsystem_test_helpers::make_subsystem_context;
+	use infrablockspace_node_subsystem_test_helpers::make_subsystem_context;
 	use infrablockspace_overseer::{AllMessages, SubsystemContext};
 	use sp_core::testing::TaskExecutor;
 	use std::collections::{HashMap, HashSet};
