@@ -25,7 +25,7 @@ use infrablockspace_service::chain_spec::{
 	get_account_id_from_seed, get_from_seed, polkadot_chain_spec_properties, Extensions,
 };
 use pallet_staking::Forcing;
-use polkadot_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
+use infrablockspace_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
 use sc_chain_spec::{ChainSpec, ChainType};
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::sr25519;
@@ -36,7 +36,7 @@ const DEFAULT_PROTOCOL_ID: &str = "dot";
 
 /// The `ChainSpec` parameterized for polkadot test runtime.
 pub type PolkadotChainSpec =
-	sc_service::GenericChainSpec<polkadot_test_runtime::GenesisConfig, Extensions>;
+	sc_service::GenericChainSpec<infrablockspace_test_runtime::GenesisConfig, Extensions>;
 
 /// Local testnet config (multivalidator Alice + Bob)
 pub fn polkadot_local_testnet_config() -> PolkadotChainSpec {
@@ -55,7 +55,7 @@ pub fn polkadot_local_testnet_config() -> PolkadotChainSpec {
 }
 
 /// Local testnet genesis config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_genesis() -> polkadot_test_runtime::GenesisConfig {
+pub fn polkadot_local_testnet_genesis() -> infrablockspace_test_runtime::GenesisConfig {
 	polkadot_testnet_genesis(
 		vec![get_authority_keys_from_seed("Alice"), get_authority_keys_from_seed("Bob")],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -108,8 +108,8 @@ fn polkadot_testnet_genesis(
 	)>,
 	root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
-) -> polkadot_test_runtime::GenesisConfig {
-	use polkadot_test_runtime as runtime;
+) -> infrablockspace_test_runtime::GenesisConfig {
+	use infrablockspace_test_runtime as runtime;
 
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 

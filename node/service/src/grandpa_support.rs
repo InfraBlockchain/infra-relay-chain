@@ -219,7 +219,7 @@ pub(crate) fn kusama_hard_forks() -> Vec<grandpa::AuthoritySetHardFork<Block>> {
 mod tests {
 	use consensus_common::BlockOrigin;
 	use grandpa::VotingRule;
-	use polkadot_test_client::{
+	use infrablockspace_test_client::{
 		ClientBlockImportExt, DefaultTestClientBuilderExt, InitPolkadotBlockBuilder,
 		TestClientBuilder, TestClientBuilderExt,
 	};

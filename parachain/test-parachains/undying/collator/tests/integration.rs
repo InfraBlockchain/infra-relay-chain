@@ -31,7 +31,7 @@ async fn collating_using_undying_collator() {
 
 	let para_id = ParaId::from(100);
 
-	let alice_config = polkadot_test_service::node_config(
+	let alice_config = infrablockspace_test_service::node_config(
 		|| {},
 		tokio::runtime::Handle::current(),
 		Alice,
@@ -40,9 +40,9 @@ async fn collating_using_undying_collator() {
 	);
 
 	// start alice
-	let alice = polkadot_test_service::run_validator_node(alice_config, Some(PUPPET_EXE.into()));
+	let alice = infrablockspace_test_service::run_validator_node(alice_config, Some(PUPPET_EXE.into()));
 
-	let bob_config = polkadot_test_service::node_config(
+	let bob_config = infrablockspace_test_service::node_config(
 		|| {},
 		tokio::runtime::Handle::current(),
 		Bob,
@@ -51,7 +51,7 @@ async fn collating_using_undying_collator() {
 	);
 
 	// start bob
-	let bob = polkadot_test_service::run_validator_node(bob_config, Some(PUPPET_EXE.into()));
+	let bob = infrablockspace_test_service::run_validator_node(bob_config, Some(PUPPET_EXE.into()));
 
 	let collator = test_parachain_undying_collator::Collator::new(1_000, 1);
 
@@ -62,7 +62,7 @@ async fn collating_using_undying_collator() {
 		.unwrap();
 
 	// run the collator node
-	let mut charlie = polkadot_test_service::run_collator_node(
+	let mut charlie = infrablockspace_test_service::run_collator_node(
 		tokio::runtime::Handle::current(),
 		Charlie,
 		|| {},

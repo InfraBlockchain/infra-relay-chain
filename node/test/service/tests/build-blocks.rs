@@ -15,7 +15,7 @@
 // along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
 use futures::{future, pin_mut, select, FutureExt};
-use polkadot_test_service::*;
+use infrablockspace_test_service::*;
 use sp_keyring::Sr25519Keyring;
 
 #[substrate_test_utils::test(flavor = "multi_thread")]

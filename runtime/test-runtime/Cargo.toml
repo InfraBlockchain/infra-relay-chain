@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-test-runtime"
+name = "infrablockspace-test-runtime"
 build = "build.rs"
 version.workspace = true
 authors.workspace = true
