@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Substrate.  If not, see <http://www.gnu.org/licenses/>.
 
-use infrablockspace_core_primitives::{Block, Hash, Header};
+use infrablockspace_core_primitives::{Block, Hash, Header};
 use std::{
 	io::{BufRead, BufReader, Read},
 	process::{Child, ExitStatus},

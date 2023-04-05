@@ -220,7 +220,7 @@ mod tests {
 	use consensus_common::BlockOrigin;
 	use grandpa::VotingRule;
 	use infrablockspace_test_client::{
-		ClientBlockImportExt, DefaultTestClientBuilderExt, InitPolkadotBlockBuilder,
+		ClientBlockImportExt, DefaultTestClientBuilderExt, InitInfraBsBlockBuilder,
 		TestClientBuilder, TestClientBuilderExt,
 	};
 	use sp_blockchain::HeaderBackend;
@@ -240,7 +240,7 @@ mod tests {
 
 			move |hashes: &mut Vec<_>, n| {
 				for _ in 0..n {
-					let block = client.init_polkadot_block_builder().build().unwrap().block;
+					let block = client.init_infrabs_block_builder().build().unwrap().block;
 					hashes.push(block.header.hash());
 					futures::executor::block_on(client.import(BlockOrigin::Own, block)).unwrap();
 				}

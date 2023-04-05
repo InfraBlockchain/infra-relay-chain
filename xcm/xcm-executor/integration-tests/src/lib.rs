@@ -20,7 +20,7 @@
 use frame_support::{codec::Encode, dispatch::GetDispatchInfo, weights::Weight};
 use infrablockspace_test_client::{
 	BlockBuilderExt, ClientBlockImportExt, DefaultTestClientBuilderExt, ExecutionStrategy,
-	InitPolkadotBlockBuilder, TestClientBuilder, TestClientBuilderExt,
+	InitInfraBsBlockBuilder, TestClientBuilder, TestClientBuilderExt,
 };
 use infrablockspace_test_runtime::{pallet_test_notifier, xcm_config::XcmConfig};
 use infrablockspace_test_service::construct_extrinsic;
@@ -42,7 +42,7 @@ fn basic_buy_fees_message_executes() {
 		DepositAsset { assets: Wild(AllCounted(1)), beneficiary: Parent.into() },
 	]);
 
-	let mut block_builder = client.init_polkadot_block_builder();
+	let mut block_builder = client.init_infrabs_block_builder();
 
 	let execute = construct_extrinsic(
 		&client,
@@ -54,7 +54,7 @@ fn basic_buy_fees_message_executes() {
 		0,
 	);
 
-	block_builder.push_polkadot_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -103,11 +103,11 @@ fn transact_recursion_limit_works() {
 		});
 	}
 
-	let mut block_builder = client.init_polkadot_block_builder();
+	let mut block_builder = client.init_infrabs_block_builder();
 
 	let execute = construct_extrinsic(&client, call, sp_keyring::Sr25519Keyring::Alice, 0);
 
-	block_builder.push_polkadot_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -136,7 +136,7 @@ fn query_response_fires() {
 		.set_execution_strategy(ExecutionStrategy::AlwaysWasm)
 		.build();
 
-	let mut block_builder = client.init_polkadot_block_builder();
+	let mut block_builder = client.init_infrabs_block_builder();
 
 	let execute = construct_extrinsic(
 		&client,
@@ -147,7 +147,7 @@ fn query_response_fires() {
 		0,
 	);
 
-	block_builder.push_polkadot_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -166,7 +166,7 @@ fn query_response_fires() {
 	});
 	let query_id = query_id.unwrap();
 
-	let mut block_builder = client.init_polkadot_block_builder();
+	let mut block_builder = client.init_infrabs_block_builder();
 
 	let response = Response::ExecutionResult(None);
 	let max_weight = Weight::from_parts(1_000_000, 1024 * 1024);
@@ -184,7 +184,7 @@ fn query_response_fires() {
 		1,
 	);
 
-	block_builder.push_polkadot_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -220,7 +220,7 @@ fn query_response_elicits_handler() {
 		.set_execution_strategy(ExecutionStrategy::AlwaysWasm)
 		.build();
 
-	let mut block_builder = client.init_polkadot_block_builder();
+	let mut block_builder = client.init_infrabs_block_builder();
 
 	let execute = construct_extrinsic(
 		&client,
@@ -231,7 +231,7 @@ fn query_response_elicits_handler() {
 		0,
 	);
 
-	block_builder.push_polkadot_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -250,7 +250,7 @@ fn query_response_elicits_handler() {
 	});
 	let query_id = query_id.unwrap();
 
-	let mut block_builder = client.init_polkadot_block_builder();
+	let mut block_builder = client.init_infrabs_block_builder();
 
 	let response = Response::ExecutionResult(None);
 	let max_weight = Weight::from_parts(1_000_000, 1024 * 1024);
@@ -267,7 +267,7 @@ fn query_response_elicits_handler() {
 		1,
 	);
 
-	block_builder.push_polkadot_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
