@@ -18,12 +18,12 @@
 
 use futures::channel::oneshot;
 use futures_timer::Delay;
-use parity_scale_codec::{Decode, Encode};
 use infrablockspace_node_primitives::{
 	Collation, CollationResult, CollationSecondedSignal, CollatorFn, MaybeCompressedPoV, PoV,
 	Statement,
 };
 use infrablockspace_primitives::{CollatorId, CollatorPair};
+use parity_scale_codec::{Decode, Encode};
 use sp_core::{traits::SpawnNamed, Pair};
 use std::{
 	collections::HashMap,
