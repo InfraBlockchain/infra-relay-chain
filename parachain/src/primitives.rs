@@ -25,6 +25,7 @@ use parity_scale_codec::{CompactAs, Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_core::{RuntimeDebug, TypeId};
 use sp_runtime::traits::Hash as _;
+use sp_runtime::generic::PotVote;
 
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
@@ -378,6 +379,9 @@ pub type UpwardMessages = BoundedVec<UpwardMessage, ConstU32<MAX_UPWARD_MESSAGE_
 pub type HorizontalMessages =
 	BoundedVec<OutboundHrmpMessage<Id>, ConstU32<MAX_HORIZONTAL_MESSAGE_NUM>>;
 
+pub const MAX_VOTE_NUM: u32 = 16 * 1024;
+pub type PotVotes = BoundedVec<PotVote, ConstU32<MAX_VOTE_NUM>>;
+
 /// The result of parachain validation.
 // TODO: balance uploads (https://github.com/paritytech/polkadot/issues/220)
 #[derive(PartialEq, Eq, Clone, Encode)]
@@ -397,4 +401,6 @@ pub struct ValidationResult {
 	pub processed_downward_messages: u32,
 	/// The mark which specifies the block number up to which all inbound HRMP messages are processed.
 	pub hrmp_watermark: RelayChainBlockNumber,
+	/// Vote Result for the parachain block. Should be bounded
+	pub vote_result: PotVotes,
 }
