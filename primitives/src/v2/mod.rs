@@ -31,7 +31,7 @@ use inherents::InherentIdentifier;
 use primitives::RuntimeDebug;
 use runtime_primitives::{
 	traits::{AppVerify, Header as HeaderT},
-	generic::{PotVotesResult, PotVote},
+	generic::PotVotesResult,
 };
 use sp_arithmetic::traits::{BaseArithmetic, Saturating};
 

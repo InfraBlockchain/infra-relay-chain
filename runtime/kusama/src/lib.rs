@@ -42,7 +42,8 @@ use runtime_parachains::{
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent, reward_points as parachains_reward_points,
 	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
-	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
+	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump, 
+	pot as parachains_pot
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -1125,6 +1126,8 @@ impl parachains_inclusion::Config for Runtime {
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = parachains_reward_points::RewardValidatorsWithEraPoints<Runtime>;
 }
+
+impl parachains_pot::Config for Runtime {}
 
 parameter_types! {
 	pub const ParasUnsignedPriority: TransactionPriority = TransactionPriority::max_value();

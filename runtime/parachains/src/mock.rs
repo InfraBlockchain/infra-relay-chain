@@ -221,6 +221,8 @@ impl crate::paras::Config for Test {
 	type NextSessionRotation = TestNextSessionRotation;
 }
 
+impl crate::pot::Config for Test {}
+
 impl crate::dmp::Config for Test {}
 
 parameter_types! {

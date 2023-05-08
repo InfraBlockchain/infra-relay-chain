@@ -22,7 +22,7 @@
 
 use crate::{
 	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield,
-	scheduler::CoreAssignment, shared, ump,
+	scheduler::CoreAssignment, shared, ump, pot
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
@@ -196,6 +196,7 @@ pub mod pallet {
 		+ dmp::Config
 		+ ump::Config
 		+ hrmp::Config
+		+ pot::Config
 		+ configuration::Config
 	{
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
@@ -776,6 +777,13 @@ impl<T: Config> Pallet<T> {
 			receipt.descriptor.para_id,
 			commitments.horizontal_messages,
 		);
+
+		if let Some(vote_result) = commitments.vote_result {
+			<pot::Pallet<T>>::aggregate_vote_result(
+				receipt.descriptor.para_id,
+				vote_result
+			)
+		};
 
 		Self::deposit_event(Event::<T>::CandidateIncluded(
 			plain,
