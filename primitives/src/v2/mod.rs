@@ -29,7 +29,10 @@ use sp_std::{
 use application_crypto::KeyTypeId;
 use inherents::InherentIdentifier;
 use primitives::RuntimeDebug;
-use runtime_primitives::traits::{AppVerify, Header as HeaderT};
+use runtime_primitives::{
+	traits::{AppVerify, Header as HeaderT},
+	generic::{PotVotesResult, PotVote},
+};
 use sp_arithmetic::traits::{BaseArithmetic, Saturating};
 
 pub use runtime_primitives::traits::{BlakeTwo256, Hash as HashT};
@@ -38,7 +41,7 @@ pub use runtime_primitives::traits::{BlakeTwo256, Hash as HashT};
 pub use infrablockspace_core_primitives::v2::{
 	AccountId, AccountIndex, AccountPublic, Balance, Block, BlockId, BlockNumber, CandidateHash,
 	ChainId, DownwardMessage, Hash, Header, InboundDownwardMessage, InboundHrmpMessage, Moment,
-	Nonce, OutboundHrmpMessage, Remark, Signature, UncheckedExtrinsic, Vote, VoteWeight, MaxValidators
+	Nonce, OutboundHrmpMessage, Remark, Signature, UncheckedExtrinsic
 };
 
 // Export some infrablockspace-parachain primitives
@@ -607,12 +610,19 @@ pub struct CandidateCommitments<N = BlockNumber> {
 	pub processed_downward_messages: u32,
 	/// The mark which specifies the block number up to which all inbound HRMP messages are processed.
 	pub hrmp_watermark: N,
+	/// Result of pot votes sent by the parachain
+	pub vote_result: Option<PotVotesResult>,
 }
 
 impl CandidateCommitments {
 	/// Compute the blake2-256 hash of the commitments.
 	pub fn hash(&self) -> Hash {
 		BlakeTwo256::hash_of(self)
+	}
+	
+	/// Put vote result from `ValidationResult`
+	pub fn update_vote_result(&mut self, vote_result: Option<PotVotesResult>) {
+		self.vote_result = vote_result;
 	}
 }
 

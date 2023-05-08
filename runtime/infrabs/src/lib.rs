@@ -16,7 +16,7 @@ use primitives::{
 use runtime_common::{
 	auctions, claims, crowdloan, impl_runtime_weights, impls::DealWithFees, paras_registrar,
 	prod_or_fast, slots, BalanceToU256, BlockHashCount, BlockLength, CurrencyToVote,
-	SlowAdjustingFeeUpdate, U256ToBalance,
+	SlowAdjustingFeeUpdate, U256ToBalance, pot as relay_pot,
 };
 
 // For Runtime
