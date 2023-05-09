@@ -17,7 +17,7 @@
 //! Mocks for all the traits.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, inclusion, initializer, origin, paras, paras_inherent,
+	configuration, disputes, dmp, hrmp, pot, inclusion, initializer, origin, paras, paras_inherent,
 	scheduler, session_info, shared,
 	ump::{self, MessageId, UmpSink},
 	ParaId,
@@ -68,6 +68,7 @@ frame_support::construct_runtime!(
 		SessionInfo: session_info,
 		Disputes: disputes,
 		Babe: pallet_babe,
+		Pot: pot,
 	}
 );
 
@@ -221,7 +222,9 @@ impl crate::paras::Config for Test {
 	type NextSessionRotation = TestNextSessionRotation;
 }
 
-impl crate::pot::Config for Test {}
+impl crate::pot::Config for Test {
+	type RuntimeEvent = RuntimeEvent;
+}
 
 impl crate::dmp::Config for Test {}
 
