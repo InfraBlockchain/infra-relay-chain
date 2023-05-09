@@ -1289,7 +1289,9 @@ impl parachains_inclusion::Config for Runtime {
 	type RewardValidators = parachains_reward_points::RewardValidatorsWithEraPoints<Runtime>;
 }
 
-impl parachains_pot::Config for Runtime {}
+impl parachains_pot::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
 
 parameter_types! {
 	pub const ParasUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
@@ -1570,6 +1572,9 @@ construct_runtime! {
 		Slots: slots::{Pallet, Call, Storage, Event<T>} = 71,
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
+
+		// Pot Related
+		Pot: parachains_pot::{Pallet, Storage, Event} = 80, 
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
