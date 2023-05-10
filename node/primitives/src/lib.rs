@@ -28,7 +28,7 @@ use bounded_vec::BoundedVec;
 use futures::Future;
 use parity_scale_codec::{Decode, Encode, Error as CodecError, Input};
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-
+use sp_runtime::generic::PotVotesResult;
 use infrablockspace_primitives::{
 	BlakeTwo256, BlockNumber, CandidateCommitments, CandidateHash, CollatorPair,
 	CommittedCandidateReceipt, CompactStatement, EncodeAs, Hash, HashT, HeadData, Id as ParaId,
@@ -325,6 +325,8 @@ pub struct Collation<BlockNumber = infrablockspace_primitives::BlockNumber> {
 	pub processed_downward_messages: u32,
 	/// The mark which specifies the block number up to which all inbound HRMP messages are processed.
 	pub hrmp_watermark: BlockNumber,
+	/// Pot Vote Result
+	pub vote_result: Option<PotVotesResult>,
 }
 
 /// Signal that is being returned when a collation was seconded by a validator.

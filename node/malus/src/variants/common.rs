@@ -169,6 +169,7 @@ pub fn create_fake_candidate_commitments(
 		head_data: persisted_validation_data.parent_head.clone(),
 		processed_downward_messages: 0,
 		hrmp_watermark: persisted_validation_data.relay_parent_number,
+		vote_result: None,
 	}
 }
 

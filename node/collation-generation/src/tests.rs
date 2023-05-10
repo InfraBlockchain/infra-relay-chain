@@ -46,6 +46,7 @@ mod handle_new_activations {
 			proof_of_validity: MaybeCompressedPoV::Raw(PoV { block_data: BlockData(Vec::new()) }),
 			processed_downward_messages: 0_u32,
 			hrmp_watermark: 0_u32.into(),
+			vote_result: None,
 		}
 	}
 

@@ -207,6 +207,7 @@ impl TestCandidateBuilder {
 				new_validation_code: None,
 				processed_downward_messages: 0,
 				hrmp_watermark: 0_u32,
+				vote_result: None,
 			},
 		}
 	}
@@ -316,6 +317,7 @@ fn backing_second_works() {
 						new_validation_code: None,
 						processed_downward_messages: 0,
 						hrmp_watermark: 0,
+						vote_result: None, 
 					}, test_state.validation_data.clone()),
 				)).unwrap();
 			}
@@ -462,6 +464,7 @@ fn backing_works() {
 						new_validation_code: None,
 						processed_downward_messages: 0,
 						hrmp_watermark: 0,
+						vote_result: None,
 					}, test_state.validation_data.clone()),
 				)).unwrap();
 			}
@@ -786,6 +789,7 @@ fn backing_misbehavior_works() {
 						new_validation_code: None,
 						processed_downward_messages: 0,
 						hrmp_watermark: 0,
+						vote_result: None,
 					}, test_state.validation_data.clone()),
 				)).unwrap();
 			}
@@ -959,6 +963,7 @@ fn backing_dont_second_invalid() {
 						new_validation_code: None,
 						processed_downward_messages: 0,
 						hrmp_watermark: 0,
+						vote_result: None,
 					}, test_state.validation_data.clone()),
 				)).unwrap();
 			}

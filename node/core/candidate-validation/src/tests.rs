@@ -450,6 +450,7 @@ fn candidate_validation_ok_is_ok() {
 		horizontal_messages: Default::default(),
 		processed_downward_messages: 0,
 		hrmp_watermark: 0,
+		vote_result: None,
 	};
 
 	let commitments = CandidateCommitments {
@@ -459,6 +460,7 @@ fn candidate_validation_ok_is_ok() {
 		new_validation_code: validation_result.new_validation_code.clone(),
 		processed_downward_messages: validation_result.processed_downward_messages,
 		hrmp_watermark: validation_result.hrmp_watermark,
+		vote_result: validation_result.vote_result.clone(),
 	};
 
 	let candidate_receipt = CandidateReceipt { descriptor, commitments_hash: commitments.hash() };
@@ -577,6 +579,7 @@ fn candidate_validation_one_ambiguous_error_is_valid() {
 		horizontal_messages: Default::default(),
 		processed_downward_messages: 0,
 		hrmp_watermark: 0,
+		vote_result: None,
 	};
 
 	let commitments = CandidateCommitments {
@@ -586,6 +589,7 @@ fn candidate_validation_one_ambiguous_error_is_valid() {
 		new_validation_code: validation_result.new_validation_code.clone(),
 		processed_downward_messages: validation_result.processed_downward_messages,
 		hrmp_watermark: validation_result.hrmp_watermark,
+		vote_result: None,
 	};
 
 	let candidate_receipt = CandidateReceipt { descriptor, commitments_hash: commitments.hash() };
@@ -755,6 +759,7 @@ fn candidate_validation_commitment_hash_mismatch_is_invalid() {
 		horizontal_messages: Default::default(),
 		processed_downward_messages: 0,
 		hrmp_watermark: 12345,
+		vote_result: None,
 	};
 
 	let pool = TaskExecutor::new();
@@ -858,6 +863,7 @@ fn compressed_code_works() {
 		horizontal_messages: Default::default(),
 		processed_downward_messages: 0,
 		hrmp_watermark: 0,
+		vote_result: None,
 	};
 
 	let commitments = CandidateCommitments {
@@ -867,6 +873,7 @@ fn compressed_code_works() {
 		new_validation_code: validation_result.new_validation_code.clone(),
 		processed_downward_messages: validation_result.processed_downward_messages,
 		hrmp_watermark: validation_result.hrmp_watermark,
+		vote_result: validation_result.vote_result.clone(),
 	};
 
 	let candidate_receipt = CandidateReceipt { descriptor, commitments_hash: commitments.hash() };
@@ -922,6 +929,7 @@ fn code_decompression_failure_is_error() {
 		horizontal_messages: Default::default(),
 		processed_downward_messages: 0,
 		hrmp_watermark: 0,
+		vote_result: None,
 	};
 
 	let candidate_receipt = CandidateReceipt { descriptor, commitments_hash: Hash::zero() };
@@ -975,6 +983,7 @@ fn pov_decompression_failure_is_invalid() {
 		horizontal_messages: Default::default(),
 		processed_downward_messages: 0,
 		hrmp_watermark: 0,
+		vote_result: None,
 	};
 
 	let candidate_receipt = CandidateReceipt { descriptor, commitments_hash: Hash::zero() };

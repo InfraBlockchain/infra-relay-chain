@@ -638,14 +638,14 @@ where
 				gum::info!(target: LOG_TARGET, ?para_id, "Invalid candidate (para_head)");
 				Ok(ValidationResult::Invalid(InvalidCandidate::ParaHeadHashMismatch))
 			} else {
-				let mut outputs = CandidateCommitments {
+				let outputs = CandidateCommitments {
 					head_data: res.head_data,
 					upward_messages: res.upward_messages,
 					horizontal_messages: res.horizontal_messages,
 					new_validation_code: res.new_validation_code,
 					processed_downward_messages: res.processed_downward_messages,
 					hrmp_watermark: res.hrmp_watermark,
-					vote_result: None,
+					vote_result: res.vote_result.clone(),
 				};
 				if candidate_receipt.commitments_hash != outputs.hash() {
 					gum::info!(
@@ -662,7 +662,6 @@ where
 						?res.vote_result,
 						"👉 Vote Result"
 					);
-					outputs.update_vote_result(res.vote_result);
 					gum::info!(
 						target: LOG_TARGET,
 						?outputs,
