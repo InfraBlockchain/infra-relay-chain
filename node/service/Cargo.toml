@@ -137,7 +137,7 @@ infrablockspace-statement-distribution = { path = "../network/statement-distribu
 [dev-dependencies]
 infrablockspace-test-client = { path = "../test/client" }
 infrablockspace-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
-env_logger = "0.9.0"
+env_logger = "0.10.0"
 assert_matches = "1.5.0"
 tempfile = "3.2"
 
