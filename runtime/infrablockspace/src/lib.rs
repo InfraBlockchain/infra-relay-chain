@@ -364,7 +364,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
+	type SessionManager = PotReward;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -1322,6 +1322,10 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
+impl parachains_pot_reward::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
+
 parameter_types! {
 	pub const ParasUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
 }
@@ -1604,6 +1608,7 @@ construct_runtime! {
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
 		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
+		PotReward: parachains_pot_reward = 83,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,

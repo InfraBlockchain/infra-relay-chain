@@ -28,9 +28,10 @@ use infrablockspace_runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent,
-	runtime_api_impl::v2 as runtime_impl, scheduler as parachains_scheduler,
-	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
+	paras_inherent as parachains_paras_inherent, pot as parachains_pot,
+	pot_reward as parachains_pot_reward, runtime_api_impl::v2 as runtime_impl,
+	scheduler as parachains_scheduler, session_info as parachains_session_info,
+	shared as parachains_shared, ump as parachains_ump,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -60,7 +61,9 @@ use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str,
 	curve::PiecewiseLinear,
-	generic, generic::{VoteAccountId, VoteWeight}, impl_opaque_keys,
+	generic,
+	generic::{VoteAccountId, VoteWeight},
+	impl_opaque_keys,
 	traits::{
 		BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT, OpaqueKeys,
 		SaturatedConversion, StaticLookup, Verify,
@@ -280,7 +283,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = Staking;
+	type SessionManager = PotReward;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = ();
@@ -508,7 +511,7 @@ impl pallet_infra_voting::Config for Runtime {
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = ();
 	type SessionInterface = ();
-	type SessionsPerEra = Sessions; 
+	type SessionsPerEra = Sessions;
 }
 
 impl pallet_infra_system_token_manager::Config for Runtime {
@@ -711,6 +714,8 @@ construct_runtime! {
 		Hrmp: parachains_hrmp::{Pallet, Call, Storage, Event<T>},
 		Ump: parachains_ump::{Pallet, Call, Storage, Event},
 		Dmp: parachains_dmp::{Pallet, Call, Storage},
+		Pot: parachains_pot::{Pallet, Storage, Event},
+		PotReward: parachains_pot_reward::{Pallet, Storage, Event},
 		Xcm: pallet_xcm::{Pallet, Call, Event<T>, Origin},
 		ParasDisputes: parachains_disputes::{Pallet, Storage, Event<T>},
 
