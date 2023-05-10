@@ -660,9 +660,14 @@ where
 					gum::info!(
 						target: LOG_TARGET,
 						?res.vote_result,
-						"Valid!"
+						"👉 Vote Result"
 					);
 					outputs.update_vote_result(res.vote_result);
+					gum::info!(
+						target: LOG_TARGET,
+						?outputs,
+						"🌸 Output"
+					);
 					Ok(ValidationResult::Valid(outputs, persisted_validation_data))
 				}
 			},
