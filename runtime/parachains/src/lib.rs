@@ -33,6 +33,8 @@ pub mod metrics;
 pub mod origin;
 pub mod paras;
 pub mod paras_inherent;
+pub mod pot;
+pub mod pot_reward;
 pub mod reward_points;
 pub mod scheduler;
 pub mod session_info;
