@@ -518,6 +518,10 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
+impl parachains_pot_reward::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
+
 impl parachains_disputes::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RewardValidators = ();

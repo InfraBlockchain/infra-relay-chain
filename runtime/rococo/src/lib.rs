@@ -41,12 +41,13 @@ use runtime_parachains::{
 	disputes::slashing as parachains_slashing,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent,
+	paras_inherent as parachains_paras_inherent, pot as parachains_pot,
+	pot_reward as parachains_pot_reward,
 	runtime_api_impl::{
 		v2 as parachains_runtime_api_impl, vstaging as parachains_runtime_api_impl_staging,
 	},
 	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump
+	shared as parachains_shared, ump as parachains_ump,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -72,12 +73,13 @@ use pallet_transaction_payment::{CurrencyAdapter, FeeDetails, RuntimeDispatchInf
 use sp_core::{ConstU128, OpaqueMetadata, H256};
 use sp_mmr_primitives as mmr;
 use sp_runtime::{
-	create_runtime_str, generic, impl_opaque_keys,
+	create_runtime_str, generic,
+	generic::{VoteAccountId, VoteWeight},
+	impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConstU32, ConvertInto,
 		Extrinsic as ExtrinsicT, Keccak256, OpaqueKeys, SaturatedConversion, Verify,
 	},
-	generic::{VoteAccountId, VoteWeight},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult, KeyTypeId, Perbill, Percent, Permill,
 };
@@ -359,7 +361,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = ValidatorIdOf;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, ValidatorManager>;
+	type SessionManager = PotReward;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -1070,10 +1072,14 @@ impl pallet_infra_voting::Config for Runtime {
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = ();
 	type SessionInterface = ();
-	type SessionsPerEra = Sessions; 
+	type SessionsPerEra = Sessions;
 }
 
 impl pallet_infra_system_token_manager::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
+
+impl parachains_pot_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
@@ -1482,6 +1488,10 @@ construct_runtime! {
 		Slots: slots::{Pallet, Call, Storage, Event<T>} = 71,
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
+
+		// Pot Related
+		Pot: parachains_pot::{Pallet, Storage, Event} = 80,
+		PotReward: parachains_pot_reward = 81,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
