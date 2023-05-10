@@ -657,6 +657,11 @@ where
 					// If validation produced a new set of commitments, we treat the candidate as invalid.
 					Ok(ValidationResult::Invalid(InvalidCandidate::CommitmentsHashMismatch))
 				} else {
+					gum::info!(
+						target: LOG_TARGET,
+						?res.vote_result,
+						"Valid!"
+					);
 					outputs.update_vote_result(res.vote_result);
 					Ok(ValidationResult::Valid(outputs, persisted_validation_data))
 				}
