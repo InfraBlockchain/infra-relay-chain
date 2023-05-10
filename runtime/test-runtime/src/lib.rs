@@ -282,7 +282,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = Staking;
+	type SessionManager = PotReward;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = ();
@@ -509,10 +509,6 @@ impl pallet_infra_voting::Config for Runtime {
 	type SessionInterface = ();
 }
 
-impl pallet_infra_system_token_manager::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-}
-
 impl parachains_disputes::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RewardValidators = ();
@@ -709,6 +705,8 @@ construct_runtime! {
 		Hrmp: parachains_hrmp::{Pallet, Call, Storage, Event<T>},
 		Ump: parachains_ump::{Pallet, Call, Storage, Event},
 		Dmp: parachains_dmp::{Pallet, Call, Storage},
+		Pot: parachains_pot::{Pallet, Storage, Event},
+		PotReward: parachains_pot_reward::{Pallet, Storage, Event},
 		Xcm: pallet_xcm::{Pallet, Call, Event<T>, Origin},
 		ParasDisputes: parachains_disputes::{Pallet, Storage, Event<T>},
 

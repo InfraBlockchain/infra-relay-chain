@@ -31,10 +31,9 @@ use runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent,
-	reward_points as parachains_reward_points, runtime_api_impl::v2 as parachains_runtime_api_impl,
-	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump,
+	paras_inherent as parachains_paras_inherent, reward_points as parachains_reward_points,
+	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
+	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -66,8 +65,10 @@ use sp_core::OpaqueMetadata;
 use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str,
-	curve::PiecewiseLinear, generic,
-	generic::{VoteAccountId, VoteWeight}, impl_opaque_keys,
+	curve::PiecewiseLinear,
+	generic,
+	generic::{VoteAccountId, VoteWeight},
+	impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
 		OpaqueKeys, SaturatedConversion, Verify,
@@ -1318,6 +1319,10 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
+impl parachains_pot_reward::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
+
 parameter_types! {
 	pub const ParasUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
 }
@@ -1600,6 +1605,7 @@ construct_runtime! {
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
 		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
+		PotReward: parachains_pot_reward = 83,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
