@@ -509,6 +509,10 @@ impl pallet_infra_voting::Config for Runtime {
 	type SessionInterface = ();
 }
 
+impl parachains_pot_reward::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
+
 impl parachains_disputes::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RewardValidators = ();
