@@ -18,10 +18,6 @@ use beefy_primitives::crypto::AuthorityId as BeefyId;
 use frame_support::weights::Weight;
 use grandpa::AuthorityId as GrandpaId;
 
-// Infrablockspace Runtime Configuration
-#[cfg(feature = "infrablockspace-native")]
-use infrablockspace_runtime as infrabs;
-
 // Polkadot Runtime Configuration
 #[cfg(feature = "kusama-native")]
 use kusama_runtime as kusama;
@@ -39,10 +35,10 @@ use rococo_runtime_constants::currency::UNITS as ROC;
 use infrablockspace_primitives::{AccountId, AccountPublic, AssignmentId, ValidatorId};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_staking::Forcing;
-use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
-use sp_consensus_babe::AuthorityId as BabeId;
 use sc_chain_spec::{ChainSpecExtension, ChainType};
 use serde::{Deserialize, Serialize};
+use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
+use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::{sr25519, Pair, Public};
 use sp_runtime::{traits::IdentifyAccount, Perbill};
 use telemetry::TelemetryEndpoints;
@@ -71,10 +67,6 @@ pub struct Extensions {
 	/// This value will be set by the `sync-state rpc` implementation.
 	pub light_sync_state: sc_sync_state_rpc::LightSyncStateExtension,
 }
-
-/// The 'ChainSpec' parameterized for the Infrablockspace runtime.
-#[cfg(feature = "infrablockspace-native")]
-pub type InfraBsChainSpec = service::GenericChainSpec<infrabs::GenesisConfig, Extensions>;
 
 /// The `ChainSpec` parameterized for the polkadot runtime.
 #[cfg(feature = "polkadot-native")]
@@ -142,14 +134,11 @@ pub fn rococo_config() -> Result<RococoChainSpec, String> {
 }
 
 /// The default parachains host configuration.
-#[cfg(any(
-	feature = "rococo-native",
-	feature = "kusama-native",
-	feature = "polkadot-native"
-))]
+#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "polkadot-native"))]
 fn default_parachains_host_configuration(
-) -> infrablockspace_runtime_parachains::configuration::HostConfiguration<infrablockspace_primitives::BlockNumber>
-{
+) -> infrablockspace_runtime_parachains::configuration::HostConfiguration<
+	infrablockspace_primitives::BlockNumber,
+> {
 	use infrablockspace_primitives::{MAX_CODE_SIZE, MAX_POV_SIZE};
 
 	infrablockspace_runtime_parachains::configuration::HostConfiguration {
@@ -189,11 +178,7 @@ fn default_parachains_host_configuration(
 	}
 }
 
-#[cfg(any(
-	feature = "rococo-native",
-	feature = "kusama-native",
-	feature = "polkadot-native"
-))]
+#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "polkadot-native"))]
 #[test]
 fn default_parachains_host_configuration_is_consistent() {
 	default_parachains_host_configuration().panic_if_not_consistent();
@@ -1453,4 +1438,3 @@ pub fn rococo_local_testnet_config() -> Result<RococoChainSpec, String> {
 		Default::default(),
 	))
 }
-

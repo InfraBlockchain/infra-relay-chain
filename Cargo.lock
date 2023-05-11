@@ -3580,7 +3580,6 @@ dependencies = [
  "infrablockspace-core-primitives",
  "infrablockspace-node-core-parachains-inherent",
  "infrablockspace-primitives",
- "infrablockspace-runtime",
  "infrablockspace-runtime-common",
  "kusama-runtime",
  "pallet-transaction-payment",
@@ -4328,74 +4327,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "infrablockspace-runtime"
-version = "0.1.0"
-dependencies = [
- "bitvec",
- "frame-benchmarking",
- "frame-executive",
- "frame-remote-externalities",
- "frame-support",
- "frame-system",
- "frame-system-benchmarking",
- "frame-system-rpc-runtime-api",
- "frame-try-runtime",
- "hex-literal",
- "infrablockspace-primitives",
- "infrablockspace-runtime-common",
- "infrablockspace-runtime-constants",
- "infrablockspace-runtime-parachains",
- "log",
- "pallet-asset-tx-payment",
- "pallet-assets",
- "pallet-authorship",
- "pallet-babe",
- "pallet-balances",
- "pallet-collective",
- "pallet-democracy",
- "pallet-grandpa",
- "pallet-multisig",
- "pallet-scheduler",
- "pallet-session",
- "pallet-timestamp",
- "pallet-transaction-payment",
- "pallet-transaction-payment-rpc-runtime-api",
- "pallet-treasury",
- "pallet-xcm",
- "parity-scale-codec",
- "rustc-hex",
- "scale-info",
- "separator",
- "serde",
- "serde_derive",
- "serde_json",
- "smallvec",
- "sp-api",
- "sp-authority-discovery",
- "sp-block-builder",
- "sp-consensus-babe",
- "sp-core",
- "sp-inherents",
- "sp-io",
- "sp-keyring",
- "sp-offchain",
- "sp-runtime",
- "sp-session",
- "sp-std",
- "sp-tracing",
- "sp-transaction-pool",
- "sp-trie",
- "sp-version",
- "static_assertions",
- "substrate-wasm-builder",
- "tiny-keccak",
- "tokio",
- "xcm",
- "xcm-builder",
- "xcm-executor",
-]
-
-[[package]]
 name = "infrablockspace-runtime-common"
 version = "0.9.37"
 dependencies = [
@@ -4443,19 +4374,6 @@ dependencies = [
  "sp-std",
  "static_assertions",
  "xcm",
-]
-
-[[package]]
-name = "infrablockspace-runtime-constants"
-version = "0.1.0"
-dependencies = [
- "frame-support",
- "infrablockspace-primitives",
- "infrablockspace-runtime-common",
- "smallvec",
- "sp-core",
- "sp-runtime",
- "sp-weights",
 ]
 
 [[package]]
@@ -4555,8 +4473,6 @@ dependencies = [
  "infrablockspace-parachain",
  "infrablockspace-primitives",
  "infrablockspace-rpc",
- "infrablockspace-runtime",
- "infrablockspace-runtime-constants",
  "infrablockspace-runtime-parachains",
  "infrablockspace-statement-distribution",
  "infrablockspace-test-client",
@@ -6750,24 +6666,6 @@ checksum = "a1914cd452d8fccd6f9db48147b29fd4ae05bea9dc5d9ad578509f72415de282"
 dependencies = [
  "cfg-if",
  "libm 0.1.4",
-]
-
-[[package]]
-name = "pallet-asset-tx-payment"
-version = "4.0.0-dev"
-source = "git+https://github.com/InfraBlockchain/infra-substrate?branch=master#3cef45294c1f23fc18c69e889c0368a6b1084822"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-transaction-payment",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
 ]
 
 [[package]]

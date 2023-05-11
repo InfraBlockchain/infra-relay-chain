@@ -12,7 +12,7 @@ babe = { package = "sc-consensus-babe", git = "https://github.com/InfraBlockchai
 beefy = { package = "sc-consensus-beefy", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 grandpa = { package = "sc-consensus-grandpa", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 mmr-gadget = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-sp-mmr-primitives = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master"}
+sp-mmr-primitives = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-block-builder = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-chain-spec = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-client-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -89,22 +89,16 @@ infrablockspace-parachain = { path = "../../parachain" }
 infrablockspace-primitives = { path = "../../primitives" }
 infrablockspace-node-primitives = { path = "../primitives" }
 infrablockspace-rpc = { path = "../../rpc" }
-infrablockspace-node-subsystem = {path = "../subsystem" }
+infrablockspace-node-subsystem = { path = "../subsystem" }
 infrablockspace-node-subsystem-util = { path = "../subsystem-util" }
 infrablockspace-node-subsystem-types = { path = "../subsystem-types" }
 infrablockspace-runtime-parachains = { path = "../../runtime/parachains" }
 infrablockspace-node-network-protocol = { path = "../network/protocol" }
 
-# Infrablockspace Runtime Constants
-infrablockspace-runtime-constants = { path = "../../runtime/infrabs/constants", optional = true }
-
 # Polkadot Runtime Constants
 polkadot-runtime-constants = { path = "../../runtime/polkadot/constants", optional = true }
 kusama-runtime-constants = { path = "../../runtime/kusama/constants", optional = true }
 rococo-runtime-constants = { path = "../../runtime/rococo/constants", optional = true }
-
-# Infrablockspace Runtimes
-infrablockspace-runtime = { path = "../../runtime/infrabs", optional = true }
 
 # Polkadot Runtimes
 polkadot-runtime = { path = "../../runtime/polkadot", optional = true }
@@ -144,9 +138,7 @@ tempfile = "3.2"
 [features]
 default = ["db", "full-node", "polkadot-native"]
 
-db = [
-	"service/rocksdb"
-]
+db = ["service/rocksdb"]
 
 full-node = [
 	"infrablockspace-node-core-av-store",
@@ -175,13 +167,16 @@ full-node = [
 	"parity-db",
 ]
 
-infrablockspace-native = [ "infrablockspace-runtime", "infrablockspace-runtime-constants", "infrablockspace-client/polkadot" ]
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
 # Validators require the native runtime currently
-polkadot-native = [ "polkadot-runtime", "polkadot-runtime-constants", "infrablockspace-client/polkadot" ]
-kusama-native = [ "kusama-runtime", "kusama-runtime-constants", "infrablockspace-client/kusama" ]
-rococo-native = [ "rococo-runtime", "rococo-runtime-constants", "infrablockspace-client/rococo" ]
+polkadot-native = [
+	"polkadot-runtime",
+	"polkadot-runtime-constants",
+	"infrablockspace-client/polkadot",
+]
+kusama-native = ["kusama-runtime", "kusama-runtime-constants", "infrablockspace-client/kusama"]
+rococo-native = ["rococo-runtime", "rococo-runtime-constants", "infrablockspace-client/rococo"]
 
 runtime-benchmarks = [
 	"polkadot-runtime?/runtime-benchmarks",
