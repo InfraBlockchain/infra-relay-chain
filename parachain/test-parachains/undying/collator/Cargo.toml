@@ -38,7 +38,7 @@ infrablockspace-node-core-pvf = { path = "../../../../node/core/pvf" }
 
 [dev-dependencies]
 infrablockspace-parachain = { path = "../../.." }
-infrablockspace-test-service = { path = "../../../../node/test/service" }
+infrabs-test-service = { path = "../../../../node/test/service" }
 
 substrate-test-utils = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-service = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

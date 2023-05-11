@@ -11,14 +11,17 @@ futures-timer = "3.0.2"
 gum = { package = "tracing-gum", path = "../../gum" }
 
 sp-maybe-compressed-blob = { package = "sp-maybe-compressed-blob", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-parity-scale-codec = { version = "3.3.0", default-features = false, features = ["bit-vec", "derive"] }
+parity-scale-codec = { version = "3.3.0", default-features = false, features = [
+    "bit-vec",
+    "derive",
+] }
 
 infrablockspace-primitives = { path = "../../../primitives" }
 infrablockspace-parachain = { path = "../../../parachain" }
 infrablockspace-node-primitives = { path = "../../primitives" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
 infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
-polkadot-node-metrics = { path = "../../metrics" }
+infrabs-node-metrics = { path = "../../metrics" }
 
 [target.'cfg(not(any(target_os = "android", target_os = "unknown")))'.dependencies]
 infrablockspace-node-core-pvf = { path = "../pvf" }

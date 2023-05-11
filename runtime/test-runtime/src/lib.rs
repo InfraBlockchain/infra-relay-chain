@@ -28,9 +28,9 @@ use infrablockspace_runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent, runtime_api_impl::v2 as runtime_impl,
-	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump, pot as parachains_pot,
+	paras_inherent as parachains_paras_inherent, pot as parachains_pot,
+	runtime_api_impl::v2 as runtime_impl, scheduler as parachains_scheduler,
+	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -40,10 +40,10 @@ use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{Everything, KeyOwnerProofSystem, WithdrawReasons},
 };
+use infrablockspace_runtime_parachains::reward_points::RewardValidatorsWithEraPoints;
 use pallet_grandpa::{fg_primitives, AuthorityId as GrandpaId};
 use pallet_session::historical as session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
-use infrablockspace_runtime_parachains::reward_points::RewardValidatorsWithEraPoints;
 use primitives::{
 	AccountId, AccountIndex, Balance, BlockNumber, CandidateEvent, CommittedCandidateReceipt,
 	CoreState, GroupRotationInfo, Hash as HashT, Id as ParaId, InboundDownwardMessage,
@@ -95,8 +95,8 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 /// Runtime version (Test).
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-	spec_name: create_runtime_str!("infrablockspace-test-runtime"),
-	impl_name: create_runtime_str!("parity-infrablockspace-test-runtime"),
+	spec_name: create_runtime_str!("infrabs-test-runtime"),
+	impl_name: create_runtime_str!("parity-infrabs-test-runtime"),
 	authoring_version: 2,
 	spec_version: 1056,
 	impl_version: 0,

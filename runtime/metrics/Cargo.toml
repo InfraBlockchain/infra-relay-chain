@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-runtime-metrics"
+name = "infrabs-runtime-metrics"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

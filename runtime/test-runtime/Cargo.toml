@@ -1,5 +1,5 @@
 [package]
-name = "infrablockspace-test-runtime"
+name = "infrabs-test-runtime"
 build = "build.rs"
 version.workspace = true
 authors.workspace = true
@@ -47,7 +47,7 @@ pallet-session = { git = "https://github.com/InfraBlockchain/infra-substrate", b
 frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-staking-reward-curve = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-frame-system = {git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-system-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 test-runtime-constants = { package = "test-runtime-constants", path = "./constants", default-features = false }
 pallet-timestamp = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -130,7 +130,4 @@ std = [
 	"pallet-sudo/std",
 ]
 
-runtime-benchmarks = [
-	"pallet-xcm/runtime-benchmarks",
-	"xcm-builder/runtime-benchmarks",
-]
+runtime-benchmarks = ["pallet-xcm/runtime-benchmarks", "xcm-builder/runtime-benchmarks"]

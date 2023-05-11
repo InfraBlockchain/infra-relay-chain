@@ -1,5 +1,5 @@
 [package]
-name = "infrablockspace-test-service"
+name = "infrabs-test-service"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -21,7 +21,7 @@ infrablockspace-runtime-common = { path = "../../../runtime/common" }
 infrablockspace-service = { path = "../../service" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
 infrablockspace-node-primitives = { path = "../../primitives" }
-infrablockspace-test-runtime = { path = "../../../runtime/test-runtime" }
+infrabs-test-runtime = { path = "../../../runtime/test-runtime" }
 test-runtime-constants = { path = "../../../runtime/test-runtime/constants" }
 infrablockspace-runtime-parachains = { path = "../../../runtime/parachains" }
 
@@ -64,5 +64,5 @@ substrate-test-utils = { git = "https://github.com/InfraBlockchain/infra-substra
 tokio = { version = "1.24.2", features = ["macros"] }
 
 [features]
-runtime-metrics=["infrablockspace-test-runtime/runtime-metrics"]
-runtime-benchmarks=["infrablockspace-test-runtime/runtime-benchmarks"]
+runtime-metrics = ["infrabs-test-runtime/runtime-metrics"]
+runtime-benchmarks = ["infrabs-test-runtime/runtime-benchmarks"]

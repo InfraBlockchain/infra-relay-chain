@@ -1,6 +1,6 @@
 [package]
 name = "infrablockspace-cli"
-description = "Polkadot Relay-chain Client Node"
+description = "InfraBlockSpace Relay-chain Client Node"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -23,7 +23,7 @@ pyro = { package = "pyroscope", version = "0.3.1", optional = true }
 service = { package = "infrablockspace-service", path = "../node/service", default-features = false, optional = true }
 infrablockspace-client = { path = "../node/client", optional = true }
 infrablockspace-node-core-pvf = { path = "../node/core/pvf", optional = true }
-polkadot-performance-test = { path = "../node/test/performance-test", optional = true }
+infrabs-performance-test = { path = "../node/test/performance-test", optional = true }
 
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -32,7 +32,7 @@ frame-benchmarking-cli = { git = "https://github.com/InfraBlockchain/infra-subst
 try-runtime-cli = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", optional = true }
 sc-cli = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", optional = true }
 sc-service = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", optional = true }
-polkadot-node-metrics = { path = "../node/metrics" }
+infrabs-node-metrics = { path = "../node/metrics" }
 sc-tracing = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", optional = true }
 sc-sysinfo = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-executor = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -42,7 +42,7 @@ sc-storage-monitor = { git = "https://github.com/InfraBlockchain/infra-substrate
 substrate-build-script-utils = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 [features]
-default = ["db", "cli", "full-node", "polkadot-native"]
+default = ["db", "cli", "full-node", "infrabs-native"]
 db = ["service/db"]
 cli = [
 	"clap",
@@ -56,21 +56,21 @@ cli = [
 ]
 runtime-benchmarks = [
 	"service/runtime-benchmarks",
-	"polkadot-node-metrics/runtime-benchmarks",
-	"polkadot-performance-test?/runtime-benchmarks",
+	"infrabs-node-metrics/runtime-benchmarks",
+	"infrabs-performance-test?/runtime-benchmarks",
 ]
 full-node = ["service/full-node"]
 try-runtime = ["service/try-runtime", "try-runtime-cli/try-runtime"]
 fast-runtime = ["service/fast-runtime"]
 pyroscope = ["pyro"]
-hostperfcheck = ["polkadot-performance-test"]
+hostperfcheck = ["infrabs-performance-test"]
 
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
 # Validators require the native runtime currently
-polkadot-native = ["service/polkadot-native"]
+infrabs-native = ["service/infrabs-native"]
 kusama-native = ["service/kusama-native"]
 rococo-native = ["service/rococo-native"]
 
 malus = ["full-node", "service/malus"]
-runtime-metrics = ["service/runtime-metrics", "polkadot-node-metrics/runtime-metrics"]
+runtime-metrics = ["service/runtime-metrics", "infrabs-node-metrics/runtime-metrics"]
