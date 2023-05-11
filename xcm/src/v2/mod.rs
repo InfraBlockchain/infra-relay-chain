@@ -112,7 +112,7 @@ pub enum NetworkId {
 	/// Some named network.
 	Named(WeakBoundedVec<u8, ConstU32<32>>),
 	/// The Polkadot Relay chain
-	Polkadot,
+	Infrabs,
 	/// Kusama.
 	Kusama,
 }
@@ -123,7 +123,7 @@ impl TryInto<NetworkId> for Option<NewNetworkId> {
 		use NewNetworkId::*;
 		Ok(match self {
 			None => NetworkId::Any,
-			Some(Polkadot) => NetworkId::Polkadot,
+			Some(Infrabs) => NetworkId::Infrabs,
 			Some(Kusama) => NetworkId::Kusama,
 			_ => return Err(()),
 		})

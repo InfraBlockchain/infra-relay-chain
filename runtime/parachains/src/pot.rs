@@ -6,11 +6,10 @@ pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
-	
-	use frame_support::pallet_prelude::*;
-	use frame_system::pallet_prelude::*;
+
 	use super::*;
-	
+	use frame_support::pallet_prelude::*;
+
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
 	#[pallet::without_storage_info]
@@ -27,10 +26,7 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event {
-		VoteCollected{
-			para: ParaId, 
-			vote: PotVotesResult,
-		},
+		VoteCollected { para: ParaId, vote: PotVotesResult },
 	}
 
 	#[pallet::storage]
@@ -39,14 +35,8 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-
 	pub(crate) fn aggregate_vote_result(para: ParaId, result: PotVotesResult) {
 		AggregatedPotVotes::<T>::insert(&para, result.clone());
-		Self::deposit_event(
-			Event::VoteCollected { 
-				para: para, 
-				vote: result,
-			}
-		)
+		Self::deposit_event(Event::VoteCollected { para, vote: result })
 	}
 }

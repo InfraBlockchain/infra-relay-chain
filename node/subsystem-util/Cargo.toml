@@ -21,7 +21,7 @@ derive_more = "0.99.17"
 lru = "0.9.0"
 
 infrablockspace-node-subsystem = { path = "../subsystem" }
-polkadot-node-jaeger = { path = "../jaeger" }
+infrabs-node-jaeger = { path = "../jaeger" }
 infrabs-node-metrics = { path = "../metrics" }
 infrablockspace-node-network-protocol = { path = "../network/protocol" }
 infrablockspace-primitives = { path = "../../primitives" }

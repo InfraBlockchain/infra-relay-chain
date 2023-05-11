@@ -1,20 +1,20 @@
 // Copyright 2017-2021 Parity Technologies (UK) Ltd.
-// This file is part of Polkadot.
+// This file is part of Infrabs.
 
-// Polkadot is free software: you can redistribute it and/or modify
+// Infrabs is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Polkadot is distributed in the hope that it will be useful,
+// Infrabs is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
 
-//! Polkadot service. Specialized wrapper over substrate service.
+//! Infrabs service. Specialized wrapper over substrate service.
 
 #![deny(unused_results)]
 
@@ -87,9 +87,9 @@ pub use infrablockspace_client::RococoExecutorDispatch;
 pub use infrablockspace_client::KusamaExecutorDispatch;
 
 #[cfg(feature = "infrabs-native")]
-pub use infrablockspace_client::PolkadotExecutorDispatch;
+pub use infrablockspace_client::InfrabsExecutorDispatch;
 
-pub use chain_spec::{KusamaChainSpec, PolkadotChainSpec, RococoChainSpec};
+pub use chain_spec::{InfrabsChainSpec, KusamaChainSpec, RococoChainSpec};
 pub use consensus_common::{block_validation::Chain, Proposal, SelectChain};
 use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
 #[cfg(feature = "full-node")]
@@ -118,11 +118,11 @@ pub use sp_runtime::{
 	},
 };
 
-// Polkadot Native Runtimes
+// Infrabs Native Runtimes
+#[cfg(feature = "infrabs-native")]
+pub use {infrabs_runtime, infrabs_runtime_constants};
 #[cfg(feature = "kusama-native")]
 pub use {kusama_runtime, kusama_runtime_constants};
-#[cfg(feature = "infrabs-native")]
-pub use {polkadot_runtime, polkadot_runtime_constants};
 #[cfg(feature = "rococo-native")]
 pub use {rococo_runtime, rococo_runtime_constants};
 
@@ -237,8 +237,8 @@ pub enum Error {
 
 /// Can be called for a `Configuration` to identify which network the configuration targets.
 pub trait IdentifyVariant {
-	/// Returns if this is a configuration for the `Polkadot` network.
-	fn is_polkadot(&self) -> bool;
+	/// Returns if this is a configuration for the `Infrabs` network.
+	fn is_infrabs(&self) -> bool;
 
 	/// Returns if this is a configuration for the `Kusama` network.
 	fn is_kusama(&self) -> bool;
@@ -251,8 +251,8 @@ pub trait IdentifyVariant {
 }
 
 impl IdentifyVariant for Box<dyn ChainSpec> {
-	fn is_polkadot(&self) -> bool {
-		self.id().starts_with("polkadot") || self.id().starts_with("dot")
+	fn is_infrabs(&self) -> bool {
+		self.id().starts_with("infrabs") || self.id().starts_with("dot")
 	}
 	fn is_kusama(&self) -> bool {
 		self.id().starts_with("kusama") || self.id().starts_with("ksm")
@@ -764,7 +764,7 @@ where
 
 	let genesis_hash = client.block_hash(0).ok().flatten().expect("Genesis block exists; qed");
 
-	// Note: GrandPa is pushed before the Polkadot-specific protocols. This doesn't change
+	// Note: GrandPa is pushed before the Infrabs-specific protocols. This doesn't change
 	// anything in terms of behaviour, but makes the logs more consistent with the other
 	// Substrate nodes.
 	let grandpa_protocol_name = grandpa::protocol_standard_name(&genesis_hash, &config.chain_spec);
@@ -1299,7 +1299,7 @@ pub fn new_chain_ops(
 
 	#[cfg(feature = "infrabs-native")]
 	{
-		return chain_ops!(config, jaeger_agent, None; polkadot_runtime, PolkadotExecutorDispatch, Polkadot)
+		return chain_ops!(config, jaeger_agent, None; infrabs_runtime, InfrabsExecutorDispatch, Infrabs)
 	}
 
 	#[cfg(not(feature = "infrabs-native"))]
@@ -1313,7 +1313,7 @@ pub fn new_chain_ops(
 
 /// Build a full node.
 ///
-/// The actual "flavor", aka if it will use `Polkadot`, `Rococo` or `Kusama` is determined based on
+/// The actual "flavor", aka if it will use `Infrabs`, `Rococo` or `Kusama` is determined based on
 /// [`IdentifyVariant`] using the chain spec.
 ///
 /// `overseer_enable_anyways` always enables the overseer, based on the provided `OverseerGenerator`,
@@ -1373,7 +1373,7 @@ pub fn build_full(
 
 	#[cfg(feature = "infrabs-native")]
 	{
-		return new_full::<polkadot_runtime::RuntimeApi, PolkadotExecutorDispatch, _>(
+		return new_full::<infrabs_runtime::RuntimeApi, InfrabsExecutorDispatch, _>(
 			config,
 			is_collator,
 			grandpa_pause,
@@ -1390,7 +1390,7 @@ pub fn build_full(
 			malus_finality_delay,
 			hwbench,
 		)
-		.map(|full| full.with_client(Client::Polkadot))
+		.map(|full| full.with_client(Client::Infrabs))
 	}
 
 	#[cfg(not(feature = "infrabs-native"))]

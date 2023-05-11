@@ -33,8 +33,8 @@ pub mod messages;
 mod runtime_client;
 pub use runtime_client::RuntimeApiSubsystemClient;
 
+pub use infrabs_node_jaeger as jaeger;
 pub use jaeger::*;
-pub use polkadot_node_jaeger as jaeger;
 
 /// How many slots are stack-reserved for active leaves updates
 ///

@@ -48,7 +48,7 @@ fn get_exec_name() -> Option<String> {
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
-		"BlockchainLabs InfraBlockSpace".into()
+		"BlockchainLabs InfraBlockspace".into()
 	}
 
 	fn impl_version() -> String {
@@ -117,7 +117,7 @@ impl SubstrateCli for Cli {
 			path => {
 				let path = std::path::PathBuf::from(path);
 
-				let chain_spec = Box::new(service::infrabsChainSpec::from_json_file(path.clone())?)
+				let chain_spec = Box::new(service::InfrabsChainSpec::from_json_file(path.clone())?)
 					as Box<dyn service::ChainSpec>;
 
 				// When `force_*` is given or the file name starts with the name of one of the known chains,
@@ -161,7 +161,7 @@ fn set_default_ss58_version(spec: &Box<dyn service::ChainSpec>) {
 	let ss58_version = if spec.is_kusama() {
 		Ss58AddressFormatRegistry::KusamaAccount
 	} else {
-		Ss58AddressFormatRegistry::InfrabsAccount
+		Ss58AddressFormatRegistry::PolkadotAccount
 	}
 	.into();
 

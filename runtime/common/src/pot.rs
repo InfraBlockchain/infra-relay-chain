@@ -1,13 +1,12 @@
 use frame_support::traits::pot::VoteInfoHandler;
-use sp_runtime::generic::{VoteAccountId, VoteWeight, VoteAssetId, PotVotes};
-use sp_std::prelude::*;
 pub use pallet::*;
+use sp_runtime::generic::{PotVotes, VoteAccountId, VoteAssetId, VoteWeight};
+use sp_std::prelude::*;
 
 #[frame_support::pallet]
 pub mod pallet {
-    use frame_support::pallet_prelude::*;
-    use frame_system::pallet_prelude::*;
 	use super::*;
+	use frame_support::pallet_prelude::*;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
@@ -23,21 +22,14 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-        VoteCollected {
-            candidate: VoteAccountId,
-            asset_id: VoteAssetId,
-            weight: VoteWeight,
-        },
-        VoteWeightUpdated {
-            candidate: VoteAccountId, 
-            asset_id: VoteAssetId,
-        }
-    }
+		VoteCollected { candidate: VoteAccountId, asset_id: VoteAssetId, weight: VoteWeight },
+		VoteWeightUpdated { candidate: VoteAccountId, asset_id: VoteAssetId },
+	}
 
 	#[pallet::error]
 	pub enum Error<T> {}
 
-    /// The vote weight of a specific account for a specific asset.
+	/// The vote weight of a specific account for a specific asset.
 	#[pallet::storage]
 	pub(super) type CollectedPotVotes<T: Config> = StorageValue<_, PotVotes, OptionQuery>;
 }
@@ -61,17 +53,17 @@ impl<T: Config> Pallet<T> {
 	) {
 		let pot_votes = if let Some(mut old) = CollectedPotVotes::<T>::get() {
 			old.update_vote_weight(vote_asset_id.clone(), vote_account_id.clone(), vote_weight);
-            Pallet::<T>::deposit_event(Event::<T>::VoteWeightUpdated {
-                candidate: vote_account_id,
-                asset_id: vote_asset_id,
-            });
+			Pallet::<T>::deposit_event(Event::<T>::VoteWeightUpdated {
+				candidate: vote_account_id,
+				asset_id: vote_asset_id,
+			});
 			old
 		} else {
-            Pallet::<T>::deposit_event(Event::<T>::VoteCollected {
-                candidate: vote_account_id.clone(),
-                asset_id: vote_asset_id.clone(),
-                weight: vote_weight.clone(),
-            });
+			Pallet::<T>::deposit_event(Event::<T>::VoteCollected {
+				candidate: vote_account_id.clone(),
+				asset_id: vote_asset_id.clone(),
+				weight: vote_weight.clone(),
+			});
 			PotVotes::new(vote_asset_id, vote_account_id, vote_weight)
 		};
 		CollectedPotVotes::<T>::put(pot_votes);

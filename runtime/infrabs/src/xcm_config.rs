@@ -43,7 +43,7 @@ parameter_types! {
 	/// the context".
 	pub const TokenLocation: MultiLocation = Here.into_location();
 	/// The infrabs network ID. This is named.
-	pub const ThisNetwork: NetworkId = NetworkId::infrabs;
+	pub const ThisNetwork: NetworkId = NetworkId::Infrabs;
 	/// Our location in the universe of consensus systems.
 	pub const UniversalLocation: InteriorMultiLocation = X1(GlobalConsensus(ThisNetwork::get()));
 	/// The Checking Account, which holds any native assets that have been teleported out and not back in (yet).

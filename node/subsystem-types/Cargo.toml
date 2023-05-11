@@ -11,8 +11,8 @@ futures = "0.3.21"
 infrablockspace-primitives = { path = "../../primitives" }
 infrablockspace-node-primitives = { path = "../primitives" }
 infrablockspace-node-network-protocol = { path = "../network/protocol" }
-polkadot-statement-table = { path = "../../statement-table" }
-polkadot-node-jaeger = { path = "../jaeger" }
+infrabs-statement-table = { path = "../../statement-table" }
+infrabs-node-jaeger = { path = "../jaeger" }
 orchestra = "0.0.4"
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

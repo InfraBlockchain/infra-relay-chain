@@ -19,7 +19,7 @@
 //! ```rust
 //! # use infrablockspace_primitives::{CandidateHash, Hash};
 //! # fn main() {
-//! use polkadot_node_jaeger as jaeger;
+//! use infrabs_node_jaeger as jaeger;
 //!
 //! let relay_parent = Hash::default();
 //! let candidate = CandidateHash::default();
@@ -53,7 +53,7 @@
 //! ```rust
 //! # use infrablockspace_primitives::{CandidateHash, Hash};
 //! # fn main() {
-//! # use polkadot_node_jaeger as jaeger;
+//! # use infrabs_node_jaeger as jaeger;
 //!
 //! # let relay_parent = Hash::default();
 //! # let candidate = CandidateHash::default();
@@ -83,9 +83,11 @@
 //! # }
 //! ```
 
-use parity_scale_codec::Encode;
 use infrablockspace_node_primitives::PoV;
-use infrablockspace_primitives::{BlakeTwo256, CandidateHash, Hash, HashT, Id as ParaId, ValidatorIndex};
+use infrablockspace_primitives::{
+	BlakeTwo256, CandidateHash, Hash, HashT, Id as ParaId, ValidatorIndex,
+};
+use parity_scale_codec::Encode;
 use sc_network::PeerId;
 
 use std::{fmt, sync::Arc};

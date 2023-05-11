@@ -77,13 +77,13 @@ build-malus:
     - .compiler-info
     - .collect-artifacts
   script:
-    - time cargo build --profile testnet --verbose -p polkadot-test-malus
+    - time cargo build --profile testnet --verbose -p infrabs-test-malus
     # pack artifacts
     - mkdir -p ./artifacts
     - mv ./target/testnet/malus ./artifacts/.
     - echo -n "${CI_COMMIT_REF_NAME}" > ./artifacts/VERSION
     - echo -n "${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}" > ./artifacts/EXTRATAG
-    - echo "polkadot-test-malus = $(cat ./artifacts/VERSION) (EXTRATAG = $(cat ./artifacts/EXTRATAG))"
+    - echo "infrabs-test-malus = $(cat ./artifacts/VERSION) (EXTRATAG = $(cat ./artifacts/EXTRATAG))"
     - cp -r ./scripts/* ./artifacts
 
 build-staking-miner:
@@ -171,4 +171,4 @@ build-short-benchmark:
   script:
     - cargo +nightly build --profile release --locked --features=runtime-benchmarks
     - mkdir artifacts
-    - cp ./target/release/polkadot ./artifacts/
+    - cp ./target/release/infrabs ./artifacts/

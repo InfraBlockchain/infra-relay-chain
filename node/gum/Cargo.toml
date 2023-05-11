@@ -7,6 +7,6 @@ description = "Stick logs together with the TraceID as provided by tempo"
 
 [dependencies]
 tracing = "0.1.35"
-jaeger = { path = "../jaeger", package = "polkadot-node-jaeger" }
+jaeger = { path = "../jaeger", package = "infrabs-node-jaeger" }
 gum-proc-macro = { path = "./proc-macro", package = "tracing-gum-proc-macro" }
 infrablockspace-primitives = { path = "../../primitives", features = ["std"] }

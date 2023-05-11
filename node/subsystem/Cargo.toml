@@ -8,4 +8,4 @@ edition.workspace = true
 [dependencies]
 infrablockspace-overseer = { path = "../overseer" }
 infrablockspace-node-subsystem-types = { path = "../subsystem-types" }
-polkadot-node-jaeger = { path = "../jaeger" }
+infrabs-node-jaeger = { path = "../jaeger" }
