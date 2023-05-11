@@ -6,7 +6,7 @@ path = "src/main.rs"
 name = "polkadot"
 description = "Implementation of a `https://polkadot.network` node in Rust based on the Substrate framework."
 license = "GPL-3.0-only"
-rust-version = "1.64.0" # workspace properties
+rust-version = "1.64.0"                                                                                       # workspace properties
 readme = "README.md"
 authors.workspace = true
 edition.workspace = true
@@ -23,7 +23,7 @@ color-eyre = { version = "0.6.1", default-features = false }
 tikv-jemallocator = "0.5.0"
 
 # Crates in our workspace, defined as dependencies so we can pass them feature flags.
-infrablockspace-cli = { path = "cli", features = [ "kusama-native", "rococo-native" ]  }
+infrablockspace-cli = { path = "cli", features = ["kusama-native", "rococo-native"] }
 infrablockspace-node-core-pvf = { path = "node/core/pvf" }
 infrablockspace-overseer = { path = "node/overseer" }
 
@@ -46,8 +46,6 @@ members = [
 	"runtime/common/slot_range_helper",
 	"runtime/metrics",
 	"runtime/parachains",
-	"runtime/infrabs",
-	"runtime/infrabs/constants",
 	"runtime/polkadot",
 	"runtime/polkadot/constants",
 	"runtime/kusama",
@@ -170,7 +168,7 @@ sha2 = { opt-level = 3 }
 sha3 = { opt-level = 3 }
 smallvec = { opt-level = 3 }
 snow = { opt-level = 3 }
-substrate-bip39 = {opt-level = 3}
+substrate-bip39 = { opt-level = 3 }
 twox-hash = { opt-level = 3 }
 uint = { opt-level = 3 }
 wasmi = { opt-level = 3 }
@@ -195,17 +193,20 @@ codegen-units = 1
 
 [profile.testnet]
 inherits = "release"
-debug = 1 # debug symbols are useful for profilers
+debug = 1               # debug symbols are useful for profilers
 debug-assertions = true
 overflow-checks = true
 
 [features]
-runtime-benchmarks= [ "infrablockspace-cli/runtime-benchmarks" ]
-try-runtime = [ "infrablockspace-cli/try-runtime" ]
-fast-runtime = [ "infrablockspace-cli/fast-runtime" ]
-runtime-metrics = [ "infrablockspace-cli/runtime-metrics" ]
+runtime-benchmarks = ["infrablockspace-cli/runtime-benchmarks"]
+try-runtime = ["infrablockspace-cli/try-runtime"]
+fast-runtime = ["infrablockspace-cli/fast-runtime"]
+runtime-metrics = ["infrablockspace-cli/runtime-metrics"]
 pyroscope = ["infrablockspace-cli/pyroscope"]
-jemalloc-allocator = ["infrablockspace-node-core-pvf/jemalloc-allocator", "infrablockspace-overseer/jemalloc-allocator"]
+jemalloc-allocator = [
+	"infrablockspace-node-core-pvf/jemalloc-allocator",
+	"infrablockspace-overseer/jemalloc-allocator",
+]
 
 # Configuration for building a .deb package - for use with `cargo-deb`
 [package.metadata.deb]
@@ -217,12 +218,18 @@ license-file = ["LICENSE", "0"]
 # https://www.debian.org/doc/debian-policy/ch-maintainerscripts.html
 maintainer-scripts = "scripts/packaging/deb-maintainer-scripts"
 assets = [
-	["target/release/polkadot", "/usr/bin/", "755"],
-	["scripts/packaging/polkadot.service", "/lib/systemd/system/", "644"]
+	[
+		"target/release/polkadot",
+		"/usr/bin/",
+		"755",
+	],
+	[
+		"scripts/packaging/polkadot.service",
+		"/lib/systemd/system/",
+		"644",
+	],
 ]
-conf-files = [
-	"/etc/default/polkadot"
-]
+conf-files = ["/etc/default/polkadot"]
 
 [package.metadata.spellcheck]
 config = "./scripts/ci/gitlab/spellcheck.toml"

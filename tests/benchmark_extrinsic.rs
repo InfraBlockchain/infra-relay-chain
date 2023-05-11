@@ -17,7 +17,7 @@
 use assert_cmd::cargo::cargo_bin;
 use std::{process::Command, result::Result};
 
-static RUNTIMES: [&str; 4] = ["polkadot", "kusama", "rococo", "infrabs"];
+static RUNTIMES: [&str; 4] = ["polkadot", "kusama", "rococo"];
 
 static EXTRINSICS: [(&str, &str); 2] = [("system", "remark"), ("balances", "transfer_keep_alive")];
 
