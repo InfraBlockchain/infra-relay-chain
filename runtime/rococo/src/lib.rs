@@ -1077,6 +1077,7 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 
 impl parachains_pot_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type ValidatorSet = Historical;
 }
 
 parameter_types! {
