@@ -52,6 +52,7 @@ pallet-grandpa = { git = "https://github.com/InfraBlockchain/infra-substrate", b
 pallet-identity = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-im-online = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-indices = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-infra-asset-tx-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-membership = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-mmr = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-multisig = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -143,6 +144,7 @@ std = [
 	"pallet-identity/std",
 	"pallet-im-online/std",
 	"pallet-indices/std",
+	"pallet-infra-asset-tx-payment/std",
 	"pallet-membership/std",
 	"pallet-mmr/std",
 	"pallet-multisig/std",
