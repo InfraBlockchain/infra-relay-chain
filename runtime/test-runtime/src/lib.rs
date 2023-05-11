@@ -511,6 +511,7 @@ impl pallet_infra_voting::Config for Runtime {
 
 impl parachains_pot_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type ValidatorSet = Historical;
 }
 
 impl parachains_disputes::Config for Runtime {

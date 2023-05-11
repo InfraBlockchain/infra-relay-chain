@@ -35,15 +35,16 @@ use frame_support::{
 	traits::{
 		tokens::{
 			fungibles::{Balanced, CreditOf, Inspect},
-			WithdrawConsequence,
+			AssetId, Balance, WithdrawConsequence,
 		},
-		IsType,
+		IsType, ValidatorSet, ValidatorSetWithIdentification,
 	},
 	DefaultNoBound,
 };
 use frame_system::pallet_prelude::*;
 use log::{debug, error, info, trace, warn};
 use pallet_session::historical;
+use primitives::AccountId;
 use scale_info::TypeInfo;
 use sp_runtime::{traits::StaticLookup, RuntimeDebug};
 use sp_staking::SessionIndex;
@@ -53,10 +54,23 @@ pub use pallet::*;
 
 type AccountIdLookupOf<T> = <<T as frame_system::Config>::Lookup as StaticLookup>::Source;
 
-#[derive(Encode, Decode, RuntimeDebug, TypeInfo)]
+/// A type for representing the validator id in a session.
+pub type ValidatorId<T> = <<T as Config>::ValidatorSet as ValidatorSet<
+	<T as frame_system::Config>::AccountId,
+>>::ValidatorId;
+
+#[derive(Encode, Decode, Clone, PartialEq, Eq, sp_core::RuntimeDebug, TypeInfo)]
 pub struct ValidatorReward {
-	asset_id: u128,
-	amount: u128,
+	#[codec(compact)]
+	pub asset_id: u32,
+	#[codec(compact)]
+	pub amount: u128,
+}
+
+impl ValidatorReward {
+	pub fn new(asset_id: u32, amount: u128) -> Self {
+		Self { asset_id, amount }
+	}
 }
 
 #[frame_support::pallet]
@@ -75,19 +89,21 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+		/// A type for retrieving the validators supposed to be online in a session.
+		type ValidatorSet: ValidatorSetWithIdentification<Self::AccountId>;
 	}
 
 	#[pallet::storage]
 	#[pallet::getter(fn validator_rewards)]
 	#[pallet::unbounded]
 	pub type ValidatorRewards<T: Config> =
-		StorageMap<_, Twox64Concat, T::AccountId, Vec<ValidatorReward>>;
+		StorageMap<_, Twox64Concat, ValidatorId<T>, Vec<ValidatorReward>>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// The validator has been rewarded by this amount.
-		Rewarded { stash: T::AccountId, amount: u128 },
+		Rewarded { stash: ValidatorId<T>, amount: u128 },
 	}
 
 	#[pallet::error]
@@ -96,6 +112,7 @@ pub mod pallet {
 		NotController,
 		/// Rewards already been claimed for this validator.
 		AlreadyClaimed,
+		Unknown,
 	}
 
 	#[pallet::call]
@@ -116,7 +133,27 @@ impl<T: Config> Pallet<T> {
 		None
 	}
 	fn start_session(_start_index: SessionIndex) {}
-	fn end_session(_end_index: SessionIndex) {}
+	fn end_session(_end_index: SessionIndex) {
+		let current_validators = T::ValidatorSet::validators();
+		for validator in current_validators.iter() {
+			// TODO: need to change system token
+			if ValidatorRewards::<T>::contains_key(validator) {
+				let _ = ValidatorRewards::<T>::try_mutate_exists(
+					validator,
+					|maybe_rewards| -> Result<(), DispatchError> {
+						let rewards = maybe_rewards.as_mut().ok_or(Error::<T>::Unknown)?;
+						for reward in rewards.iter_mut() {
+							reward.amount += 10;
+						}
+						Ok(())
+					},
+				);
+			} else {
+				let rewards = vec![ValidatorReward::new(1, 10)];
+				ValidatorRewards::<T>::insert(validator, rewards);
+			}
+		}
+	}
 }
 
 /// In this implementation `new_session(session)` must be called before `end_session(session-1)`
@@ -126,19 +163,19 @@ impl<T: Config> Pallet<T> {
 /// some session can lag in between the newest session planned and the latest session started.
 impl<T: Config> pallet_session::SessionManager<T::AccountId> for Pallet<T> {
 	fn new_session(new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
-		info!("planning new session {}", new_index);
+		info!("🏁 planning new session {}", new_index);
 		Self::new_session(new_index)
 	}
 	fn new_session_genesis(new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
-		info!("planning new session {} at genesis", new_index);
+		info!("🏁 planning new session {} at genesis", new_index);
 		Self::new_session(new_index)
 	}
 	fn start_session(start_index: SessionIndex) {
-		info!("starting session {}", start_index);
+		info!("🏁 starting session {}", start_index);
 		Self::start_session(start_index)
 	}
 	fn end_session(end_index: SessionIndex) {
-		info!("ending session {}", end_index);
+		info!("🏁 ending session {}", end_index);
 		Self::end_session(end_index)
 	}
 }

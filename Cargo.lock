@@ -4595,6 +4595,7 @@ dependencies = [
  "pallet-authorship",
  "pallet-babe",
  "pallet-balances",
+ "pallet-infra-asset-tx-payment",
  "pallet-infra-system-token-manager",
  "pallet-infra-voting",
  "pallet-session",
@@ -7180,6 +7181,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-infra-asset-tx-payment"
+version = "0.1.0"
+source = "git+https://github.com/InfraBlockchain/infra-substrate?branch=master#86932c8d7663f150e64578aef855ed5a00614659"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-transaction-payment",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-infra-system-token-manager"
 version = "4.0.0-dev"
 source = "git+https://github.com/InfraBlockchain/infra-substrate?branch=master#cb516b879cbfe52dda75c8538afa82c360f64e17"
@@ -8841,6 +8860,7 @@ dependencies = [
  "pallet-identity",
  "pallet-im-online",
  "pallet-indices",
+ "pallet-infra-asset-tx-payment",
  "pallet-infra-system-token-manager",
  "pallet-infra-voting",
  "pallet-membership",
