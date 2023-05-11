@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-test-malus"
+name = "infrabs-test-malus"
 description = "Misbehaving nodes for local testnets, system and Simnet tests."
 license = "GPL-3.0-only"
 version.workspace = true
@@ -17,7 +17,7 @@ infrablockspace-cli = { path = "../../cli", features = [
     "malus",
     "rococo-native",
     "kusama-native",
-    "polkadot-native",
+    "infrabs-native",
 ] }
 infrablockspace-node-subsystem = { path = "../subsystem" }
 infrablockspace-node-subsystem-util = { path = "../subsystem-util" }

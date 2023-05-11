@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-polkadot-node-metrics = { path = "../../metrics" }
+infrabs-node-metrics = { path = "../../metrics" }
 infrablockspace-node-network-protocol = { path = "../protocol" }
 infrablockspace-node-primitives = { path = "../../primitives" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
@@ -17,7 +17,9 @@ gum = { package = "tracing-gum", path = "../../gum" }
 
 [dev-dependencies]
 sp-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", features = ["std"] }
+sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", features = [
+    "std",
+] }
 
 infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 infrablockspace-node-subsystem-test-helpers = { path = "../../subsystem-test-helpers" }
@@ -25,7 +27,7 @@ infrablockspace-primitives-test-helpers = { path = "../../../primitives/test-hel
 
 assert_matches = "1.4.0"
 schnorrkel = { version = "0.9.1", default-features = false }
-rand_core = "0.5.1" # should match schnorrkel
+rand_core = "0.5.1"                                          # should match schnorrkel
 rand_chacha = "0.3.1"
 env_logger = "0.9.0"
 log = "0.4.17"

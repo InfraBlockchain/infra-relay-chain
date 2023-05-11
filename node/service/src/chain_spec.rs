@@ -23,9 +23,9 @@ use grandpa::AuthorityId as GrandpaId;
 use kusama_runtime as kusama;
 #[cfg(feature = "kusama-native")]
 use kusama_runtime_constants::currency::UNITS as KSM;
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 use polkadot_runtime as polkadot;
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 use polkadot_runtime_constants::currency::UNITS as DOT;
 #[cfg(feature = "rococo-native")]
 use rococo_runtime as rococo;
@@ -43,7 +43,7 @@ use sp_core::{sr25519, Pair, Public};
 use sp_runtime::{traits::IdentifyAccount, Perbill};
 use telemetry::TelemetryEndpoints;
 
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 const POLKADOT_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 #[cfg(feature = "kusama-native")]
 const KUSAMA_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
@@ -69,14 +69,14 @@ pub struct Extensions {
 }
 
 /// The `ChainSpec` parameterized for the polkadot runtime.
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 pub type PolkadotChainSpec = service::GenericChainSpec<polkadot::GenesisConfig, Extensions>;
 
 // Dummy chain spec, in case when we don't have the native runtime.
 pub type DummyChainSpec = service::GenericChainSpec<(), Extensions>;
 
 // Dummy chain spec, but that is fine when we don't have the native runtime.
-#[cfg(not(feature = "polkadot-native"))]
+#[cfg(not(feature = "infrabs-native"))]
 pub type PolkadotChainSpec = DummyChainSpec;
 
 /// The `ChainSpec` parameterized for the kusama runtime.
@@ -134,7 +134,7 @@ pub fn rococo_config() -> Result<RococoChainSpec, String> {
 }
 
 /// The default parachains host configuration.
-#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "polkadot-native"))]
+#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "infrabs-native"))]
 fn default_parachains_host_configuration(
 ) -> infrablockspace_runtime_parachains::configuration::HostConfiguration<
 	infrablockspace_primitives::BlockNumber,
@@ -178,13 +178,13 @@ fn default_parachains_host_configuration(
 	}
 }
 
-#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "polkadot-native"))]
+#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "infrabs-native"))]
 #[test]
 fn default_parachains_host_configuration_is_consistent() {
 	default_parachains_host_configuration().panic_if_not_consistent();
 }
 
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 fn polkadot_session_keys(
 	babe: BabeId,
 	grandpa: GrandpaId,
@@ -243,7 +243,7 @@ fn rococo_session_keys(
 	}
 }
 
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 fn polkadot_staging_testnet_config_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig {
 	// subkey inspect "$SECRET"
 	let endowed_accounts = vec![];
@@ -846,7 +846,7 @@ pub fn polkadot_chain_spec_properties() -> serde_json::map::Map<String, serde_js
 }
 
 /// Polkadot staging testnet config.
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 pub fn polkadot_staging_testnet_config() -> Result<PolkadotChainSpec, String> {
 	let wasm_binary = polkadot::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 	let boot_nodes = vec![];
@@ -993,7 +993,7 @@ fn testnet_accounts() -> Vec<AccountId> {
 }
 
 /// Helper function to create polkadot `GenesisConfig` for testing
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 pub fn polkadot_testnet_genesis(
 	wasm_binary: &[u8],
 	initial_authorities: Vec<(
@@ -1251,7 +1251,7 @@ pub fn rococo_testnet_genesis(
 	}
 }
 
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 fn polkadot_development_config_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig {
 	polkadot_testnet_genesis(
 		wasm_binary,
@@ -1282,7 +1282,7 @@ fn rococo_development_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::Gene
 }
 
 /// Polkadot development config (single validator Alice)
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 pub fn polkadot_development_config() -> Result<PolkadotChainSpec, String> {
 	let wasm_binary = polkadot::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 
@@ -1342,7 +1342,7 @@ pub fn rococo_development_config() -> Result<RococoChainSpec, String> {
 	))
 }
 
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 fn polkadot_local_testnet_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig {
 	polkadot_testnet_genesis(
 		wasm_binary,
@@ -1356,7 +1356,7 @@ fn polkadot_local_testnet_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig
 }
 
 /// Polkadot local testnet config (multivalidator Alice + Bob)
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 pub fn polkadot_local_testnet_config() -> Result<PolkadotChainSpec, String> {
 	let wasm_binary = polkadot::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 

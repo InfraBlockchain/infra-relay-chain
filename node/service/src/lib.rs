@@ -86,7 +86,7 @@ pub use infrablockspace_client::RococoExecutorDispatch;
 #[cfg(feature = "kusama-native")]
 pub use infrablockspace_client::KusamaExecutorDispatch;
 
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 pub use infrablockspace_client::PolkadotExecutorDispatch;
 
 pub use chain_spec::{KusamaChainSpec, PolkadotChainSpec, RococoChainSpec};
@@ -121,7 +121,7 @@ pub use sp_runtime::{
 // Polkadot Native Runtimes
 #[cfg(feature = "kusama-native")]
 pub use {kusama_runtime, kusama_runtime_constants};
-#[cfg(feature = "polkadot-native")]
+#[cfg(feature = "infrabs-native")]
 pub use {polkadot_runtime, polkadot_runtime_constants};
 #[cfg(feature = "rococo-native")]
 pub use {rococo_runtime, rococo_runtime_constants};
@@ -1297,12 +1297,12 @@ pub fn new_chain_ops(
 		return chain_ops!(config, jaeger_agent, None; kusama_runtime, KusamaExecutorDispatch, Kusama)
 	}
 
-	#[cfg(feature = "polkadot-native")]
+	#[cfg(feature = "infrabs-native")]
 	{
 		return chain_ops!(config, jaeger_agent, None; polkadot_runtime, PolkadotExecutorDispatch, Polkadot)
 	}
 
-	#[cfg(not(feature = "polkadot-native"))]
+	#[cfg(not(feature = "infrabs-native"))]
 	{
 		let _ = config;
 		let _ = jaeger_agent;
@@ -1371,7 +1371,7 @@ pub fn build_full(
 		.map(|full| full.with_client(Client::Kusama))
 	}
 
-	#[cfg(feature = "polkadot-native")]
+	#[cfg(feature = "infrabs-native")]
 	{
 		return new_full::<polkadot_runtime::RuntimeApi, PolkadotExecutorDispatch, _>(
 			config,
@@ -1393,7 +1393,7 @@ pub fn build_full(
 		.map(|full| full.with_client(Client::Polkadot))
 	}
 
-	#[cfg(not(feature = "polkadot-native"))]
+	#[cfg(not(feature = "infrabs-native"))]
 	{
 		let _ = config;
 		let _ = is_collator;

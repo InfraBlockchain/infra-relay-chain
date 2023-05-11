@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-performance-test"
+name = "infrabs-performance-test"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

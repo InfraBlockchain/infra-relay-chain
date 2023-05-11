@@ -29,7 +29,7 @@ enum Command {
 #[derive(Clone, Debug, ValueEnum)]
 #[value(rename_all = "PascalCase")]
 enum Runtime {
-	Polkadot,
+	Infrabs,
 	Kusama,
 }
 
@@ -59,10 +59,9 @@ async fn main() {
 
 	use pallet_bags_list_remote_tests::*;
 	match options.runtime {
-		Runtime::Polkadot => sp_core::crypto::set_default_ss58_version(
-			<polkadot_runtime::Runtime as frame_system::Config>::SS58Prefix::get()
-				.try_into()
-				.unwrap(),
+		Runtime::Infrabs => sp_core::crypto::set_default_ss58_version(
+			infrabs_runtime::Runtime as frame_system::Config >
+				::SS58Prefix::get().try_into().unwrap(),
 		),
 		Runtime::Kusama => sp_core::crypto::set_default_ss58_version(
 			<kusama_runtime::Runtime as frame_system::Config>::SS58Prefix::get()
@@ -92,19 +91,19 @@ async fn main() {
 			)
 			.await;
 		},
-		(Runtime::Polkadot, Command::CheckMigration) => {
-			use polkadot_runtime::{Block, Runtime};
-			use polkadot_runtime_constants::currency::UNITS;
+		(Runtime::Infrabs, Command::CheckMigration) => {
+			use infrabs_runtime::{Block, Runtime};
+			use infrabs_runtime_constants::currency::UNITS;
 			migration::execute::<Runtime, Block>(UNITS as u64, "DOT", options.uri.clone()).await;
 		},
-		(Runtime::Polkadot, Command::SanityCheck) => {
-			use polkadot_runtime::{Block, Runtime};
-			use polkadot_runtime_constants::currency::UNITS;
+		(Runtime::Infrabs, Command::SanityCheck) => {
+			use infrabs_runtime::{Block, Runtime};
+			use infrabs_runtime_constants::currency::UNITS;
 			try_state::execute::<Runtime, Block>(UNITS as u64, "DOT", options.uri.clone()).await;
 		},
-		(Runtime::Polkadot, Command::Snapshot) => {
-			use polkadot_runtime::{Block, Runtime};
-			use polkadot_runtime_constants::currency::UNITS;
+		(Runtime::Infrabs, Command::Snapshot) => {
+			use infrabs_runtime::{Block, Runtime};
+			use infrabs_runtime_constants::currency::UNITS;
 			snapshot::execute::<Runtime, Block>(
 				options.snapshot_limit,
 				UNITS.try_into().unwrap(),

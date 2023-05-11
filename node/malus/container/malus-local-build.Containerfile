@@ -4,8 +4,8 @@
 
 FROM rust as builder
 
-WORKDIR /usr/src/polkadot-malus
-COPY polkadot/  /usr/src/polkadot-malus/polkadot/
+WORKDIR /usr/src/infrabs-malus
+COPY infrabs/  /usr/src/infrabs-malus/infrabs/
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ca-certificates \
@@ -22,10 +22,10 @@ RUN export PATH="$PATH:$HOME/.cargo/bin" && \
     rustup default stable
 
 
-WORKDIR /usr/src/polkadot-malus/polkadot
+WORKDIR /usr/src/infrabs-malus/infrabs
 
-RUN cargo build -p polkadot-test-malus --release --verbose
-RUN cp -v /usr/src/polkadot-malus/polkadot/target/release/malus /usr/local/bin
+RUN cargo build -p infrabs-test-malus --release --verbose
+RUN cp -v /usr/src/infrabs-malus/infrabs/target/release/malus /usr/local/bin
 
 # check if executable works in this container
 RUN /usr/local/bin/malus --version
@@ -38,7 +38,7 @@ FROM debian:buster-slim as runtime
 RUN apt-get update && \
     apt-get install -y curl tini
 
-COPY --from=builder /usr/src/polkadot-malus/polkadot/target/release/malus /usr/local/bin
+COPY --from=builder /usr/src/infrabs-malus/infrabs/target/release/malus /usr/local/bin
 # Non-root user for security purposes.
 #
 # UIDs below 10,000 are a security risk, as a container breakout could result
@@ -54,7 +54,7 @@ RUN groupadd --gid 10001 nonroot && \
             --gid nonroot \
             --groups nonroot \
             --uid 10000 nonroot
-WORKDIR /home/nonroot/polkadot-malus
+WORKDIR /home/nonroot/infrabs-malus
 
 RUN chown -R nonroot. /home/nonroot
 

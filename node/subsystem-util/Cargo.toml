@@ -20,9 +20,9 @@ gum = { package = "tracing-gum", path = "../gum" }
 derive_more = "0.99.17"
 lru = "0.9.0"
 
-infrablockspace-node-subsystem = {path = "../subsystem" }
+infrablockspace-node-subsystem = { path = "../subsystem" }
 polkadot-node-jaeger = { path = "../jaeger" }
-polkadot-node-metrics = { path = "../metrics" }
+infrabs-node-metrics = { path = "../metrics" }
 infrablockspace-node-network-protocol = { path = "../network/protocol" }
 infrablockspace-primitives = { path = "../../primitives" }
 infrablockspace-node-primitives = { path = "../primitives" }
@@ -34,7 +34,7 @@ sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substr
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 kvdb = "0.13.0"
-parity-db = { version = "0.4.4"}
+parity-db = { version = "0.4.4" }
 
 [dev-dependencies]
 assert_matches = "1.4.0"

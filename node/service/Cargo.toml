@@ -96,12 +96,12 @@ infrablockspace-runtime-parachains = { path = "../../runtime/parachains" }
 infrablockspace-node-network-protocol = { path = "../network/protocol" }
 
 # Polkadot Runtime Constants
-polkadot-runtime-constants = { path = "../../runtime/polkadot/constants", optional = true }
+infrabs-runtime-constants = { path = "../../runtime/infrabs/constants", optional = true }
 kusama-runtime-constants = { path = "../../runtime/kusama/constants", optional = true }
 rococo-runtime-constants = { path = "../../runtime/rococo/constants", optional = true }
 
 # Polkadot Runtimes
-polkadot-runtime = { path = "../../runtime/polkadot", optional = true }
+infrabs-runtime = { path = "../../runtime/infrabs", optional = true }
 kusama-runtime = { path = "../../runtime/kusama", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
@@ -129,14 +129,14 @@ infrablockspace-node-core-runtime-api = { path = "../core/runtime-api", optional
 infrablockspace-statement-distribution = { path = "../network/statement-distribution", optional = true }
 
 [dev-dependencies]
-infrablockspace-test-client = { path = "../test/client" }
+infrabs-test-client = { path = "../test/client" }
 infrablockspace-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
 env_logger = "0.9.0"
 assert_matches = "1.5.0"
 tempfile = "3.2"
 
 [features]
-default = ["db", "full-node", "polkadot-native"]
+default = ["db", "full-node", "infrabs-native"]
 
 db = ["service/rocksdb"]
 
@@ -170,27 +170,23 @@ full-node = [
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
 # Validators require the native runtime currently
-polkadot-native = [
-	"polkadot-runtime",
-	"polkadot-runtime-constants",
-	"infrablockspace-client/polkadot",
-]
+infrabs-native = ["infrabs-runtime", "infrabs-runtime-constants", "infrablockspace-client/infrabs"]
 kusama-native = ["kusama-runtime", "kusama-runtime-constants", "infrablockspace-client/kusama"]
 rococo-native = ["rococo-runtime", "rococo-runtime-constants", "infrablockspace-client/rococo"]
 
 runtime-benchmarks = [
-	"polkadot-runtime?/runtime-benchmarks",
+	"infrabs-runtime?/runtime-benchmarks",
 	"kusama-runtime?/runtime-benchmarks",
 	"rococo-runtime?/runtime-benchmarks",
 	"service/runtime-benchmarks",
 ]
 try-runtime = [
-	"polkadot-runtime?/try-runtime",
+	"infrabs-runtime?/try-runtime",
 	"kusama-runtime?/try-runtime",
 	"rococo-runtime?/try-runtime",
 ]
 fast-runtime = [
-	"polkadot-runtime?/fast-runtime",
+	"infrabs-runtime?/fast-runtime",
 	"kusama-runtime?/fast-runtime",
 	"rococo-runtime?/fast-runtime",
 ]
@@ -199,5 +195,5 @@ malus = ["full-node"]
 runtime-metrics = [
 	"rococo-runtime?/runtime-metrics",
 	"kusama-runtime?/runtime-metrics",
-	"polkadot-runtime?/runtime-metrics",
+	"infrabs-runtime?/runtime-metrics",
 ]
