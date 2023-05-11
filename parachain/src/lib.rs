@@ -1,18 +1,18 @@
 // Copyright 2017-2020 Parity Technologies (UK) Ltd.
-// This file is part of Polkadot.
+// This file is part of Infrabs.
 
-// Polkadot is free software: you can redistribute it and/or modify
+// Infrabs is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Polkadot is distributed in the hope that it will be useful,
+// Infrabs is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
 
 #![warn(unused_crate_dependencies)]
 
@@ -23,7 +23,7 @@
 //!
 //! ## Parachain WASM
 //!
-//! Polkadot parachain WASM is in the form of a module which imports a memory
+//! Infrabs parachain WASM is in the form of a module which imports a memory
 //! instance and exports a function `validate_block`.
 //!
 //! `validate` accepts as input two `i32` values, representing a pointer/length pair

@@ -3775,13 +3775,13 @@ dependencies = [
  "infrablockspace-overseer",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
+ "infrabs-node-jaeger",
  "kvdb",
  "kvdb-memorydb",
  "lru 0.9.0",
  "merlin",
  "parity-scale-codec",
  "parking_lot 0.12.1",
- "polkadot-node-jaeger",
  "rand_core 0.5.1",
  "sc-keystore",
  "schnorrkel",
@@ -3841,7 +3841,7 @@ dependencies = [
  "infrablockspace-node-subsystem-util",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "polkadot-statement-table",
+ "infrabs-statement-table",
  "sc-keystore",
  "sp-application-crypto",
  "sp-core",
@@ -4090,8 +4090,8 @@ dependencies = [
  "hex",
  "infrablockspace-node-primitives",
  "infrablockspace-primitives",
+ "infrabs-node-jaeger",
  "parity-scale-codec",
- "polkadot-node-jaeger",
  "rand 0.8.5",
  "rand_chacha 0.3.1",
  "sc-authority-discovery",
@@ -4132,7 +4132,7 @@ version = "0.9.37"
 dependencies = [
  "infrablockspace-node-subsystem-types",
  "infrablockspace-overseer",
- "polkadot-node-jaeger",
+ "infrabs-node-jaeger",
 ]
 
 [[package]]
@@ -4163,9 +4163,9 @@ dependencies = [
  "infrablockspace-node-network-protocol",
  "infrablockspace-node-primitives",
  "infrablockspace-primitives",
+ "infrabs-node-jaeger",
+ "infrabs-statement-table",
  "orchestra",
- "polkadot-node-jaeger",
- "polkadot-statement-table",
  "sc-network",
  "smallvec",
  "sp-api",
@@ -4193,6 +4193,7 @@ dependencies = [
  "infrablockspace-overseer",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
+ "infrabs-node-jaeger",
  "infrabs-node-metrics",
  "itertools",
  "kvdb",
@@ -4205,7 +4206,6 @@ dependencies = [
  "parity-scale-codec",
  "parking_lot 0.11.2",
  "pin-project",
- "polkadot-node-jaeger",
  "prioritized-metered-channel",
  "rand 0.8.5",
  "sp-application-crypto",
@@ -4592,6 +4592,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "infrabs-node-jaeger"
+version = "0.9.37"
+dependencies = [
+ "infrablockspace-node-primitives",
+ "infrablockspace-primitives",
+ "lazy_static",
+ "log",
+ "mick-jaeger",
+ "parity-scale-codec",
+ "parking_lot 0.12.1",
+ "sc-network",
+ "sp-core",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
 name = "infrabs-node-metrics"
 version = "0.9.37"
 dependencies = [
@@ -4752,6 +4769,15 @@ dependencies = [
  "parity-scale-codec",
  "sp-std",
  "sp-tracing",
+]
+
+[[package]]
+name = "infrabs-statement-table"
+version = "0.9.37"
+dependencies = [
+ "infrablockspace-primitives",
+ "parity-scale-codec",
+ "sp-core",
 ]
 
 [[package]]
@@ -4926,6 +4952,17 @@ dependencies = [
  "test-runtime-constants",
  "tokio",
  "tracing-gum",
+]
+
+[[package]]
+name = "infrabs-voter-bags"
+version = "0.9.37"
+dependencies = [
+ "clap 4.2.7",
+ "generate-bags",
+ "infrabs-runtime",
+ "kusama-runtime",
+ "sp-io",
 ]
 
 [[package]]
@@ -8163,43 +8200,6 @@ name = "platforms"
 version = "3.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3d7ddaed09e0eb771a79ab0fd64609ba0afb0a8366421957936ad14cbd13630"
-
-[[package]]
-name = "polkadot-node-jaeger"
-version = "0.9.37"
-dependencies = [
- "infrablockspace-node-primitives",
- "infrablockspace-primitives",
- "lazy_static",
- "log",
- "mick-jaeger",
- "parity-scale-codec",
- "parking_lot 0.12.1",
- "sc-network",
- "sp-core",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "polkadot-statement-table"
-version = "0.9.37"
-dependencies = [
- "infrablockspace-primitives",
- "parity-scale-codec",
- "sp-core",
-]
-
-[[package]]
-name = "polkadot-voter-bags"
-version = "0.9.37"
-dependencies = [
- "clap 4.2.7",
- "generate-bags",
- "infrabs-runtime",
- "kusama-runtime",
- "sp-io",
-]
 
 [[package]]
 name = "polling"
@@ -12484,7 +12484,7 @@ name = "tracing-gum"
 version = "0.9.37"
 dependencies = [
  "infrablockspace-primitives",
- "polkadot-node-jaeger",
+ "infrabs-node-jaeger",
  "tracing",
  "tracing-gum-proc-macro",
 ]

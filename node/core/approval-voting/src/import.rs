@@ -28,7 +28,6 @@
 //!
 //! We maintain a rolling window of session indices. This starts as empty
 
-use polkadot_node_jaeger as jaeger;
 use infrablockspace_node_primitives::{
 	approval::{self as approval_types, BlockApprovalMeta, RelayVRFStory},
 	MAX_FINALITY_LAG,
@@ -48,6 +47,7 @@ use infrablockspace_primitives::{
 	BlockNumber, CandidateEvent, CandidateHash, CandidateReceipt, ConsensusLog, CoreIndex,
 	GroupIndex, Hash, Header, SessionIndex,
 };
+use infrabs_node_jaeger as jaeger;
 use sc_keystore::LocalKeystore;
 use sp_consensus_slots::Slot;
 
@@ -612,12 +612,14 @@ pub(crate) mod tests {
 	use crate::approval_db::v1::DbBackend;
 	use ::test_helpers::{dummy_candidate_receipt, dummy_hash};
 	use assert_matches::assert_matches;
-	use merlin::Transcript;
 	use infrablockspace_node_primitives::approval::{VRFOutput, VRFProof};
 	use infrablockspace_node_subsystem::messages::{AllMessages, ApprovalVotingMessage};
 	use infrablockspace_node_subsystem_test_helpers::make_subsystem_context;
 	use infrablockspace_node_subsystem_util::database::Database;
-	use infrablockspace_primitives::{Id as ParaId, IndexedVec, SessionInfo, ValidatorId, ValidatorIndex};
+	use infrablockspace_primitives::{
+		Id as ParaId, IndexedVec, SessionInfo, ValidatorId, ValidatorIndex,
+	};
+	use merlin::Transcript;
 	pub(crate) use sp_consensus_babe::{
 		digests::{CompatibleDigestItem, PreDigest, SecondaryVRFPreDigest},
 		AllowedSlots, BabeEpochConfiguration, Epoch as BabeEpoch,
@@ -696,7 +698,10 @@ pub(crate) mod tests {
 			_relay_vrf_story: infrablockspace_node_primitives::approval::RelayVRFStory,
 			_assignment: &infrablockspace_node_primitives::approval::AssignmentCert,
 			_backing_group: infrablockspace_primitives::GroupIndex,
-		) -> Result<infrablockspace_node_primitives::approval::DelayTranche, criteria::InvalidAssignment> {
+		) -> Result<
+			infrablockspace_node_primitives::approval::DelayTranche,
+			criteria::InvalidAssignment,
+		> {
 			Ok(0)
 		}
 	}

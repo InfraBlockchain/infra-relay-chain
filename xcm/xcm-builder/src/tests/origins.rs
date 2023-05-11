@@ -1,18 +1,18 @@
 // Copyright 2022 Parity Technologies (UK) Ltd.
-// This file is part of Polkadot.
+// This file is part of Infrabs.
 
-// Polkadot is free software: you can redistribute it and/or modify
+// Infrabs is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Polkadot is distributed in the hope that it will be useful,
+// Infrabs is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
 
 use super::*;
 
@@ -22,8 +22,8 @@ fn universal_origin_should_work() {
 	clear_universal_aliases();
 	// Parachain 1 may represent Kusama to us
 	add_universal_alias(Parachain(1), Kusama);
-	// Parachain 2 may represent Polkadot to us
-	add_universal_alias(Parachain(2), Polkadot);
+	// Parachain 2 may represent Infrabs to us
+	add_universal_alias(Parachain(2), Infrabs);
 
 	let message = Xcm(vec![
 		UniversalOrigin(GlobalConsensus(Kusama)),
@@ -71,15 +71,15 @@ fn universal_origin_should_work() {
 fn export_message_should_work() {
 	// Bridge chain (assumed to be Relay) lets Parachain #1 have message execution for free.
 	AllowUnpaidFrom::set(vec![X1(Parachain(1)).into()]);
-	// Local parachain #1 issues a transfer asset on Polkadot Relay-chain, transfering 100 Planck to
-	// Polkadot parachain #2.
+	// Local parachain #1 issues a transfer asset on Infrabs Relay-chain, transfering 100 Planck to
+	// Infrabs parachain #2.
 	let expected_message = Xcm(vec![TransferAsset {
 		assets: (Here, 100u128).into(),
 		beneficiary: Parachain(2).into(),
 	}]);
 	let expected_hash = fake_message_hash(&expected_message);
 	let message = Xcm(vec![ExportMessage {
-		network: Polkadot,
+		network: Infrabs,
 		destination: Here,
 		xcm: expected_message.clone(),
 	}]);
@@ -94,7 +94,7 @@ fn export_message_should_work() {
 	let uni_src = (ByGenesis([0; 32]), Parachain(42), Parachain(1)).into();
 	assert_eq!(
 		exported_xcm(),
-		vec![(Polkadot, 403611790, uni_src, Here, expected_message, expected_hash)]
+		vec![(Infrabs, 403611790, uni_src, Here, expected_message, expected_hash)]
 	);
 }
 

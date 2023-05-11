@@ -1,18 +1,18 @@
 // Copyright 2020-2021 Parity Technologies (UK) Ltd.
-// This file is part of Polkadot.
+// This file is part of Infrabs.
 
-// Polkadot is free software: you can redistribute it and/or modify
+// Infrabs is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Polkadot is distributed in the hope that it will be useful,
+// Infrabs is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
 
 //! XCM `Junctions`/`InteriorMultiLocation` datatype.
 
@@ -634,7 +634,7 @@ mod tests {
 	fn relative_to_works() {
 		use Junctions::*;
 		use NetworkId::*;
-		assert_eq!(X1(Polkadot.into()).relative_to(&X1(Kusama.into())), (Parent, Polkadot).into());
+		assert_eq!(X1(Infrabs.into()).relative_to(&X1(Kusama.into())), (Parent, Infrabs).into());
 		let base = X3(Kusama.into(), Parachain(1), PalletInstance(1));
 
 		// Ancestors.
@@ -647,10 +647,7 @@ mod tests {
 		);
 
 		// Ancestors with one child.
-		assert_eq!(
-			X1(Polkadot.into()).relative_to(&base),
-			(Parent, Parent, Parent, Polkadot).into()
-		);
+		assert_eq!(X1(Infrabs.into()).relative_to(&base), (Parent, Parent, Parent, Infrabs).into());
 		assert_eq!(
 			X2(Kusama.into(), Parachain(2)).relative_to(&base),
 			(Parent, Parent, Parachain(2)).into()
@@ -666,8 +663,8 @@ mod tests {
 
 		// Ancestors with grandchildren.
 		assert_eq!(
-			X2(Polkadot.into(), Parachain(1)).relative_to(&base),
-			(Parent, Parent, Parent, Polkadot, Parachain(1)).into()
+			X2(Infrabs.into(), Parachain(1)).relative_to(&base),
+			(Parent, Parent, Parent, Infrabs, Parachain(1)).into()
 		);
 		assert_eq!(
 			X3(Kusama.into(), Parachain(2), PalletInstance(1)).relative_to(&base),
@@ -688,7 +685,7 @@ mod tests {
 	fn global_consensus_works() {
 		use Junctions::*;
 		use NetworkId::*;
-		assert_eq!(X1(Polkadot.into()).global_consensus(), Ok(Polkadot));
+		assert_eq!(X1(Infrabs.into()).global_consensus(), Ok(Infrabs));
 		assert_eq!(X2(Kusama.into(), 1u64.into()).global_consensus(), Ok(Kusama));
 		assert_eq!(Here.global_consensus(), Err(()));
 		assert_eq!(X1(1u64.into()).global_consensus(), Err(()));
@@ -698,11 +695,11 @@ mod tests {
 	#[test]
 	fn test_conversion() {
 		use super::{Junction::*, Junctions::*, NetworkId::*};
-		let x: Junctions = GlobalConsensus(Polkadot).into();
-		assert_eq!(x, X1(GlobalConsensus(Polkadot)));
-		let x: Junctions = Polkadot.into();
-		assert_eq!(x, X1(GlobalConsensus(Polkadot)));
-		let x: Junctions = (Polkadot, Kusama).into();
-		assert_eq!(x, X2(GlobalConsensus(Polkadot), GlobalConsensus(Kusama)));
+		let x: Junctions = GlobalConsensus(Infrabs).into();
+		assert_eq!(x, X1(GlobalConsensus(Infrabs)));
+		let x: Junctions = Infrabs.into();
+		assert_eq!(x, X1(GlobalConsensus(Infrabs)));
+		let x: Junctions = (Infrabs, Kusama).into();
+		assert_eq!(x, X2(GlobalConsensus(Infrabs), GlobalConsensus(Kusama)));
 	}
 }

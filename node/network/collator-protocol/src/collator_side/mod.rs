@@ -738,11 +738,7 @@ async fn handle_incoming_peer_message<Context>(
 						?origin,
 						"received a valid `CollationSeconded`",
 					);
-					gum::debug!(
-						target: LOG_TARGET,
-						?statement,
-						"🫰🏻 Statement!",
-					);
+					gum::debug!(target: LOG_TARGET, ?statement, "🫰🏻 Statement!",);
 					let _ = sender.send(CollationSecondedSignal { statement, relay_parent });
 				} else {
 					gum::debug!(

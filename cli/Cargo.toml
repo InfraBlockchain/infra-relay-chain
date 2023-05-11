@@ -1,6 +1,6 @@
 [package]
 name = "infrablockspace-cli"
-description = "InfraBlockSpace Relay-chain Client Node"
+description = "InfraBlockspace Relay-chain Client Node"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

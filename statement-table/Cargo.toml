@@ -1,5 +1,5 @@
 [package]
-name = "polkadot-statement-table"
+name = "infrabs-statement-table"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

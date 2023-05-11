@@ -24,8 +24,8 @@ use infrablockspace_primitives::{
 use infrablockspace_service::chain_spec::{
 	get_account_id_from_seed, get_from_seed, polkadot_chain_spec_properties, Extensions,
 };
-use pallet_staking::Forcing;
 use infrablockspace_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
+use pallet_staking::Forcing;
 use sc_chain_spec::{ChainSpec, ChainType};
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::sr25519;
@@ -35,12 +35,12 @@ use test_runtime_constants::currency::DOTS;
 const DEFAULT_PROTOCOL_ID: &str = "dot";
 
 /// The `ChainSpec` parameterized for polkadot test runtime.
-pub type PolkadotChainSpec =
+pub type InfrabsChainSpec =
 	sc_service::GenericChainSpec<infrablockspace_test_runtime::GenesisConfig, Extensions>;
 
 /// Local testnet config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_config() -> PolkadotChainSpec {
-	PolkadotChainSpec::from_genesis(
+pub fn polkadot_local_testnet_config() -> InfrabsChainSpec {
+	InfrabsChainSpec::from_genesis(
 		"Local Testnet",
 		"local_testnet",
 		ChainType::Local,

@@ -30,7 +30,7 @@ pub enum Error {
 
 	#[error(transparent)]
 	#[cfg(feature = "hostperfcheck")]
-	PerfCheck(#[from] polkadot_performance_test::PerfCheckError),
+	PerfCheck(#[from] infrabs_performance_test::PerfCheckError),
 
 	#[cfg(not(feature = "pyroscope"))]
 	#[error("Binary was not compiled with `--feature=pyroscope`")]

@@ -7,7 +7,10 @@ edition.workspace = true
 [dependencies]
 futures = "0.3.21"
 futures-timer = "3.0.2"
-parity-scale-codec = { version = "3.3.0", default-features = false, features = ["bit-vec", "derive"] }
+parity-scale-codec = { version = "3.3.0", default-features = false, features = [
+    "bit-vec",
+    "derive",
+] }
 gum = { package = "tracing-gum", path = "../../gum" }
 bitvec = { version = "1.0.0", default-features = false, features = ["alloc"] }
 lru = "0.9"
@@ -22,18 +25,20 @@ infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 infrablockspace-overseer = { path = "../../overseer" }
 infrablockspace-primitives = { path = "../../../primitives" }
 infrablockspace-node-primitives = { path = "../../primitives" }
-polkadot-node-jaeger = { path = "../../jaeger" }
+infrabs-node-jaeger = { path = "../../jaeger" }
 
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-consensus = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-consensus-slots = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, features = ["full_crypto"] }
+sp-application-crypto = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, features = [
+    "full_crypto",
+] }
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 [dev-dependencies]
 async-trait = "0.1.57"
 parking_lot = "0.12.0"
-rand_core = "0.5.1" #                                                                       should match schnorrkel
+rand_core = "0.5.1"                                                                                               #                                                                       should match schnorrkel
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

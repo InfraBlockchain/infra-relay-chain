@@ -19,14 +19,14 @@ use frame_support::weights::Weight;
 use grandpa::AuthorityId as GrandpaId;
 
 // Polkadot Runtime Configuration
+#[cfg(feature = "infrabs-native")]
+use infrabs_runtime as infrabs;
+#[cfg(feature = "infrabs-native")]
+use infrabs_runtime_constants::currency::UNITS as DOT;
 #[cfg(feature = "kusama-native")]
 use kusama_runtime as kusama;
 #[cfg(feature = "kusama-native")]
 use kusama_runtime_constants::currency::UNITS as KSM;
-#[cfg(feature = "infrabs-native")]
-use polkadot_runtime as polkadot;
-#[cfg(feature = "infrabs-native")]
-use polkadot_runtime_constants::currency::UNITS as DOT;
 #[cfg(feature = "rococo-native")]
 use rococo_runtime as rococo;
 #[cfg(feature = "rococo-native")]
@@ -68,16 +68,16 @@ pub struct Extensions {
 	pub light_sync_state: sc_sync_state_rpc::LightSyncStateExtension,
 }
 
-/// The `ChainSpec` parameterized for the polkadot runtime.
+/// The `ChainSpec` parameterized for the infrabs runtime.
 #[cfg(feature = "infrabs-native")]
-pub type PolkadotChainSpec = service::GenericChainSpec<polkadot::GenesisConfig, Extensions>;
+pub type InfrabsChainSpec = service::GenericChainSpec<infrabs::GenesisConfig, Extensions>;
 
 // Dummy chain spec, in case when we don't have the native runtime.
 pub type DummyChainSpec = service::GenericChainSpec<(), Extensions>;
 
 // Dummy chain spec, but that is fine when we don't have the native runtime.
 #[cfg(not(feature = "infrabs-native"))]
-pub type PolkadotChainSpec = DummyChainSpec;
+pub type InfrabsChainSpec = DummyChainSpec;
 
 /// The `ChainSpec` parameterized for the kusama runtime.
 #[cfg(feature = "kusama-native")]
@@ -121,8 +121,8 @@ impl sp_runtime::BuildStorage for RococoGenesisExt {
 	}
 }
 
-pub fn polkadot_config() -> Result<PolkadotChainSpec, String> {
-	PolkadotChainSpec::from_json_bytes(&include_bytes!("../chain-specs/polkadot.json")[..])
+pub fn infrabs_config() -> Result<InfrabsChainSpec, String> {
+	InfrabsChainSpec::from_json_bytes(&include_bytes!("../chain-specs/infrabs.json")[..])
 }
 
 pub fn kusama_config() -> Result<KusamaChainSpec, String> {
@@ -185,15 +185,15 @@ fn default_parachains_host_configuration_is_consistent() {
 }
 
 #[cfg(feature = "infrabs-native")]
-fn polkadot_session_keys(
+fn infrabs_session_keys(
 	babe: BabeId,
 	grandpa: GrandpaId,
 	im_online: ImOnlineId,
 	para_validator: ValidatorId,
 	para_assignment: AssignmentId,
 	authority_discovery: AuthorityDiscoveryId,
-) -> polkadot::SessionKeys {
-	polkadot::SessionKeys {
+) -> infrabs::SessionKeys {
+	infrabs::SessionKeys {
 		babe,
 		grandpa,
 		im_online,
@@ -244,7 +244,7 @@ fn rococo_session_keys(
 }
 
 #[cfg(feature = "infrabs-native")]
-fn polkadot_staging_testnet_config_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig {
+fn infrabs_staging_testnet_config_genesis(wasm_binary: &[u8]) -> infrabs::GenesisConfig {
 	// subkey inspect "$SECRET"
 	let endowed_accounts = vec![];
 
@@ -262,24 +262,24 @@ fn polkadot_staging_testnet_config_genesis(wasm_binary: &[u8]) -> polkadot::Gene
 	const ENDOWMENT: u128 = 1_000_000 * DOT;
 	const STASH: u128 = 100 * DOT;
 
-	polkadot::GenesisConfig {
-		system: polkadot::SystemConfig { code: wasm_binary.to_vec() },
-		balances: polkadot::BalancesConfig {
+	infrabs::GenesisConfig {
+		system: infrabs::SystemConfig { code: wasm_binary.to_vec() },
+		balances: infrabs::BalancesConfig {
 			balances: endowed_accounts
 				.iter()
 				.map(|k: &AccountId| (k.clone(), ENDOWMENT))
 				.chain(initial_authorities.iter().map(|x| (x.0.clone(), STASH)))
 				.collect(),
 		},
-		indices: polkadot::IndicesConfig { indices: vec![] },
-		session: polkadot::SessionConfig {
+		indices: infrabs::IndicesConfig { indices: vec![] },
+		session: infrabs::SessionConfig {
 			keys: initial_authorities
 				.iter()
 				.map(|x| {
 					(
 						x.0.clone(),
 						x.0.clone(),
-						polkadot_session_keys(
+						infrabs_session_keys(
 							x.2.clone(),
 							x.3.clone(),
 							x.4.clone(),
@@ -291,12 +291,12 @@ fn polkadot_staging_testnet_config_genesis(wasm_binary: &[u8]) -> polkadot::Gene
 				})
 				.collect::<Vec<_>>(),
 		},
-		staking: polkadot::StakingConfig {
+		staking: infrabs::StakingConfig {
 			validator_count: 50,
 			minimum_validator_count: 4,
 			stakers: initial_authorities
 				.iter()
-				.map(|x| (x.0.clone(), x.1.clone(), STASH, polkadot::StakerStatus::Validator))
+				.map(|x| (x.0.clone(), x.1.clone(), STASH, infrabs::StakerStatus::Validator))
 				.collect(),
 			invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
 			force_era: Forcing::ForceNone,
@@ -305,24 +305,24 @@ fn polkadot_staging_testnet_config_genesis(wasm_binary: &[u8]) -> polkadot::Gene
 		},
 		phragmen_election: Default::default(),
 		democracy: Default::default(),
-		council: polkadot::CouncilConfig { members: vec![], phantom: Default::default() },
-		technical_committee: polkadot::TechnicalCommitteeConfig {
+		council: infrabs::CouncilConfig { members: vec![], phantom: Default::default() },
+		technical_committee: infrabs::TechnicalCommitteeConfig {
 			members: vec![],
 			phantom: Default::default(),
 		},
 		technical_membership: Default::default(),
-		babe: polkadot::BabeConfig {
+		babe: infrabs::BabeConfig {
 			authorities: Default::default(),
-			epoch_config: Some(polkadot::BABE_GENESIS_EPOCH_CONFIG),
+			epoch_config: Some(infrabs::BABE_GENESIS_EPOCH_CONFIG),
 		},
 		grandpa: Default::default(),
 		im_online: Default::default(),
-		authority_discovery: polkadot::AuthorityDiscoveryConfig { keys: vec![] },
-		claims: polkadot::ClaimsConfig { claims: vec![], vesting: vec![] },
-		vesting: polkadot::VestingConfig { vesting: vec![] },
+		authority_discovery: infrabs::AuthorityDiscoveryConfig { keys: vec![] },
+		claims: infrabs::ClaimsConfig { claims: vec![], vesting: vec![] },
+		vesting: infrabs::VestingConfig { vesting: vec![] },
 		treasury: Default::default(),
 		hrmp: Default::default(),
-		configuration: polkadot::ConfigurationConfig {
+		configuration: infrabs::ConfigurationConfig {
 			config: default_parachains_host_configuration(),
 		},
 		paras: Default::default(),
@@ -835,8 +835,8 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 	}
 }
 
-/// Returns the properties for the [`PolkadotChainSpec`].
-pub fn polkadot_chain_spec_properties() -> serde_json::map::Map<String, serde_json::Value> {
+/// Returns the properties for the [`InfrabsChainSpec`].
+pub fn infrabs_chain_spec_properties() -> serde_json::map::Map<String, serde_json::Value> {
 	serde_json::json!({
 		"tokenDecimals": 10,
 	})
@@ -847,15 +847,15 @@ pub fn polkadot_chain_spec_properties() -> serde_json::map::Map<String, serde_js
 
 /// Polkadot staging testnet config.
 #[cfg(feature = "infrabs-native")]
-pub fn polkadot_staging_testnet_config() -> Result<PolkadotChainSpec, String> {
-	let wasm_binary = polkadot::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+pub fn infrabs_staging_testnet_config() -> Result<InfrabsChainSpec, String> {
+	let wasm_binary = infrabs::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 	let boot_nodes = vec![];
 
-	Ok(PolkadotChainSpec::from_genesis(
+	Ok(InfrabsChainSpec::from_genesis(
 		"Polkadot Staging Testnet",
-		"polkadot_staging_testnet",
+		"infrabs_staging_testnet",
 		ChainType::Live,
-		move || polkadot_staging_testnet_config_genesis(wasm_binary),
+		move || infrabs_staging_testnet_config_genesis(wasm_binary),
 		boot_nodes,
 		Some(
 			TelemetryEndpoints::new(vec![(POLKADOT_STAGING_TELEMETRY_URL.to_string(), 0)])
@@ -863,7 +863,7 @@ pub fn polkadot_staging_testnet_config() -> Result<PolkadotChainSpec, String> {
 		),
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(polkadot_chain_spec_properties()),
+		Some(infrabs_chain_spec_properties()),
 		Default::default(),
 	))
 }
@@ -992,9 +992,9 @@ fn testnet_accounts() -> Vec<AccountId> {
 	]
 }
 
-/// Helper function to create polkadot `GenesisConfig` for testing
+/// Helper function to create infrabs `GenesisConfig` for testing
 #[cfg(feature = "infrabs-native")]
-pub fn polkadot_testnet_genesis(
+pub fn infrabs_testnet_genesis(
 	wasm_binary: &[u8],
 	initial_authorities: Vec<(
 		AccountId,
@@ -1008,26 +1008,26 @@ pub fn polkadot_testnet_genesis(
 	)>,
 	_root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
-) -> polkadot::GenesisConfig {
+) -> infrabs::GenesisConfig {
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 
 	const ENDOWMENT: u128 = 1_000_000 * DOT;
 	const STASH: u128 = 100 * DOT;
 
-	polkadot::GenesisConfig {
-		system: polkadot::SystemConfig { code: wasm_binary.to_vec() },
-		indices: polkadot::IndicesConfig { indices: vec![] },
-		balances: polkadot::BalancesConfig {
+	infrabs::GenesisConfig {
+		system: infrabs::SystemConfig { code: wasm_binary.to_vec() },
+		indices: infrabs::IndicesConfig { indices: vec![] },
+		balances: infrabs::BalancesConfig {
 			balances: endowed_accounts.iter().map(|k| (k.clone(), ENDOWMENT)).collect(),
 		},
-		session: polkadot::SessionConfig {
+		session: infrabs::SessionConfig {
 			keys: initial_authorities
 				.iter()
 				.map(|x| {
 					(
 						x.0.clone(),
 						x.0.clone(),
-						polkadot_session_keys(
+						infrabs_session_keys(
 							x.2.clone(),
 							x.3.clone(),
 							x.4.clone(),
@@ -1039,12 +1039,12 @@ pub fn polkadot_testnet_genesis(
 				})
 				.collect::<Vec<_>>(),
 		},
-		staking: polkadot::StakingConfig {
+		staking: infrabs::StakingConfig {
 			minimum_validator_count: 1,
 			validator_count: initial_authorities.len() as u32,
 			stakers: initial_authorities
 				.iter()
-				.map(|x| (x.0.clone(), x.1.clone(), STASH, polkadot::StakerStatus::Validator))
+				.map(|x| (x.0.clone(), x.1.clone(), STASH, infrabs::StakerStatus::Validator))
 				.collect(),
 			invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
 			force_era: Forcing::NotForcing,
@@ -1052,25 +1052,25 @@ pub fn polkadot_testnet_genesis(
 			..Default::default()
 		},
 		phragmen_election: Default::default(),
-		democracy: polkadot::DemocracyConfig::default(),
-		council: polkadot::CouncilConfig { members: vec![], phantom: Default::default() },
-		technical_committee: polkadot::TechnicalCommitteeConfig {
+		democracy: infrabs::DemocracyConfig::default(),
+		council: infrabs::CouncilConfig { members: vec![], phantom: Default::default() },
+		technical_committee: infrabs::TechnicalCommitteeConfig {
 			members: vec![],
 			phantom: Default::default(),
 		},
 		technical_membership: Default::default(),
-		babe: polkadot::BabeConfig {
+		babe: infrabs::BabeConfig {
 			authorities: Default::default(),
-			epoch_config: Some(polkadot::BABE_GENESIS_EPOCH_CONFIG),
+			epoch_config: Some(infrabs::BABE_GENESIS_EPOCH_CONFIG),
 		},
 		grandpa: Default::default(),
 		im_online: Default::default(),
-		authority_discovery: polkadot::AuthorityDiscoveryConfig { keys: vec![] },
-		claims: polkadot::ClaimsConfig { claims: vec![], vesting: vec![] },
-		vesting: polkadot::VestingConfig { vesting: vec![] },
+		authority_discovery: infrabs::AuthorityDiscoveryConfig { keys: vec![] },
+		claims: infrabs::ClaimsConfig { claims: vec![], vesting: vec![] },
+		vesting: infrabs::VestingConfig { vesting: vec![] },
 		treasury: Default::default(),
 		hrmp: Default::default(),
-		configuration: polkadot::ConfigurationConfig {
+		configuration: infrabs::ConfigurationConfig {
 			config: default_parachains_host_configuration(),
 		},
 		paras: Default::default(),
@@ -1252,8 +1252,8 @@ pub fn rococo_testnet_genesis(
 }
 
 #[cfg(feature = "infrabs-native")]
-fn polkadot_development_config_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig {
-	polkadot_testnet_genesis(
+fn infrabs_development_config_genesis(wasm_binary: &[u8]) -> infrabs::GenesisConfig {
+	infrabs_testnet_genesis(
 		wasm_binary,
 		vec![get_authority_keys_from_seed_no_beefy("Alice")],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -1283,19 +1283,19 @@ fn rococo_development_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::Gene
 
 /// Polkadot development config (single validator Alice)
 #[cfg(feature = "infrabs-native")]
-pub fn polkadot_development_config() -> Result<PolkadotChainSpec, String> {
-	let wasm_binary = polkadot::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+pub fn infrabs_development_config() -> Result<InfrabsChainSpec, String> {
+	let wasm_binary = infrabs::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 
-	Ok(PolkadotChainSpec::from_genesis(
+	Ok(InfrabsChainSpec::from_genesis(
 		"Development",
 		"dev",
 		ChainType::Development,
-		move || polkadot_development_config_genesis(wasm_binary),
+		move || infrabs_development_config_genesis(wasm_binary),
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(polkadot_chain_spec_properties()),
+		Some(infrabs_chain_spec_properties()),
 		Default::default(),
 	))
 }
@@ -1343,8 +1343,8 @@ pub fn rococo_development_config() -> Result<RococoChainSpec, String> {
 }
 
 #[cfg(feature = "infrabs-native")]
-fn polkadot_local_testnet_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig {
-	polkadot_testnet_genesis(
+fn infrabs_local_testnet_genesis(wasm_binary: &[u8]) -> infrabs::GenesisConfig {
+	infrabs_testnet_genesis(
 		wasm_binary,
 		vec![
 			get_authority_keys_from_seed_no_beefy("Alice"),
@@ -1357,19 +1357,19 @@ fn polkadot_local_testnet_genesis(wasm_binary: &[u8]) -> polkadot::GenesisConfig
 
 /// Polkadot local testnet config (multivalidator Alice + Bob)
 #[cfg(feature = "infrabs-native")]
-pub fn polkadot_local_testnet_config() -> Result<PolkadotChainSpec, String> {
-	let wasm_binary = polkadot::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+pub fn infrabs_local_testnet_config() -> Result<InfrabsChainSpec, String> {
+	let wasm_binary = infrabs::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 
-	Ok(PolkadotChainSpec::from_genesis(
+	Ok(InfrabsChainSpec::from_genesis(
 		"Local Testnet",
 		"local_testnet",
 		ChainType::Local,
-		move || polkadot_local_testnet_genesis(wasm_binary),
+		move || infrabs_local_testnet_genesis(wasm_binary),
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(polkadot_chain_spec_properties()),
+		Some(infrabs_chain_spec_properties()),
 		Default::default(),
 	))
 }
