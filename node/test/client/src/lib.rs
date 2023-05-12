@@ -26,8 +26,8 @@ use sp_core::storage::Storage;
 use sp_runtime::BuildStorage;
 
 pub use block_builder::*;
-pub use infrablockspace_test_runtime as runtime;
-pub use infrablockspace_test_service::{
+pub use infrabs_test_runtime as runtime;
+pub use infrabs_test_service::{
 	construct_extrinsic, construct_transfer_extrinsic, Client, FullBackend,
 	PolkadotTestExecutorDispatch,
 };

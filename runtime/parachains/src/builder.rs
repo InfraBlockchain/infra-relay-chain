@@ -192,7 +192,7 @@ impl<T: paras_inherent::Config> BenchBuilder<T> {
 	}
 
 	/// Specify a mapping of core index/ para id to the number of dispute statements for the
-	/// corresponding dispute statement set. Note that if the number of disputes is not specified
+	/// corresponding dispute statement set. Note that if the number of disputes is not specifie  d
 	/// it fallbacks to having a dispute per every validator. Additionally, an entry is not
 	/// guaranteed to have a dispute - it must line up with the cores marked as disputed as defined
 	/// in `Self::Build`.
