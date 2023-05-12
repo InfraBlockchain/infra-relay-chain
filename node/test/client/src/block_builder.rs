@@ -16,8 +16,8 @@
 
 use crate::{Client, FullBackend};
 use infrablockspace_primitives::{Block, InherentData as ParachainsInherentData};
+use infrabs_test_runtime::{GetLastTimestamp, UncheckedExtrinsic};
 use parity_scale_codec::{Decode, Encode};
-use infrablockspace_test_runtime::{GetLastTimestamp, UncheckedExtrinsic};
 use sc_block_builder::{BlockBuilder, BlockBuilderProvider};
 use sp_api::ProvideRuntimeApi;
 use sp_consensus_babe::{
@@ -61,7 +61,7 @@ impl InitInfraBsBlockBuilder for Client {
 
 		// `MinimumPeriod` is a storage parameter type that requires externalities to access the value.
 		let minimum_period = BasicExternalities::new_empty()
-			.execute_with(|| infrablockspace_test_runtime::MinimumPeriod::get());
+			.execute_with(|| infrabs_test_runtime::MinimumPeriod::get());
 
 		let timestamp = if last_timestamp == 0 {
 			std::time::SystemTime::now()
@@ -74,7 +74,7 @@ impl InitInfraBsBlockBuilder for Client {
 
 		// `SlotDuration` is a storage parameter type that requires externalities to access the value.
 		let slot_duration = BasicExternalities::new_empty()
-			.execute_with(|| infrablockspace_test_runtime::SlotDuration::get());
+			.execute_with(|| infrabs_test_runtime::SlotDuration::get());
 
 		let slot = (timestamp / slot_duration).into();
 
