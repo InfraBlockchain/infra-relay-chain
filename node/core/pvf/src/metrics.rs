@@ -17,7 +17,7 @@
 //! Prometheus metrics related to the validation host.
 
 use crate::prepare::MemoryStats;
-use infrabs_node_metrics::metrics::{self, prometheus};
+use infrablockspace_node_metrics::metrics::{self, prometheus};
 
 /// Validation host metrics.
 #[derive(Default, Clone)]

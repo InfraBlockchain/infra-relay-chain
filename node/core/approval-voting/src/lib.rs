@@ -21,6 +21,7 @@
 //! of others. It uses this information to determine when candidates and blocks have
 //! been sufficiently approved to finalize.
 
+use infrablockspace_node_jaeger as jaeger;
 use infrablockspace_node_primitives::{
 	approval::{
 		BlockApprovalMeta, DelayTranche, IndirectAssignmentCert, IndirectSignedApprovalVote,
@@ -52,7 +53,6 @@ use infrablockspace_primitives::{
 	GroupIndex, Hash, SessionIndex, SessionInfo, ValidDisputeStatementKind, ValidatorId,
 	ValidatorIndex, ValidatorPair, ValidatorSignature,
 };
-use infrabs_node_jaeger as jaeger;
 use sc_keystore::LocalKeystore;
 use sp_application_crypto::Pair;
 use sp_consensus::SyncOracle;

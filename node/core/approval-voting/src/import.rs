@@ -28,6 +28,7 @@
 //!
 //! We maintain a rolling window of session indices. This starts as empty
 
+use infrablockspace_node_jaeger as jaeger;
 use infrablockspace_node_primitives::{
 	approval::{self as approval_types, BlockApprovalMeta, RelayVRFStory},
 	MAX_FINALITY_LAG,
@@ -47,7 +48,6 @@ use infrablockspace_primitives::{
 	BlockNumber, CandidateEvent, CandidateHash, CandidateReceipt, ConsensusLog, CoreIndex,
 	GroupIndex, Hash, Header, SessionIndex,
 };
-use infrabs_node_jaeger as jaeger;
 use sc_keystore::LocalKeystore;
 use sp_consensus_slots::Slot;
 

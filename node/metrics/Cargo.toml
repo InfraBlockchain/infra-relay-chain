@@ -1,5 +1,5 @@
 [package]
-name = "infrabs-node-metrics"
+name = "infrablockspace-node-metrics"
 description = "Subsystem metric helpers"
 version.workspace = true
 authors.workspace = true
@@ -28,7 +28,7 @@ assert_cmd = "2.0.4"
 tempfile = "3.2.0"
 hyper = { version = "0.14.20", default-features = false, features = ["http1", "tcp"] }
 tokio = "1.24.2"
-infrabs-test-service = { path = "../test/service", features = ["runtime-metrics"] }
+infrablockspace-test-service = { path = "../test/service", features = ["runtime-metrics"] }
 substrate-test-utils = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-service = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

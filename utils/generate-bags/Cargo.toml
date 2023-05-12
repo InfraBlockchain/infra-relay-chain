@@ -1,5 +1,5 @@
 [package]
-name = "infrabs-voter-bags"
+name = "infrablockspace-voter-bags"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -11,4 +11,4 @@ generate-bags = { git = "https://github.com/InfraBlockchain/infra-substrate", br
 sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 kusama-runtime = { path = "../../runtime/kusama" }
-infrabs-runtime = { path = "../../runtime/infrabs" }
+infrablockspace-runtime = { path = "../../runtime/infrablockspace" }

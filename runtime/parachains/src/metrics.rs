@@ -16,7 +16,7 @@
 
 //! Runtime declaration of the parachain metrics.
 
-use infrabs_runtime_metrics::{Counter, CounterVec};
+use infrablockspace_runtime_metrics::{Counter, CounterVec};
 use primitives::metric_definitions::{
 	PARACHAIN_CREATE_INHERENT_BITFIELDS_SIGNATURE_CHECKS,
 	PARACHAIN_INHERENT_DATA_BITFIELDS_PROCESSED, PARACHAIN_INHERENT_DATA_CANDIDATES_PROCESSED,

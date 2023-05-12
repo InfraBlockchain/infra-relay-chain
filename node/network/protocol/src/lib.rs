@@ -24,7 +24,7 @@ use parity_scale_codec::{Decode, Encode};
 use std::{collections::HashMap, fmt};
 
 #[doc(hidden)]
-pub use infrabs_node_jaeger as jaeger;
+pub use infrablockspace_node_jaeger as jaeger;
 pub use sc_network::{IfDisconnected, PeerId};
 #[doc(hidden)]
 pub use std::sync::Arc;

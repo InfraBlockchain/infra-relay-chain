@@ -3432,12 +3432,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "infrablockspace"
+version = "0.9.37"
+dependencies = [
+ "assert_cmd",
+ "color-eyre",
+ "infrablockspace-cli",
+ "infrablockspace-core-primitives",
+ "infrablockspace-node-core-pvf",
+ "infrablockspace-overseer",
+ "nix 0.26.2",
+ "substrate-rpc-client",
+ "tempfile",
+ "tikv-jemallocator",
+ "tokio",
+]
+
+[[package]]
 name = "infrablockspace-approval-distribution"
 version = "0.9.37"
 dependencies = [
  "assert_matches",
  "env_logger 0.9.3",
  "futures",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-network-protocol",
  "infrablockspace-node-primitives",
  "infrablockspace-node-subsystem",
@@ -3445,7 +3463,6 @@ dependencies = [
  "infrablockspace-node-subsystem-util",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-node-metrics",
  "log",
  "rand 0.8.5",
  "rand_chacha 0.3.1",
@@ -3548,9 +3565,9 @@ dependencies = [
  "futures",
  "infrablockspace-client",
  "infrablockspace-node-core-pvf",
+ "infrablockspace-node-metrics",
+ "infrablockspace-performance-test",
  "infrablockspace-service",
- "infrabs-node-metrics",
- "infrabs-performance-test",
  "log",
  "pyroscope",
  "sc-cli",
@@ -3580,8 +3597,8 @@ dependencies = [
  "infrablockspace-core-primitives",
  "infrablockspace-node-core-parachains-inherent",
  "infrablockspace-primitives",
+ "infrablockspace-runtime",
  "infrablockspace-runtime-common",
- "infrabs-runtime",
  "kusama-runtime",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
@@ -3720,6 +3737,7 @@ dependencies = [
  "fatality",
  "futures",
  "futures-timer",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-network-protocol",
  "infrablockspace-node-subsystem",
  "infrablockspace-node-subsystem-test-helpers",
@@ -3727,7 +3745,6 @@ dependencies = [
  "infrablockspace-overseer",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-node-metrics",
  "parity-scale-codec",
  "parking_lot 0.12.1",
  "sc-network",
@@ -3768,6 +3785,7 @@ dependencies = [
  "derive_more",
  "futures",
  "futures-timer",
+ "infrablockspace-node-jaeger",
  "infrablockspace-node-primitives",
  "infrablockspace-node-subsystem",
  "infrablockspace-node-subsystem-test-helpers",
@@ -3775,7 +3793,6 @@ dependencies = [
  "infrablockspace-overseer",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-node-jaeger",
  "kvdb",
  "kvdb-memorydb",
  "lru 0.9.0",
@@ -3841,7 +3858,7 @@ dependencies = [
  "infrablockspace-node-subsystem-util",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-statement-table",
+ "infrablockspace-statement-table",
  "sc-keystore",
  "sp-application-crypto",
  "sp-core",
@@ -3877,6 +3894,7 @@ dependencies = [
  "futures",
  "futures-timer",
  "infrablockspace-node-core-pvf",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-primitives",
  "infrablockspace-node-subsystem",
  "infrablockspace-node-subsystem-test-helpers",
@@ -3884,7 +3902,6 @@ dependencies = [
  "infrablockspace-parachain",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-node-metrics",
  "parity-scale-codec",
  "sp-core",
  "sp-keyring",
@@ -3897,11 +3914,11 @@ name = "infrablockspace-node-core-chain-api"
 version = "0.9.37"
 dependencies = [
  "futures",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-primitives",
  "infrablockspace-node-subsystem",
  "infrablockspace-node-subsystem-test-helpers",
  "infrablockspace-primitives",
- "infrabs-node-metrics",
  "maplit",
  "parity-scale-codec",
  "sc-client-api",
@@ -4008,10 +4025,10 @@ dependencies = [
  "futures-timer",
  "hex-literal",
  "infrablockspace-core-primitives",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-primitives",
  "infrablockspace-parachain",
  "infrablockspace-primitives",
- "infrabs-node-metrics",
  "libc",
  "parity-scale-codec",
  "pin-project",
@@ -4063,19 +4080,63 @@ name = "infrablockspace-node-core-runtime-api"
 version = "0.9.37"
 dependencies = [
  "futures",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-primitives",
  "infrablockspace-node-subsystem",
  "infrablockspace-node-subsystem-test-helpers",
  "infrablockspace-node-subsystem-types",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-node-metrics",
  "lru 0.9.0",
  "sp-api",
  "sp-authority-discovery",
  "sp-consensus-babe",
  "sp-core",
  "sp-keyring",
+ "tracing-gum",
+]
+
+[[package]]
+name = "infrablockspace-node-jaeger"
+version = "0.9.37"
+dependencies = [
+ "infrablockspace-node-primitives",
+ "infrablockspace-primitives",
+ "lazy_static",
+ "log",
+ "mick-jaeger",
+ "parity-scale-codec",
+ "parking_lot 0.12.1",
+ "sc-network",
+ "sp-core",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "infrablockspace-node-metrics"
+version = "0.9.37"
+dependencies = [
+ "assert_cmd",
+ "bs58",
+ "futures",
+ "futures-timer",
+ "hyper",
+ "infrablockspace-primitives",
+ "infrablockspace-test-service",
+ "log",
+ "parity-scale-codec",
+ "prioritized-metered-channel",
+ "prometheus-parse",
+ "sc-cli",
+ "sc-client-api",
+ "sc-service",
+ "sc-tracing",
+ "sp-keyring",
+ "substrate-prometheus-endpoint",
+ "substrate-test-utils",
+ "tempfile",
+ "tokio",
  "tracing-gum",
 ]
 
@@ -4088,9 +4149,9 @@ dependencies = [
  "fatality",
  "futures",
  "hex",
+ "infrablockspace-node-jaeger",
  "infrablockspace-node-primitives",
  "infrablockspace-primitives",
- "infrabs-node-jaeger",
  "parity-scale-codec",
  "rand 0.8.5",
  "rand_chacha 0.3.1",
@@ -4130,9 +4191,9 @@ dependencies = [
 name = "infrablockspace-node-subsystem"
 version = "0.9.37"
 dependencies = [
+ "infrablockspace-node-jaeger",
  "infrablockspace-node-subsystem-types",
  "infrablockspace-overseer",
- "infrabs-node-jaeger",
 ]
 
 [[package]]
@@ -4160,11 +4221,11 @@ dependencies = [
  "async-trait",
  "derive_more",
  "futures",
+ "infrablockspace-node-jaeger",
  "infrablockspace-node-network-protocol",
  "infrablockspace-node-primitives",
  "infrablockspace-primitives",
- "infrabs-node-jaeger",
- "infrabs-statement-table",
+ "infrablockspace-statement-table",
  "orchestra",
  "sc-network",
  "smallvec",
@@ -4186,6 +4247,8 @@ dependencies = [
  "fatality",
  "futures",
  "futures-channel",
+ "infrablockspace-node-jaeger",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-network-protocol",
  "infrablockspace-node-primitives",
  "infrablockspace-node-subsystem",
@@ -4193,8 +4256,6 @@ dependencies = [
  "infrablockspace-overseer",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-node-jaeger",
- "infrabs-node-metrics",
  "itertools",
  "kvdb",
  "kvdb-memorydb",
@@ -4225,12 +4286,12 @@ dependencies = [
  "femme",
  "futures",
  "futures-timer",
+ "infrablockspace-node-metrics",
  "infrablockspace-node-network-protocol",
  "infrablockspace-node-primitives",
  "infrablockspace-node-subsystem-types",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-node-metrics",
  "lru 0.9.0",
  "orchestra",
  "parking_lot 0.12.1",
@@ -4256,6 +4317,21 @@ dependencies = [
  "sp-core",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "infrablockspace-performance-test"
+version = "0.9.37"
+dependencies = [
+ "env_logger 0.9.3",
+ "erasure-coding",
+ "infrablockspace-node-core-pvf",
+ "infrablockspace-node-primitives",
+ "infrablockspace-primitives",
+ "kusama-runtime",
+ "log",
+ "quote",
+ "thiserror",
 ]
 
 [[package]]
@@ -4327,6 +4403,104 @@ dependencies = [
 ]
 
 [[package]]
+name = "infrablockspace-runtime"
+version = "0.9.37"
+dependencies = [
+ "bitvec",
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-executive",
+ "frame-remote-externalities",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
+ "hex-literal",
+ "infrablockspace-primitives",
+ "infrablockspace-runtime-common",
+ "infrablockspace-runtime-constants",
+ "infrablockspace-runtime-parachains",
+ "log",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-bags-list",
+ "pallet-balances",
+ "pallet-bounties",
+ "pallet-child-bounties",
+ "pallet-collective",
+ "pallet-democracy",
+ "pallet-election-provider-multi-phase",
+ "pallet-election-provider-support-benchmarking",
+ "pallet-elections-phragmen",
+ "pallet-fast-unstake",
+ "pallet-grandpa",
+ "pallet-identity",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-membership",
+ "pallet-multisig",
+ "pallet-nomination-pools",
+ "pallet-nomination-pools-benchmarking",
+ "pallet-nomination-pools-runtime-api",
+ "pallet-offences",
+ "pallet-offences-benchmarking",
+ "pallet-preimage",
+ "pallet-proxy",
+ "pallet-scheduler",
+ "pallet-session",
+ "pallet-session-benchmarking",
+ "pallet-staking",
+ "pallet-staking-reward-curve",
+ "pallet-staking-runtime-api",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-tips",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "pallet-vesting",
+ "pallet-xcm",
+ "parity-scale-codec",
+ "rustc-hex",
+ "scale-info",
+ "separator",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "smallvec",
+ "sp-api",
+ "sp-authority-discovery",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-consensus-beefy",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-keyring",
+ "sp-mmr-primitives",
+ "sp-npos-elections",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+ "sp-tracing",
+ "sp-transaction-pool",
+ "sp-trie",
+ "sp-version",
+ "static_assertions",
+ "substrate-wasm-builder",
+ "tiny-keccak",
+ "tokio",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
+]
+
+[[package]]
 name = "infrablockspace-runtime-common"
 version = "0.9.37"
 dependencies = [
@@ -4377,6 +4551,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "infrablockspace-runtime-constants"
+version = "0.9.37"
+dependencies = [
+ "frame-support",
+ "infrablockspace-primitives",
+ "infrablockspace-runtime-common",
+ "smallvec",
+ "sp-core",
+ "sp-runtime",
+ "sp-weights",
+]
+
+[[package]]
+name = "infrablockspace-runtime-metrics"
+version = "0.9.37"
+dependencies = [
+ "bs58",
+ "infrablockspace-primitives",
+ "parity-scale-codec",
+ "sp-std",
+ "sp-tracing",
+]
+
+[[package]]
 name = "infrablockspace-runtime-parachains"
 version = "0.9.37"
 dependencies = [
@@ -4393,7 +4591,7 @@ dependencies = [
  "infrablockspace-parachain",
  "infrablockspace-primitives",
  "infrablockspace-primitives-test-helpers",
- "infrabs-runtime-metrics",
+ "infrablockspace-runtime-metrics",
  "log",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -4473,11 +4671,11 @@ dependencies = [
  "infrablockspace-parachain",
  "infrablockspace-primitives",
  "infrablockspace-rpc",
+ "infrablockspace-runtime",
+ "infrablockspace-runtime-constants",
  "infrablockspace-runtime-parachains",
  "infrablockspace-statement-distribution",
- "infrabs-runtime",
- "infrabs-runtime-constants",
- "infrabs-test-client",
+ "infrablockspace-test-client",
  "kusama-runtime",
  "kusama-runtime-constants",
  "kvdb",
@@ -4575,205 +4773,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "infrabs"
-version = "0.9.37"
-dependencies = [
- "assert_cmd",
- "color-eyre",
- "infrablockspace-cli",
- "infrablockspace-core-primitives",
- "infrablockspace-node-core-pvf",
- "infrablockspace-overseer",
- "nix 0.26.2",
- "substrate-rpc-client",
- "tempfile",
- "tikv-jemallocator",
- "tokio",
-]
-
-[[package]]
-name = "infrabs-node-jaeger"
-version = "0.9.37"
-dependencies = [
- "infrablockspace-node-primitives",
- "infrablockspace-primitives",
- "lazy_static",
- "log",
- "mick-jaeger",
- "parity-scale-codec",
- "parking_lot 0.12.1",
- "sc-network",
- "sp-core",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "infrabs-node-metrics"
-version = "0.9.37"
-dependencies = [
- "assert_cmd",
- "bs58",
- "futures",
- "futures-timer",
- "hyper",
- "infrablockspace-primitives",
- "infrabs-test-service",
- "log",
- "parity-scale-codec",
- "prioritized-metered-channel",
- "prometheus-parse",
- "sc-cli",
- "sc-client-api",
- "sc-service",
- "sc-tracing",
- "sp-keyring",
- "substrate-prometheus-endpoint",
- "substrate-test-utils",
- "tempfile",
- "tokio",
- "tracing-gum",
-]
-
-[[package]]
-name = "infrabs-performance-test"
-version = "0.9.37"
-dependencies = [
- "env_logger 0.9.3",
- "erasure-coding",
- "infrablockspace-node-core-pvf",
- "infrablockspace-node-primitives",
- "infrablockspace-primitives",
- "kusama-runtime",
- "log",
- "quote",
- "thiserror",
-]
-
-[[package]]
-name = "infrabs-runtime"
-version = "0.9.37"
-dependencies = [
- "bitvec",
- "frame-benchmarking",
- "frame-election-provider-support",
- "frame-executive",
- "frame-remote-externalities",
- "frame-support",
- "frame-system",
- "frame-system-benchmarking",
- "frame-system-rpc-runtime-api",
- "frame-try-runtime",
- "hex-literal",
- "infrablockspace-primitives",
- "infrablockspace-runtime-common",
- "infrablockspace-runtime-parachains",
- "infrabs-runtime-constants",
- "log",
- "pallet-authority-discovery",
- "pallet-authorship",
- "pallet-babe",
- "pallet-bags-list",
- "pallet-balances",
- "pallet-bounties",
- "pallet-child-bounties",
- "pallet-collective",
- "pallet-democracy",
- "pallet-election-provider-multi-phase",
- "pallet-election-provider-support-benchmarking",
- "pallet-elections-phragmen",
- "pallet-fast-unstake",
- "pallet-grandpa",
- "pallet-identity",
- "pallet-im-online",
- "pallet-indices",
- "pallet-membership",
- "pallet-multisig",
- "pallet-nomination-pools",
- "pallet-nomination-pools-benchmarking",
- "pallet-nomination-pools-runtime-api",
- "pallet-offences",
- "pallet-offences-benchmarking",
- "pallet-preimage",
- "pallet-proxy",
- "pallet-scheduler",
- "pallet-session",
- "pallet-session-benchmarking",
- "pallet-staking",
- "pallet-staking-reward-curve",
- "pallet-staking-runtime-api",
- "pallet-sudo",
- "pallet-timestamp",
- "pallet-tips",
- "pallet-transaction-payment",
- "pallet-transaction-payment-rpc-runtime-api",
- "pallet-treasury",
- "pallet-utility",
- "pallet-vesting",
- "pallet-xcm",
- "parity-scale-codec",
- "rustc-hex",
- "scale-info",
- "separator",
- "serde",
- "serde_derive",
- "serde_json",
- "smallvec",
- "sp-api",
- "sp-authority-discovery",
- "sp-block-builder",
- "sp-consensus-babe",
- "sp-consensus-beefy",
- "sp-core",
- "sp-inherents",
- "sp-io",
- "sp-keyring",
- "sp-mmr-primitives",
- "sp-npos-elections",
- "sp-offchain",
- "sp-runtime",
- "sp-session",
- "sp-staking",
- "sp-std",
- "sp-tracing",
- "sp-transaction-pool",
- "sp-trie",
- "sp-version",
- "static_assertions",
- "substrate-wasm-builder",
- "tiny-keccak",
- "tokio",
- "xcm",
- "xcm-builder",
- "xcm-executor",
-]
-
-[[package]]
-name = "infrabs-runtime-constants"
-version = "0.9.37"
-dependencies = [
- "frame-support",
- "infrablockspace-primitives",
- "infrablockspace-runtime-common",
- "smallvec",
- "sp-core",
- "sp-runtime",
- "sp-weights",
-]
-
-[[package]]
-name = "infrabs-runtime-metrics"
-version = "0.9.37"
-dependencies = [
- "bs58",
- "infrablockspace-primitives",
- "parity-scale-codec",
- "sp-std",
- "sp-tracing",
-]
-
-[[package]]
-name = "infrabs-statement-table"
+name = "infrablockspace-statement-table"
 version = "0.9.37"
 dependencies = [
  "infrablockspace-primitives",
@@ -4782,14 +4782,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "infrabs-test-client"
+name = "infrablockspace-test-client"
 version = "0.9.37"
 dependencies = [
  "futures",
  "infrablockspace-node-subsystem",
  "infrablockspace-primitives",
- "infrabs-test-runtime",
- "infrabs-test-service",
+ "infrablockspace-test-runtime",
+ "infrablockspace-test-service",
  "parity-scale-codec",
  "sc-block-builder",
  "sc-consensus",
@@ -4808,7 +4808,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "infrabs-test-malus"
+name = "infrablockspace-test-malus"
 version = "0.9.37"
 dependencies = [
  "assert_matches",
@@ -4836,7 +4836,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "infrabs-test-runtime"
+name = "infrablockspace-test-runtime"
 version = "0.9.37"
 dependencies = [
  "bitvec",
@@ -4901,7 +4901,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "infrabs-test-service"
+name = "infrablockspace-test-service"
 version = "0.9.37"
 dependencies = [
  "frame-benchmarking",
@@ -4917,7 +4917,7 @@ dependencies = [
  "infrablockspace-runtime-common",
  "infrablockspace-runtime-parachains",
  "infrablockspace-service",
- "infrabs-test-runtime",
+ "infrablockspace-test-runtime",
  "pallet-balances",
  "pallet-staking",
  "pallet-transaction-payment",
@@ -4956,12 +4956,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "infrabs-voter-bags"
+name = "infrablockspace-voter-bags"
 version = "0.9.37"
 dependencies = [
  "clap 4.2.7",
  "generate-bags",
- "infrabs-runtime",
+ "infrablockspace-runtime",
  "kusama-runtime",
  "sp-io",
 ]
@@ -8869,8 +8869,8 @@ version = "0.9.37"
 dependencies = [
  "clap 4.2.7",
  "frame-system",
- "infrabs-runtime",
- "infrabs-runtime-constants",
+ "infrablockspace-runtime",
+ "infrablockspace-runtime-constants",
  "kusama-runtime",
  "kusama-runtime-constants",
  "log",
@@ -12027,7 +12027,7 @@ dependencies = [
  "infrablockspace-parachain",
  "infrablockspace-primitives",
  "infrablockspace-service",
- "infrabs-test-service",
+ "infrablockspace-test-service",
  "log",
  "parity-scale-codec",
  "sc-cli",
@@ -12074,7 +12074,7 @@ dependencies = [
  "infrablockspace-parachain",
  "infrablockspace-primitives",
  "infrablockspace-service",
- "infrabs-test-service",
+ "infrablockspace-test-service",
  "log",
  "parity-scale-codec",
  "sc-cli",
@@ -12484,8 +12484,8 @@ dependencies = [
 name = "tracing-gum"
 version = "0.9.37"
 dependencies = [
+ "infrablockspace-node-jaeger",
  "infrablockspace-primitives",
- "infrabs-node-jaeger",
  "tracing",
  "tracing-gum-proc-macro",
 ]
@@ -13967,9 +13967,9 @@ dependencies = [
  "frame-support",
  "frame-system",
  "futures",
- "infrabs-test-client",
- "infrabs-test-runtime",
- "infrabs-test-service",
+ "infrablockspace-test-client",
+ "infrablockspace-test-runtime",
+ "infrablockspace-test-service",
  "pallet-xcm",
  "sp-consensus",
  "sp-keyring",

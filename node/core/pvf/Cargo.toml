@@ -27,7 +27,7 @@ parity-scale-codec = { version = "3.3.0", default-features = false, features = [
 
 infrablockspace-parachain = { path = "../../../parachain" }
 infrablockspace-core-primitives = { path = "../../../core-primitives" }
-infrabs-node-metrics = { path = "../../metrics" }
+infrablockspace-node-metrics = { path = "../../metrics" }
 infrablockspace-node-primitives = { path = "../../primitives" }
 
 infrablockspace-primitives = { path = "../../../primitives" }

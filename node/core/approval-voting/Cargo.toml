@@ -25,7 +25,7 @@ infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 infrablockspace-overseer = { path = "../../overseer" }
 infrablockspace-primitives = { path = "../../../primitives" }
 infrablockspace-node-primitives = { path = "../../primitives" }
-infrabs-node-jaeger = { path = "../../jaeger" }
+infrablockspace-node-jaeger = { path = "../../jaeger" }
 
 sc-keystore = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-consensus = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }

@@ -1,18 +1,18 @@
 // Copyright 2017-2020 Parity Technologies (UK) Ltd.
-// This file is part of infrabs.
+// This file is part of infrablockspace.
 
-// infrabs is free software: you can redistribute it and/or modify
+// infrablockspace is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// infrabs is distributed in the hope that it will be useful,
+// infrablockspace is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with infrabs.  If not, see <http://www.gnu.org/licenses/>.
+// along with infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
 
 use crate::cli::{Cli, Subcommand};
 use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
@@ -29,7 +29,7 @@ use std::net::ToSocketAddrs;
 
 pub use crate::{error::Error, service::BlockId};
 #[cfg(feature = "hostperfcheck")]
-pub use infrabs_performance_test::PerfCheckError;
+pub use infrablockspace_performance_test::PerfCheckError;
 
 impl From<String> for Error {
 	fn from(s: String) -> Self {
@@ -72,17 +72,17 @@ impl SubstrateCli for Cli {
 	}
 
 	fn executable_name() -> String {
-		"infrabs".into()
+		"infrablockspace".into()
 	}
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
 		let id = if id == "" {
 			let n = get_exec_name().unwrap_or_default();
-			["infrabs", "rococo"]
+			["infrablockspace", "rococo"]
 				.iter()
 				.cloned()
 				.find(|&chain| n.starts_with(chain))
-				.unwrap_or("infrabs")
+				.unwrap_or("infrablockspace")
 		} else {
 			id
 		};
@@ -97,13 +97,16 @@ impl SubstrateCli for Cli {
 			#[cfg(not(feature = "kusama-native"))]
 			name if name.starts_with("kusama-") && !name.ends_with(".json") =>
 				Err(format!("`{}` only supported with `kusama-native` feature enabled.", name))?,
-			"infrabs" => Box::new(service::chain_spec::infrabs_config()?),
-			#[cfg(feature = "infrabs-native")]
-			"infrabs-dev" | "dev" => Box::new(service::chain_spec::infrabs_development_config()?),
-			#[cfg(feature = "infrabs-native")]
-			"infrabs-local" => Box::new(service::chain_spec::infrabs_local_testnet_config()?),
-			#[cfg(feature = "infrabs-native")]
-			"infrabs-staging" => Box::new(service::chain_spec::infrabs_staging_testnet_config()?),
+			"infrablockspace" => Box::new(service::chain_spec::infrablockspace_config()?),
+			#[cfg(feature = "infrablockspace-native")]
+			"infrablockspace-dev" | "dev" =>
+				Box::new(service::chain_spec::infrablockspace_development_config()?),
+			#[cfg(feature = "infrablockspace-native")]
+			"infrablockspace-local" =>
+				Box::new(service::chain_spec::infrablockspace_local_testnet_config()?),
+			#[cfg(feature = "infrablockspace-native")]
+			"infrablockspace-staging" =>
+				Box::new(service::chain_spec::infrablockspace_staging_testnet_config()?),
 			"rococo" => Box::new(service::chain_spec::rococo_config()?),
 			#[cfg(feature = "rococo-native")]
 			"rococo-dev" => Box::new(service::chain_spec::rococo_development_config()?),
@@ -117,8 +120,9 @@ impl SubstrateCli for Cli {
 			path => {
 				let path = std::path::PathBuf::from(path);
 
-				let chain_spec = Box::new(service::InfrabsChainSpec::from_json_file(path.clone())?)
-					as Box<dyn service::ChainSpec>;
+				let chain_spec =
+					Box::new(service::InfrablockspaceChainSpec::from_json_file(path.clone())?)
+						as Box<dyn service::ChainSpec>;
 
 				// When `force_*` is given or the file name starts with the name of one of the known chains,
 				// we use the chain spec for the specific chain.
@@ -147,13 +151,13 @@ impl SubstrateCli for Cli {
 		#[cfg(not(all(feature = "rococo-native", feature = "kusama-native")))]
 		let _ = spec;
 
-		#[cfg(feature = "infrabs-native")]
+		#[cfg(feature = "infrablockspace-native")]
 		{
-			return &service::infrabs_runtime::VERSION
+			return &service::infrablockspace_runtime::VERSION
 		}
 
-		#[cfg(not(feature = "infrabs-native"))]
-		panic!("No runtime feature (infrabs, kusama, rococo) is enabled")
+		#[cfg(not(feature = "infrablockspace-native"))]
+		panic!("No runtime feature (infrablockspace, kusama, rococo) is enabled")
 	}
 }
 
@@ -169,7 +173,7 @@ fn set_default_ss58_version(spec: &Box<dyn service::ChainSpec>) {
 }
 
 const DEV_ONLY_ERROR_PATTERN: &'static str =
-	"can only use subcommand with --chain [infrabs-dev, kusama-dev, rococo-dev], got ";
+	"can only use subcommand with --chain [infrablockspace-dev, kusama-dev, rococo-dev], got ";
 
 fn ensure_dev(spec: &Box<dyn service::ChainSpec>) -> std::result::Result<(), String> {
 	if spec.is_dev() {
@@ -186,8 +190,8 @@ macro_rules! unwrap_client {
 		$code:expr
 	) => {
 		match $client.as_ref() {
-			#[cfg(feature = "infrabs-native")]
-			infrablockspace_client::Client::Infrabs($client) => $code,
+			#[cfg(feature = "infrablockspace-native")]
+			infrablockspace_client::Client::Infrablockspace($client) => $code,
 			#[cfg(feature = "kusama-native")]
 			infrablockspace_client::Client::Kusama($client) => $code,
 			#[cfg(feature = "rococo-native")]
@@ -251,7 +255,7 @@ where
 	let chain_spec = &runner.config().chain_spec;
 
 	// Disallow BEEFY on production networks.
-	if cli.run.beefy && (chain_spec.is_infrabs() || chain_spec.is_kusama()) {
+	if cli.run.beefy && (chain_spec.is_infrablockspace() || chain_spec.is_kusama()) {
 		return Err(Error::Other("BEEFY disallowed on production networks".to_string()))
 	}
 
@@ -317,7 +321,7 @@ where
 	})
 }
 
-/// Parses infrabs specific CLI arguments and run the service.
+/// Parses infrablockspace specific CLI arguments and run the service.
 pub fn run() -> Result<()> {
 	let cli: Cli = Cli::from_args();
 
@@ -331,7 +335,7 @@ pub fn run() -> Result<()> {
 		// The pyroscope agent requires a `http://` prefix, so we just do that.
 		let mut agent = pyro::PyroscopeAgent::builder(
 			"http://".to_owned() + address.to_string().as_str(),
-			"infrabs".to_owned(),
+			"infrablockspace".to_owned(),
 		)
 		.sample_rate(113)
 		.build()?;
@@ -347,8 +351,12 @@ pub fn run() -> Result<()> {
 	}
 
 	match &cli.subcommand {
-		None =>
-			run_node_inner(cli, service::RealOverseerGen, None, infrabs_node_metrics::logger_hook()),
+		None => run_node_inner(
+			cli,
+			service::RealOverseerGen,
+			None,
+			infrablockspace_node_metrics::logger_hook(),
+		),
 		Some(Subcommand::BuildSpec(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
 			Ok(runner.sync_run(|config| cmd.run(config.chain_spec, config.network))?)
@@ -372,8 +380,8 @@ pub fn run() -> Result<()> {
 			set_default_ss58_version(chain_spec);
 
 			Ok(runner.async_run(|mut config| {
-				let (client, _, _, task_manager) =
-					service::new_chain_ops(&mut config, None).map_err(Error::InfrabsService)?;
+				let (client, _, _, task_manager) = service::new_chain_ops(&mut config, None)
+					.map_err(Error::InfrablockspaceService)?;
 				Ok((cmd.run(client, config.database).map_err(Error::SubstrateCli), task_manager))
 			})?)
 		},
@@ -555,16 +563,16 @@ pub fn run() -> Result<()> {
 						})
 					}
 
-					// else we assume it is infrabs.
-					#[cfg(feature = "infrabs-native")]
+					// else we assume it is infrablockspace.
+					#[cfg(feature = "infrablockspace-native")]
 					{
 						return runner.sync_run(|config| {
-							cmd.run::<service::infrabs_runtime::Block, service::InfrabsExecutorDispatch>(config)
+							cmd.run::<service::infrablockspace_runtime::Block, service::InfrablockspaceExecutorDispatch>(config)
 								.map_err(|e| Error::SubstrateCli(e))
 						})
 					}
 
-					#[cfg(not(feature = "infrabs-native"))]
+					#[cfg(not(feature = "infrablockspace-native"))]
 					#[allow(unreachable_code)]
 					Err(service::Error::NoRuntime.into())
 				},
@@ -572,7 +580,7 @@ pub fn run() -> Result<()> {
 					cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone())
 						.map_err(Error::SubstrateCli)
 				}),
-				// NOTE: this allows the infrabs client to leniently implement
+				// NOTE: this allows the infrablockspace client to leniently implement
 				// new benchmark commands.
 				#[allow(unreachable_patterns)]
 				_ => Err(Error::CommandNotImplemented),
@@ -619,21 +627,21 @@ pub fn run() -> Result<()> {
 				})
 			}
 
-			// else we assume it is infrabs.
-			#[cfg(feature = "infrabs-native")]
+			// else we assume it is infrablockspace.
+			#[cfg(feature = "infrablockspace-native")]
 			{
 				return runner.async_run(|_| {
 					Ok((
-						cmd.run::<service::infrabs_runtime::Block, HostFunctionsOf<service::InfrabsExecutorDispatch>, _>(
-							Some(timestamp_with_babe_info(service::infrabs_runtime_constants::time::MILLISECS_PER_BLOCK))
+						cmd.run::<service::infrablockspace_runtime::Block, HostFunctionsOf<service::InfrablockspaceExecutorDispatch>, _>(
+							Some(timestamp_with_babe_info(service::infrablockspace_runtime_constants::time::MILLISECS_PER_BLOCK))
 						)
 						.map_err(Error::SubstrateCli),
 						task_manager,
 					))
 				})
 			}
-			#[cfg(not(feature = "infrabs-native"))]
-			panic!("No runtime feature (infrabs, kusama, rococo) is enabled")
+			#[cfg(not(feature = "infrablockspace-native"))]
+			panic!("No runtime feature (infrablockspace, kusama, rococo) is enabled")
 		},
 		#[cfg(not(feature = "try-runtime"))]
 		Some(Subcommand::TryRuntime) => Err(Error::Other(

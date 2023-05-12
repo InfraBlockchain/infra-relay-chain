@@ -22,9 +22,9 @@ use infrablockspace_primitives::{
 	AccountId, AssignmentId, ValidatorId, MAX_CODE_SIZE, MAX_POV_SIZE,
 };
 use infrablockspace_service::chain_spec::{
-	get_account_id_from_seed, get_from_seed, infrabs_chain_spec_properties, Extensions,
+	get_account_id_from_seed, get_from_seed, infrablockspace_chain_spec_properties, Extensions,
 };
-use infrabs_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
+use infrablockspace_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
 use pallet_staking::Forcing;
 use sc_chain_spec::{ChainSpec, ChainType};
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
@@ -35,12 +35,12 @@ use test_runtime_constants::currency::DOTS;
 const DEFAULT_PROTOCOL_ID: &str = "dot";
 
 /// The `ChainSpec` parameterized for polkadot test runtime.
-pub type InfrabsChainSpec =
-	sc_service::GenericChainSpec<infrabs_test_runtime::GenesisConfig, Extensions>;
+pub type InfrablockspaceChainSpec =
+	sc_service::GenericChainSpec<infrablockspace_test_runtime::GenesisConfig, Extensions>;
 
 /// Local testnet config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_config() -> InfrabsChainSpec {
-	InfrabsChainSpec::from_genesis(
+pub fn polkadot_local_testnet_config() -> InfrablockspaceChainSpec {
+	InfrablockspaceChainSpec::from_genesis(
 		"Local Testnet",
 		"local_testnet",
 		ChainType::Local,
@@ -55,7 +55,7 @@ pub fn polkadot_local_testnet_config() -> InfrabsChainSpec {
 }
 
 /// Local testnet genesis config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_genesis() -> infrabs_test_runtime::GenesisConfig {
+pub fn polkadot_local_testnet_genesis() -> infrablockspace_test_runtime::GenesisConfig {
 	polkadot_testnet_genesis(
 		vec![get_authority_keys_from_seed("Alice"), get_authority_keys_from_seed("Bob")],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -108,8 +108,8 @@ fn polkadot_testnet_genesis(
 	)>,
 	root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
-) -> infrabs_test_runtime::GenesisConfig {
-	use infrabs_test_runtime as runtime;
+) -> infrablockspace_test_runtime::GenesisConfig {
+	use infrablockspace_test_runtime as runtime;
 
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 

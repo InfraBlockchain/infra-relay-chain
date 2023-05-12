@@ -36,7 +36,7 @@ pub use overseer::{
 	Subsystem, TimeoutExt,
 };
 
-pub use infrabs_node_metrics::{metrics, Metronome};
+pub use infrablockspace_node_metrics::{metrics, Metronome};
 
 use futures::channel::{mpsc, oneshot};
 use parity_scale_codec::Encode;

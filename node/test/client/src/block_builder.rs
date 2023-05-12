@@ -16,7 +16,7 @@
 
 use crate::{Client, FullBackend};
 use infrablockspace_primitives::{Block, InherentData as ParachainsInherentData};
-use infrabs_test_runtime::{GetLastTimestamp, UncheckedExtrinsic};
+use infrablockspace_test_runtime::{GetLastTimestamp, UncheckedExtrinsic};
 use parity_scale_codec::{Decode, Encode};
 use sc_block_builder::{BlockBuilder, BlockBuilderProvider};
 use sp_api::ProvideRuntimeApi;
@@ -32,27 +32,27 @@ pub trait InitInfraBsBlockBuilder {
 	/// Init a Polkadot specific block builder that works for the test runtime.
 	///
 	/// This will automatically create and push the inherents for you to make the block valid for the test runtime.
-	fn init_infrabs_block_builder(
+	fn init_infrablockspace_block_builder(
 		&self,
 	) -> sc_block_builder::BlockBuilder<Block, Client, FullBackend>;
 
 	/// Init a Polkadot specific block builder at a specific block that works for the test runtime.
 	///
-	/// Same as [`InitInfraBsBlockBuilder::init_infrabs_block_builder`] besides that it takes a [`BlockId`] to say
+	/// Same as [`InitInfraBsBlockBuilder::init_infrablockspace_block_builder`] besides that it takes a [`BlockId`] to say
 	/// which should be the parent block of the block that is being build.
-	fn init_infrabs_block_builder_at(
+	fn init_infrablockspace_block_builder_at(
 		&self,
 		hash: <Block as BlockT>::Hash,
 	) -> sc_block_builder::BlockBuilder<Block, Client, FullBackend>;
 }
 
 impl InitInfraBsBlockBuilder for Client {
-	fn init_infrabs_block_builder(&self) -> BlockBuilder<Block, Client, FullBackend> {
+	fn init_infrablockspace_block_builder(&self) -> BlockBuilder<Block, Client, FullBackend> {
 		let chain_info = self.chain_info();
-		self.init_infrabs_block_builder_at(chain_info.best_hash)
+		self.init_infrablockspace_block_builder_at(chain_info.best_hash)
 	}
 
-	fn init_infrabs_block_builder_at(
+	fn init_infrablockspace_block_builder_at(
 		&self,
 		hash: <Block as BlockT>::Hash,
 	) -> BlockBuilder<Block, Client, FullBackend> {
@@ -61,7 +61,7 @@ impl InitInfraBsBlockBuilder for Client {
 
 		// `MinimumPeriod` is a storage parameter type that requires externalities to access the value.
 		let minimum_period = BasicExternalities::new_empty()
-			.execute_with(|| infrabs_test_runtime::MinimumPeriod::get());
+			.execute_with(|| infrablockspace_test_runtime::MinimumPeriod::get());
 
 		let timestamp = if last_timestamp == 0 {
 			std::time::SystemTime::now()
@@ -74,7 +74,7 @@ impl InitInfraBsBlockBuilder for Client {
 
 		// `SlotDuration` is a storage parameter type that requires externalities to access the value.
 		let slot_duration = BasicExternalities::new_empty()
-			.execute_with(|| infrabs_test_runtime::SlotDuration::get());
+			.execute_with(|| infrablockspace_test_runtime::SlotDuration::get());
 
 		let slot = (timestamp / slot_duration).into();
 
@@ -134,14 +134,14 @@ pub trait BlockBuilderExt {
 	/// the block.
 	///
 	/// Returns the result of the application of the extrinsic.
-	fn push_infrabs_extrinsic(
+	fn push_infrablockspace_extrinsic(
 		&mut self,
 		ext: UncheckedExtrinsic,
 	) -> Result<(), sp_blockchain::Error>;
 }
 
 impl BlockBuilderExt for BlockBuilder<'_, Block, Client, FullBackend> {
-	fn push_infrabs_extrinsic(
+	fn push_infrablockspace_extrinsic(
 		&mut self,
 		ext: UncheckedExtrinsic,
 	) -> Result<(), sp_blockchain::Error> {

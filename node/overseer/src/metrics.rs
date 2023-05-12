@@ -17,7 +17,7 @@
 //! Prometheus metrics related to the overseer and its channels.
 
 use super::*;
-pub use infrabs_node_metrics::metrics::{self, prometheus, Metrics as MetricsTrait};
+pub use infrablockspace_node_metrics::metrics::{self, prometheus, Metrics as MetricsTrait};
 
 /// Overseer Prometheus metrics.
 #[derive(Clone)]

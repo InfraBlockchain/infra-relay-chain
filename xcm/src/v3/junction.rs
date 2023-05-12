@@ -43,7 +43,7 @@ pub enum NetworkId {
 	/// Network defined by the first 32-bytes of the hash and number of some block it contains.
 	ByFork { block_number: u64, block_hash: [u8; 32] },
 	/// The Polkadot mainnet Relay-chain.
-	Infrabs,
+	Infrablockspace,
 	/// The Kusama canary-net Relay-chain.
 	Kusama,
 	/// The Rococo testnet Relay-chain.
@@ -66,7 +66,7 @@ impl From<OldNetworkId> for Option<NetworkId> {
 		match old {
 			Any => None,
 			Named(_) => None,
-			Infrabs => Some(NetworkId::Infrabs),
+			Infrablockspace => Some(NetworkId::Infrablockspace),
 			Kusama => Some(NetworkId::Kusama),
 		}
 	}

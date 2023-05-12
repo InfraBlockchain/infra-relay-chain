@@ -1,5 +1,5 @@
 [package]
-name = "infrabs-node-jaeger"
+name = "infrablockspace-node-jaeger"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

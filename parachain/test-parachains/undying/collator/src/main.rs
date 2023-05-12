@@ -1,24 +1,26 @@
 // Copyright 2022 Parity Technologies (UK) Ltd.
-// This file is part of Infrabs.
+// This file is part of Infrablockspace.
 
-// Infrabs is free software: you can redistribute it and/or modify
+// Infrablockspace is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Infrabs is distributed in the hope that it will be useful,
+// Infrablockspace is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
 
 //! Collator for the `Undying` test parachain.
 
 use infrablockspace_cli::{Error, Result};
 use infrablockspace_node_primitives::CollationGenerationConfig;
-use infrablockspace_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
+use infrablockspace_node_subsystem::messages::{
+	CollationGenerationMessage, CollatorProtocolMessage,
+};
 use infrablockspace_primitives::Id as ParaId;
 use sc_cli::{Error as SubstrateCliError, SubstrateCli};
 use sp_core::hexdisplay::HexDisplay;
