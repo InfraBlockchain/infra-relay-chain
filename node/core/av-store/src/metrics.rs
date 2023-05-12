@@ -92,49 +92,49 @@ impl metrics::Metrics for Metrics {
 		let metrics = MetricsInner {
 			received_availability_chunks_total: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_received_availability_chunks_total",
+					"infrablockspace_parachain_received_availability_chunks_total",
 					"Number of availability chunks received.",
 				)?,
 				registry,
 			)?,
 			pruning: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_av_store_pruning",
+					"infrablockspace_parachain_av_store_pruning",
 					"Time spent within `av_store::prune_all`",
 				))?,
 				registry,
 			)?,
 			process_block_finalized: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_av_store_process_block_finalized",
+					"infrablockspace_parachain_av_store_process_block_finalized",
 					"Time spent within `av_store::process_block_finalized`",
 				))?,
 				registry,
 			)?,
 			block_activated: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_av_store_block_activated",
+					"infrablockspace_parachain_av_store_block_activated",
 					"Time spent within `av_store::process_block_activated`",
 				))?,
 				registry,
 			)?,
 			process_message: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_av_store_process_message",
+					"infrablockspace_parachain_av_store_process_message",
 					"Time spent within `av_store::process_message`",
 				))?,
 				registry,
 			)?,
 			store_available_data: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_av_store_store_available_data",
+					"infrablockspace_parachain_av_store_store_available_data",
 					"Time spent within `av_store::store_available_data`",
 				))?,
 				registry,
 			)?,
 			store_chunk: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_av_store_store_chunk",
+					"infrablockspace_parachain_av_store_store_chunk",
 					"Time spent within `av_store::store_chunk`",
 				))?,
 				registry,
@@ -142,7 +142,7 @@ impl metrics::Metrics for Metrics {
 			get_chunk: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_av_store_get_chunk",
+						"infrablockspace_parachain_av_store_get_chunk",
 						"Time spent fetching requested chunks.`",
 					)
 					.buckets(vec![

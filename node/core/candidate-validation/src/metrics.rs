@@ -90,7 +90,7 @@ impl metrics::Metrics for Metrics {
 			validation_requests: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_validation_requests_total",
+						"infrablockspace_parachain_validation_requests_total",
 						"Number of validation requests served.",
 					),
 					&["validity"],
@@ -99,21 +99,21 @@ impl metrics::Metrics for Metrics {
 			)?,
 			validate_from_chain_state: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_candidate_validation_validate_from_chain_state",
+					"infrablockspace_parachain_candidate_validation_validate_from_chain_state",
 					"Time spent within `candidate_validation::validate_from_chain_state`",
 				))?,
 				registry,
 			)?,
 			validate_from_exhaustive: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_candidate_validation_validate_from_exhaustive",
+					"infrablockspace_parachain_candidate_validation_validate_from_exhaustive",
 					"Time spent within `candidate_validation::validate_from_exhaustive`",
 				))?,
 				registry,
 			)?,
 			validate_candidate_exhaustive: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_candidate_validation_validate_candidate_exhaustive",
+					"infrablockspace_parachain_candidate_validation_validate_candidate_exhaustive",
 					"Time spent within `candidate_validation::validate_candidate_exhaustive`",
 				))?,
 				registry,
@@ -121,7 +121,7 @@ impl metrics::Metrics for Metrics {
 			pov_size: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_candidate_validation_pov_size",
+						"infrablockspace_parachain_candidate_validation_pov_size",
 						"The size of the decompressed proof of validity of a candidate",
 					)
 					.buckets(
@@ -134,7 +134,7 @@ impl metrics::Metrics for Metrics {
 			code_size: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_candidate_validation_code_size",
+						"infrablockspace_parachain_candidate_validation_code_size",
 						"The size of the decompressed WASM validation blob used for checking a candidate",
 					)
 					.buckets(

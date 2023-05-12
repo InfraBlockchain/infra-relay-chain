@@ -51,7 +51,9 @@ use infrablockspace_node_subsystem::{
 	overseer, ActiveLeavesUpdate, FromOrchestra, OverseerSignal, SpawnedSubsystem, SubsystemError,
 };
 use infrablockspace_node_subsystem_util as util;
-use infrablockspace_primitives::{AuthorityDiscoveryId, Hash, SessionIndex, SessionInfo, ValidatorIndex};
+use infrablockspace_primitives::{
+	AuthorityDiscoveryId, Hash, SessionIndex, SessionInfo, ValidatorIndex,
+};
 
 #[cfg(test)]
 mod tests;
@@ -276,8 +278,8 @@ where
 		Ok(())
 	}
 
-	// Checks if the node is an authority and also updates `polkadot_node_is_authority` and
-	// `polkadot_node_is_parachain_validator` metrics accordingly.
+	// Checks if the node is an authority and also updates `infrablockspace_node_is_authority` and
+	// `infrablockspace_node_is_parachain_validator` metrics accordingly.
 	// On success, returns the index of our keys in `session_info.discovery_keys`.
 	async fn get_key_index_and_update_metrics(
 		&mut self,

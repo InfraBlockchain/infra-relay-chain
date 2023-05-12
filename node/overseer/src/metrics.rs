@@ -141,21 +141,21 @@ impl MetricsTrait for Metrics {
 		let metrics = MetricsInner {
 			activated_heads_total: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_activated_heads_total",
+					"infrablockspace_parachain_activated_heads_total",
 					"Number of activated heads.",
 				)?,
 				registry,
 			)?,
 			deactivated_heads_total: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_deactivated_heads_total",
+					"infrablockspace_parachain_deactivated_heads_total",
 					"Number of deactivated heads.",
 				)?,
 				registry,
 			)?,
 			messages_relayed_total: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_messages_relayed_total",
+					"infrablockspace_parachain_messages_relayed_total",
 					"Number of messages relayed by Overseer.",
 				)?,
 				registry,
@@ -163,7 +163,7 @@ impl MetricsTrait for Metrics {
 			to_subsystem_bounded_tof: prometheus::register(
 				prometheus::HistogramVec::new(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_subsystem_bounded_tof",
+						"infrablockspace_parachain_subsystem_bounded_tof",
 						"Duration spent in a particular channel from entrance to removal",
 					),
 					&["subsystem_name"],
@@ -173,7 +173,7 @@ impl MetricsTrait for Metrics {
 			to_subsystem_bounded_sent: prometheus::register(
 				prometheus::GaugeVec::<prometheus::U64>::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_subsystem_bounded_sent",
+						"infrablockspace_parachain_subsystem_bounded_sent",
 						"Number of elements sent to subsystems' bounded queues",
 					),
 					&["subsystem_name"],
@@ -183,7 +183,7 @@ impl MetricsTrait for Metrics {
 			to_subsystem_bounded_received: prometheus::register(
 				prometheus::GaugeVec::<prometheus::U64>::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_subsystem_bounded_received",
+						"infrablockspace_parachain_subsystem_bounded_received",
 						"Number of elements received by subsystems' bounded queues",
 					),
 					&["subsystem_name"],
@@ -193,7 +193,7 @@ impl MetricsTrait for Metrics {
 			to_subsystem_bounded_blocked: prometheus::register(
 				prometheus::GaugeVec::<prometheus::U64>::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_subsystem_bounded_blocked",
+						"infrablockspace_parachain_subsystem_bounded_blocked",
 						"Number of times senders blocked while sending messages to a subsystem",
 					),
 					&["subsystem_name"],
@@ -203,7 +203,7 @@ impl MetricsTrait for Metrics {
 			to_subsystem_unbounded_tof: prometheus::register(
 				prometheus::HistogramVec::new(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_subsystem_unbounded_tof",
+						"infrablockspace_parachain_subsystem_unbounded_tof",
 						"Duration spent in a particular channel from entrance to removal",
 					),
 					&["subsystem_name"],
@@ -213,7 +213,7 @@ impl MetricsTrait for Metrics {
 			to_subsystem_unbounded_sent: prometheus::register(
 				prometheus::GaugeVec::<prometheus::U64>::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_subsystem_unbounded_sent",
+						"infrablockspace_parachain_subsystem_unbounded_sent",
 						"Number of elements sent to subsystems' unbounded queues",
 					),
 					&["subsystem_name"],
@@ -223,7 +223,7 @@ impl MetricsTrait for Metrics {
 			to_subsystem_unbounded_received: prometheus::register(
 				prometheus::GaugeVec::<prometheus::U64>::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_subsystem_unbounded_received",
+						"infrablockspace_parachain_subsystem_unbounded_received",
 						"Number of elements received by subsystems' unbounded queues",
 					),
 					&["subsystem_name"],
@@ -233,7 +233,7 @@ impl MetricsTrait for Metrics {
 			signals_sent: prometheus::register(
 				prometheus::GaugeVec::<prometheus::U64>::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_overseer_signals_sent",
+						"infrablockspace_parachain_overseer_signals_sent",
 						"Number of signals sent by overseer to subsystems",
 					),
 					&["subsystem_name"],
@@ -243,7 +243,7 @@ impl MetricsTrait for Metrics {
 			signals_received: prometheus::register(
 				prometheus::GaugeVec::<prometheus::U64>::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_overseer_signals_received",
+						"infrablockspace_parachain_overseer_signals_received",
 						"Number of signals received by subsystems from overseer",
 					),
 					&["subsystem_name"],
@@ -253,7 +253,7 @@ impl MetricsTrait for Metrics {
 			#[cfg(any(target_os = "linux", feature = "jemalloc-allocator"))]
 			memory_stats_allocated: prometheus::register(
 				prometheus::Gauge::<prometheus::U64>::new(
-					"polkadot_memory_allocated",
+					"infrablockspace_memory_allocated",
 					"Total bytes allocated by the node",
 				)?,
 				registry,
@@ -261,7 +261,7 @@ impl MetricsTrait for Metrics {
 			#[cfg(any(target_os = "linux", feature = "jemalloc-allocator"))]
 			memory_stats_resident: prometheus::register(
 				prometheus::Gauge::<prometheus::U64>::new(
-					"polkadot_memory_resident",
+					"infrablockspace_memory_resident",
 					"Bytes allocated by the node, and held in RAM",
 				)?,
 				registry,

@@ -83,7 +83,7 @@ impl metrics::Metrics for Metrics {
 			chain_api_requests: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_chain_api_requests_total",
+						"infrablockspace_parachain_chain_api_requests_total",
 						"Number of Chain API requests served.",
 					),
 					&["success"],
@@ -92,42 +92,42 @@ impl metrics::Metrics for Metrics {
 			)?,
 			block_number: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_chain_api_block_number",
+					"infrablockspace_parachain_chain_api_block_number",
 					"Time spent within `chain_api::block_number`",
 				))?,
 				registry,
 			)?,
 			block_header: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_chain_api_block_headers",
+					"infrablockspace_parachain_chain_api_block_headers",
 					"Time spent within `chain_api::block_headers`",
 				))?,
 				registry,
 			)?,
 			block_weight: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_chain_api_block_weight",
+					"infrablockspace_parachain_chain_api_block_weight",
 					"Time spent within `chain_api::block_weight`",
 				))?,
 				registry,
 			)?,
 			finalized_block_hash: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_chain_api_finalized_block_hash",
+					"infrablockspace_parachain_chain_api_finalized_block_hash",
 					"Time spent within `chain_api::finalized_block_hash`",
 				))?,
 				registry,
 			)?,
 			finalized_block_number: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_chain_api_finalized_block_number",
+					"infrablockspace_parachain_chain_api_finalized_block_number",
 					"Time spent within `chain_api::finalized_block_number`",
 				))?,
 				registry,
 			)?,
 			ancestors: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_chain_api_ancestors",
+					"infrablockspace_parachain_chain_api_ancestors",
 					"Time spent within `chain_api::ancestors`",
 				))?,
 				registry,

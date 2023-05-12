@@ -81,7 +81,7 @@ impl metrics::Metrics for Metrics {
 			pre_check_judgement: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_pvf_precheck_judgement",
+						"infrablockspace_pvf_precheck_judgement",
 						"Time between sending the pre-check request to receiving the response.",
 					)
 					.buckets(vec![0.1, 0.5, 1.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0]),
@@ -90,21 +90,21 @@ impl metrics::Metrics for Metrics {
 			)?,
 			votes_total: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_precheck_votes_total",
+					"infrablockspace_pvf_precheck_votes_total",
 					"The total number of votes submitted.",
 				)?,
 				registry,
 			)?,
 			votes_started: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_precheck_votes_started",
+					"infrablockspace_pvf_precheck_votes_started",
 					"The number of votes that are pending submission",
 				)?,
 				registry,
 			)?,
 			votes_duplicate: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_precheck_votes_duplicate",
+					"infrablockspace_pvf_precheck_votes_duplicate",
 					"The number of votes that are submitted more than once for the same code within\
 the same session.",
 				)?,
@@ -112,14 +112,14 @@ the same session.",
 			)?,
 			pvfs_observed: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_precheck_pvfs_observed",
+					"infrablockspace_pvf_precheck_pvfs_observed",
 					"The number of new PVFs observed.",
 				)?,
 				registry,
 			)?,
 			pvfs_left: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_precheck_pvfs_left",
+					"infrablockspace_pvf_precheck_pvfs_left",
 					"The number of PVFs removed from the view.",
 				)?,
 				registry,

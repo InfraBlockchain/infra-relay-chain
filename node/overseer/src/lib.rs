@@ -384,7 +384,7 @@ pub async fn forward_events<P: BlockchainEvents<Block>>(client: Arc<P>, mut hand
 /// # 		SpawnedSubsystem,
 /// # 	},
 /// # };
-/// # use polkadot_node_subsystem_types::messages::{
+/// # use infrablockspace_node_subsystem_types::messages::{
 /// # 	CandidateValidationMessage, CandidateBackingMessage,
 /// # 	NetworkBridgeTxMessage,
 /// # };

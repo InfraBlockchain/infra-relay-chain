@@ -103,7 +103,7 @@ impl metrics::Metrics for Metrics {
 		let metrics = MetricsInner {
 			open: prometheus::register(
 				prometheus::Counter::with_opts(prometheus::Opts::new(
-					"polkadot_parachain_candidate_disputes_total",
+					"infrablockspace_parachain_candidate_disputes_total",
 					"Total number of raised disputes.",
 				))?,
 				registry,
@@ -111,7 +111,7 @@ impl metrics::Metrics for Metrics {
 			concluded: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_candidate_dispute_concluded",
+						"infrablockspace_parachain_candidate_dispute_concluded",
 						"Concluded dispute votes, sorted by candidate is `valid` and `invalid`.",
 					),
 					&["validity"],
@@ -121,7 +121,7 @@ impl metrics::Metrics for Metrics {
 			votes: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_candidate_dispute_votes",
+						"infrablockspace_parachain_candidate_dispute_votes",
 						"Accumulated dispute votes, sorted by candidate is `valid` and `invalid`.",
 					),
 					&["validity"],
@@ -130,7 +130,7 @@ impl metrics::Metrics for Metrics {
 			)?,
 			approval_votes: prometheus::register(
 				prometheus::Counter::with_opts(prometheus::Opts::new(
-					"polkadot_parachain_dispute_candidate_approval_votes_fetched_total",
+					"infrablockspace_parachain_dispute_candidate_approval_votes_fetched_total",
 					"Number of approval votes fetched from approval voting.",
 				))?,
 				registry,
@@ -138,7 +138,7 @@ impl metrics::Metrics for Metrics {
 			queued_participations: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_dispute_participations",
+						"infrablockspace_parachain_dispute_participations",
 						"Total number of queued participations, grouped by priority and best-effort. (Not every queueing will necessarily lead to an actual participation because of duplicates.)",
 					),
 					&["priority"],
@@ -148,7 +148,7 @@ impl metrics::Metrics for Metrics {
 			vote_cleanup_time: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_dispute_coordinator_vote_cleanup",
+						"infrablockspace_parachain_dispute_coordinator_vote_cleanup",
 						"Time spent cleaning up old votes per batch.",
 					)
 					.buckets([0.01, 0.1, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0].into()),
@@ -158,7 +158,7 @@ impl metrics::Metrics for Metrics {
 			refrained_participations: prometheus::register(
 			prometheus::Counter::with_opts(
 				prometheus::Opts::new(
-					"polkadot_parachain_dispute_refrained_participations",
+					"infrablockspace_parachain_dispute_refrained_participations",
 					"Number of refrained participations. We refrain from participation if all of the following conditions are met: disputed candidate is not included, not backed and not confirmed.",
 				))?,
 				registry,

@@ -121,7 +121,7 @@ impl metrics::Metrics for Metrics {
 			worker_spawning: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_pvf_worker_spawning",
+						"infrablockspace_pvf_worker_spawning",
 						"The total number of workers began to spawn",
 					),
 					&["flavor"],
@@ -131,7 +131,7 @@ impl metrics::Metrics for Metrics {
 			worker_spawned: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_pvf_worker_spawned",
+						"infrablockspace_pvf_worker_spawned",
 						"The total number of workers spawned successfully",
 					),
 					&["flavor"],
@@ -141,7 +141,7 @@ impl metrics::Metrics for Metrics {
 			worker_retired: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_pvf_worker_retired",
+						"infrablockspace_pvf_worker_retired",
 						"The total number of workers retired, either killed by the host or died on duty",
 					),
 					&["flavor"],
@@ -150,28 +150,28 @@ impl metrics::Metrics for Metrics {
 			)?,
 			prepare_enqueued: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_prepare_enqueued",
+					"infrablockspace_pvf_prepare_enqueued",
 					"The total number of jobs enqueued into the preparation pipeline"
 				)?,
 				registry,
 			)?,
 			prepare_concluded: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_prepare_concluded",
+					"infrablockspace_pvf_prepare_concluded",
 					"The total number of jobs concluded in the preparation pipeline"
 				)?,
 				registry,
 			)?,
 			execute_enqueued: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_execute_enqueued",
+					"infrablockspace_pvf_execute_enqueued",
 					"The total number of jobs enqueued into the execution pipeline"
 				)?,
 				registry,
 			)?,
 			execute_finished: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_pvf_execute_finished",
+					"infrablockspace_pvf_execute_finished",
 					"The total number of jobs done in the execution pipeline"
 				)?,
 				registry,
@@ -179,7 +179,7 @@ impl metrics::Metrics for Metrics {
 			preparation_time: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_pvf_preparation_time",
+						"infrablockspace_pvf_preparation_time",
 						"Time spent in preparing PVF artifacts in seconds",
 					)
 					.buckets(vec![
@@ -206,7 +206,7 @@ impl metrics::Metrics for Metrics {
 			execution_time: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_pvf_execution_time",
+						"infrablockspace_pvf_execution_time",
 						"Time spent in executing PVFs",
 					).buckets(vec![
 						// This is synchronized with `APPROVAL_EXECUTION_TIMEOUT`  and
@@ -234,7 +234,7 @@ impl metrics::Metrics for Metrics {
 			preparation_max_rss: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_pvf_preparation_max_rss",
+						"infrablockspace_pvf_preparation_max_rss",
 						"ru_maxrss (maximum resident set size) observed for preparation (in kilobytes)",
 					).buckets(
 						prometheus::exponential_buckets(8192.0, 2.0, 10)
@@ -247,7 +247,7 @@ impl metrics::Metrics for Metrics {
 			preparation_max_resident: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_pvf_preparation_max_resident",
+						"infrablockspace_pvf_preparation_max_resident",
 						"max resident memory observed for preparation (in kilobytes)",
 					).buckets(
 						prometheus::exponential_buckets(8192.0, 2.0, 10)
@@ -260,7 +260,7 @@ impl metrics::Metrics for Metrics {
 			preparation_max_allocated: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_pvf_preparation_max_allocated",
+						"infrablockspace_pvf_preparation_max_allocated",
 						"max allocated memory observed for preparation (in kilobytes)",
 					).buckets(
 						prometheus::exponential_buckets(8192.0, 2.0, 10)

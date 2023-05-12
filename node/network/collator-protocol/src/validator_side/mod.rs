@@ -162,7 +162,7 @@ impl metrics::Metrics for Metrics {
 			collation_requests: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_collation_requests_total",
+						"infrablockspace_parachain_collation_requests_total",
 						"Number of collations requested from Collators.",
 					),
 					&["success"],
@@ -172,7 +172,7 @@ impl metrics::Metrics for Metrics {
 			process_msg: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_collator_protocol_validator_process_msg",
+						"infrablockspace_parachain_collator_protocol_validator_process_msg",
 						"Time spent within `collator_protocol_validator::process_msg`",
 					)
 				)?,
@@ -181,7 +181,7 @@ impl metrics::Metrics for Metrics {
 			handle_collation_request_result: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_collator_protocol_validator_handle_collation_request_result",
+						"infrablockspace_parachain_collator_protocol_validator_handle_collation_request_result",
 						"Time spent within `collator_protocol_validator::handle_collation_request_result`",
 					)
 				)?,
@@ -189,7 +189,7 @@ impl metrics::Metrics for Metrics {
 			)?,
 			collator_peer_count: prometheus::register(
 				prometheus::Gauge::new(
-					"polkadot_parachain_collator_peer_count",
+					"infrablockspace_parachain_collator_peer_count",
 					"Amount of collator peers connected",
 				)?,
 				registry,
@@ -197,7 +197,7 @@ impl metrics::Metrics for Metrics {
 			collation_request_duration: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_collator_protocol_validator_collation_request_duration",
+						"infrablockspace_parachain_collator_protocol_validator_collation_request_duration",
 						"Lifetime of the `PerRequest` structure",
 					).buckets(vec![0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9, 1.0, 1.2, 1.5, 1.75]),
 				)?,
@@ -377,17 +377,21 @@ impl ActiveParas {
 				.ok()
 				.and_then(|x| x.ok());
 
-			let mg = infrablockspace_node_subsystem_util::request_validator_groups(relay_parent, sender)
-				.await
-				.await
-				.ok()
-				.and_then(|x| x.ok());
+			let mg =
+				infrablockspace_node_subsystem_util::request_validator_groups(relay_parent, sender)
+					.await
+					.await
+					.ok()
+					.and_then(|x| x.ok());
 
-			let mc = infrablockspace_node_subsystem_util::request_availability_cores(relay_parent, sender)
-				.await
-				.await
-				.ok()
-				.and_then(|x| x.ok());
+			let mc = infrablockspace_node_subsystem_util::request_availability_cores(
+				relay_parent,
+				sender,
+			)
+			.await
+			.await
+			.ok()
+			.and_then(|x| x.ok());
 
 			let (validators, groups, rotation_info, cores) = match (mv, mg, mc) {
 				(Some(v), Some((g, r)), Some(c)) => (v, g, r, c),
@@ -402,23 +406,25 @@ impl ActiveParas {
 				},
 			};
 
-			let para_now =
-				match infrablockspace_node_subsystem_util::signing_key_and_index(&validators, keystore)
-					.await
-					.and_then(|(_, index)| {
-						infrablockspace_node_subsystem_util::find_validator_group(&groups, index)
-					}) {
-					Some(group) => {
-						let core_now = rotation_info.core_for_group(group, cores.len());
+			let para_now = match infrablockspace_node_subsystem_util::signing_key_and_index(
+				&validators,
+				keystore,
+			)
+			.await
+			.and_then(|(_, index)| {
+				infrablockspace_node_subsystem_util::find_validator_group(&groups, index)
+			}) {
+				Some(group) => {
+					let core_now = rotation_info.core_for_group(group, cores.len());
 
-						cores.get(core_now.0 as usize).and_then(|c| c.para_id())
-					},
-					None => {
-						gum::trace!(target: LOG_TARGET, ?relay_parent, "Not a validator");
+					cores.get(core_now.0 as usize).and_then(|c| c.para_id())
+				},
+				None => {
+					gum::trace!(target: LOG_TARGET, ?relay_parent, "Not a validator");
 
-						continue
-					},
-				};
+					continue
+				},
+			};
 
 			// This code won't work well, if at all for parathreads. For parathreads we'll
 			// have to be aware of which core the parathread claim is going to be multiplexed

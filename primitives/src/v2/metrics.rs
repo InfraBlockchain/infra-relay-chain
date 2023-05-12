@@ -130,14 +130,14 @@ pub mod metric_definitions {
 	/// Counts parachain inherent data weights. Use `before` and `after` labels to differentiate
 	/// between the weight before and after filtering.
 	pub const PARACHAIN_INHERENT_DATA_WEIGHT: CounterVecDefinition = CounterVecDefinition {
-		name: "polkadot_parachain_inherent_data_weight",
+		name: "infrablockspace_parachain_inherent_data_weight",
 		description: "Inherent data weight before and after filtering",
 		labels: &["when"],
 	};
 
 	/// Counts the number of bitfields processed in `enter_inner`.
 	pub const PARACHAIN_INHERENT_DATA_BITFIELDS_PROCESSED: CounterDefinition = CounterDefinition {
-		name: "polkadot_parachain_inherent_data_bitfields_processed",
+		name: "infrablockspace_parachain_inherent_data_bitfields_processed",
 		description: "Counts the number of bitfields processed in `enter_inner`.",
 	};
 
@@ -145,7 +145,7 @@ pub mod metric_definitions {
 	/// in `enter_inner`.
 	pub const PARACHAIN_INHERENT_DATA_CANDIDATES_PROCESSED: CounterVecDefinition =
 		CounterVecDefinition {
-			name: "polkadot_parachain_inherent_data_candidates_processed",
+			name: "infrablockspace_parachain_inherent_data_candidates_processed",
 			description:
 				"Counts the number of parachain block candidates processed in `enter_inner`.",
 			labels: &["category"],
@@ -156,7 +156,7 @@ pub mod metric_definitions {
 	/// the current session.
 	pub const PARACHAIN_INHERENT_DATA_DISPUTE_SETS_PROCESSED: CounterVecDefinition =
 		CounterVecDefinition {
-			name: "polkadot_parachain_inherent_data_dispute_sets_processed",
+			name: "infrablockspace_parachain_inherent_data_dispute_sets_processed",
 			description: "Counts the number of dispute statements sets processed in `enter_inner`.",
 			labels: &["category"],
 		};
@@ -164,7 +164,7 @@ pub mod metric_definitions {
 	/// Counts the number of dispute statements sets included in a block in `enter_inner`.
 	pub const PARACHAIN_INHERENT_DATA_DISPUTE_SETS_INCLUDED: CounterDefinition =
 		CounterDefinition {
-			name: "polkadot_parachain_inherent_data_dispute_sets_included",
+			name: "infrablockspace_parachain_inherent_data_dispute_sets_included",
 			description:
 				"Counts the number of dispute statements sets included in a block in `enter_inner`.",
 		};
@@ -172,7 +172,7 @@ pub mod metric_definitions {
 	/// Counts the number of `valid` and `invalid` bitfields signature checked in `enter_inner`.
 	pub const PARACHAIN_CREATE_INHERENT_BITFIELDS_SIGNATURE_CHECKS: CounterVecDefinition =
 		CounterVecDefinition {
-			name: "polkadot_parachain_create_inherent_bitfields_signature_checks",
+			name: "infrablockspace_parachain_create_inherent_bitfields_signature_checks",
 			description: "Counts the number of bitfields signature checked in `enter_inner`.",
 			labels: &["validity"],
 		};

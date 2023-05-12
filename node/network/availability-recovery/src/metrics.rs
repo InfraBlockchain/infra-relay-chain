@@ -157,7 +157,7 @@ impl metrics::Metrics for Metrics {
 		let metrics = MetricsInner {
 			chunk_requests_issued: prometheus::register(
 				Counter::new(
-					"polkadot_parachain_availability_recovery_chunk_requests_issued",
+					"infrablockspace_parachain_availability_recovery_chunk_requests_issued",
 					"Total number of issued chunk requests.",
 				)?,
 				registry,
@@ -165,7 +165,7 @@ impl metrics::Metrics for Metrics {
 			chunk_requests_finished: prometheus::register(
 				CounterVec::new(
 					Opts::new(
-						"polkadot_parachain_availability_recovery_chunk_requests_finished",
+						"infrablockspace_parachain_availability_recovery_chunk_requests_finished",
 						"Total number of chunk requests finished.",
 					),
 					&["result"],
@@ -174,21 +174,21 @@ impl metrics::Metrics for Metrics {
 			)?,
 			time_chunk_request: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_availability_recovery_time_chunk_request",
+					"infrablockspace_parachain_availability_recovery_time_chunk_request",
 					"Time spent waiting for a response to a chunk request",
 				))?,
 				registry,
 			)?,
 			time_erasure_recovery: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_availability_recovery_time_erasure_recovery",
+					"infrablockspace_parachain_availability_recovery_time_erasure_recovery",
 					"Time spent to recover the erasure code and verify the merkle root by re-encoding as erasure chunks",
 				))?,
 				registry,
 			)?,
 			time_full_recovery: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_availability_recovery_time_total",
+					"infrablockspace_parachain_availability_recovery_time_total",
 					"Time a full recovery process took, either until failure or successful erasure decoding.",
 				))?,
 				registry,
@@ -196,7 +196,7 @@ impl metrics::Metrics for Metrics {
 			full_recoveries_finished: prometheus::register(
 				CounterVec::new(
 					Opts::new(
-						"polkadot_parachain_availability_recovery_recoveries_finished",
+						"infrablockspace_parachain_availability_recovery_recoveries_finished",
 						"Total number of recoveries that finished.",
 					),
 					&["result"],
@@ -205,7 +205,7 @@ impl metrics::Metrics for Metrics {
 			)?,
 			full_recoveries_started: prometheus::register(
 				Counter::new(
-					"polkadot_parachain_availability_recovery_recovieries_started",
+					"infrablockspace_parachain_availability_recovery_recovieries_started",
 					"Total number of started recoveries.",
 				)?,
 				registry,

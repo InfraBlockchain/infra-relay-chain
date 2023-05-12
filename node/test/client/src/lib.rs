@@ -53,7 +53,7 @@ pub struct GenesisParameters;
 
 impl substrate_test_client::GenesisInit for GenesisParameters {
 	fn genesis_storage(&self) -> Storage {
-		infrablockspace_test_service::chain_spec::polkadot_local_testnet_genesis()
+		infrablockspace_test_service::chain_spec::infrablockspace_local_testnet_genesis()
 			.build_storage()
 			.expect("Builds test runtime genesis storage")
 	}

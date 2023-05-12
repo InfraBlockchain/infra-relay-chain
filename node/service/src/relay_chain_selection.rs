@@ -45,7 +45,9 @@ use infrablockspace_node_subsystem::messages::{
 };
 use infrablockspace_node_subsystem_util::metrics::{self, prometheus};
 use infrablockspace_overseer::{AllMessages, Handle};
-use infrablockspace_primitives::{Block as PolkadotBlock, BlockNumber, Hash, Header as PolkadotHeader};
+use infrablockspace_primitives::{
+	Block as PolkadotBlock, BlockNumber, Hash, Header as PolkadotHeader,
+};
 use std::sync::Arc;
 
 /// The maximum amount of unfinalized blocks we are willing to allow due to approval checking
@@ -74,7 +76,7 @@ impl metrics::Metrics for Metrics {
 			approval_checking_finality_lag: prometheus::register(
 				prometheus::Gauge::with_opts(
 					prometheus::Opts::new(
-						"polkadot_parachain_approval_checking_finality_lag",
+						"infrablockspace_parachain_approval_checking_finality_lag",
 						"How far behind the head of the chain the Approval Checking protocol wants to vote",
 					)
 				)?,
@@ -83,7 +85,7 @@ impl metrics::Metrics for Metrics {
 			disputes_finality_lag: prometheus::register(
 				prometheus::Gauge::with_opts(
 					prometheus::Opts::new(
-						"polkadot_parachain_disputes_finality_lag",
+						"infrablockspace_parachain_disputes_finality_lag",
 						"How far behind the head of the chain the Disputes protocol wants to vote",
 					)
 				)?,

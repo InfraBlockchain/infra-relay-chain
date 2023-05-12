@@ -18,7 +18,6 @@ use async_trait::async_trait;
 use futures::{executor, pending, pin_mut, poll, select, stream, FutureExt};
 use std::{collections::HashMap, sync::atomic, task::Poll};
 
-use test_helpers::{dummy_candidate_descriptor, dummy_candidate_receipt, dummy_hash};
 use infrablockspace_node_network_protocol::{PeerId, UnifiedReputationChange};
 use infrablockspace_node_primitives::{
 	BlockData, CollationGenerationConfig, CollationResult, DisputeMessage, InvalidDisputeVote, PoV,
@@ -33,6 +32,7 @@ use infrablockspace_primitives::{
 	CandidateHash, CandidateReceipt, CollatorPair, InvalidDisputeStatementKind, SessionIndex,
 	ValidDisputeStatementKind, ValidatorIndex,
 };
+use test_helpers::{dummy_candidate_descriptor, dummy_candidate_receipt, dummy_hash};
 
 use crate::{
 	self as overseer,
@@ -266,9 +266,9 @@ fn extract_metrics(registry: &prometheus::Registry) -> HashMap<&'static str, u64
 			.get_value() as u64
 	};
 
-	let activated = extract("polkadot_parachain_activated_heads_total");
-	let deactivated = extract("polkadot_parachain_deactivated_heads_total");
-	let relayed = extract("polkadot_parachain_messages_relayed_total");
+	let activated = extract("infrablockspace_parachain_activated_heads_total");
+	let deactivated = extract("infrablockspace_parachain_deactivated_heads_total");
+	let relayed = extract("infrablockspace_parachain_messages_relayed_total");
 	let mut result = HashMap::new();
 	result.insert("activated", activated);
 	result.insert("deactivated", deactivated);

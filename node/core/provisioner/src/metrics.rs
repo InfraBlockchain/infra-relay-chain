@@ -160,7 +160,7 @@ impl metrics::Metrics for Metrics {
 			inherent_data_requests: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_inherent_data_requests_total",
+						"infrablockspace_parachain_inherent_data_requests_total",
 						"Number of InherentData requests served by provisioner.",
 					),
 					&["success"],
@@ -169,14 +169,14 @@ impl metrics::Metrics for Metrics {
 			)?,
 			request_inherent_data_duration: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_provisioner_request_inherent_data_time",
+					"infrablockspace_parachain_provisioner_request_inherent_data_time",
 					"Time spent within `provisioner::request_inherent_data`",
 				))?,
 				registry,
 			)?,
 			provisionable_data_duration: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_provisioner_provisionable_data_time",
+					"infrablockspace_parachain_provisioner_provisionable_data_time",
 					"Time spent within `provisioner::provisionable_data`",
 				))?,
 				registry,
@@ -184,7 +184,7 @@ impl metrics::Metrics for Metrics {
 			inherent_data_dispute_statements: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_inherent_data_dispute_statements",
+						"infrablockspace_parachain_inherent_data_dispute_statements",
 						"Number of dispute statements passed to `create_inherent()`.",
 					),
 					&["validity"],
@@ -193,7 +193,7 @@ impl metrics::Metrics for Metrics {
 			)?,
 			inherent_data_dispute_statement_sets: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_inherent_data_dispute_statement_sets",
+					"infrablockspace_parachain_inherent_data_dispute_statement_sets",
 					"Number of dispute statements sets passed to `create_inherent()`.",
 				)?,
 				registry,
@@ -201,7 +201,7 @@ impl metrics::Metrics for Metrics {
 			inherent_data_response_bitfields: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_provisioner_inherent_data_response_bitfields_sent",
+						"infrablockspace_parachain_provisioner_inherent_data_response_bitfields_sent",
 						"Number of inherent bitfields sent in response to `ProvisionerMessage::RequestInherentData`.",
 					).buckets(vec![0.0, 10.0, 25.0, 50.0, 75.0, 100.0, 150.0, 200.0, 250.0, 300.0]),
 				)?,
@@ -210,7 +210,7 @@ impl metrics::Metrics for Metrics {
 			partitioned_disputes: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_provisioner_partitioned_disputes",
+						"infrablockspace_parachain_provisioner_partitioned_disputes",
 						"Number of disputes partitioned by type.",
 					),
 					&["partition"],
@@ -218,7 +218,7 @@ impl metrics::Metrics for Metrics {
 				&registry,
 			)?,
 			fetched_onchain_disputes: prometheus::register(
-				prometheus::Counter::new("polkadot_parachain_fetched_onchain_disputes", "Number of disputes fetched from the runtime"
+				prometheus::Counter::new("infrablockspace_parachain_fetched_onchain_disputes", "Number of disputes fetched from the runtime"
 				)?,
 				&registry,
 			)?,

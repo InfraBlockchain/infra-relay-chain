@@ -57,7 +57,7 @@ impl metrics::Metrics for Metrics {
 			chain_api_requests: prometheus::register(
 				prometheus::CounterVec::new(
 					prometheus::Opts::new(
-						"polkadot_parachain_runtime_api_requests_total",
+						"infrablockspace_parachain_runtime_api_requests_total",
 						"Number of Runtime API requests served.",
 					),
 					&["success"],
@@ -66,7 +66,7 @@ impl metrics::Metrics for Metrics {
 			)?,
 			make_runtime_api_request: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_runtime_api_make_runtime_api_request",
+					"infrablockspace_parachain_runtime_api_make_runtime_api_request",
 					"Time spent within `runtime_api::make_runtime_api_request`",
 				))?,
 				registry,

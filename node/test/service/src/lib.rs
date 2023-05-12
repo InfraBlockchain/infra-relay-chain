@@ -146,7 +146,7 @@ pub fn node_config(
 	let root = base_path.path().join(key.to_string());
 	let role = if is_validator { Role::Authority } else { Role::Full };
 	let key_seed = key.to_seed();
-	let mut spec = polkadot_local_testnet_config();
+	let mut spec = infrablockspace_local_testnet_config();
 	let mut storage = spec.as_storage_builder().build_storage().expect("could not build storage");
 
 	BasicExternalities::execute_with_storage(&mut storage, storage_update_func);

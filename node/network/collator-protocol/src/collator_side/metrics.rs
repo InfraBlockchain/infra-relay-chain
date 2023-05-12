@@ -70,21 +70,21 @@ impl metrics::Metrics for Metrics {
 		let metrics = MetricsInner {
 			advertisements_made: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_collation_advertisements_made_total",
+					"infrablockspace_parachain_collation_advertisements_made_total",
 					"A number of collation advertisements sent to validators.",
 				)?,
 				registry,
 			)?,
 			collations_send_requested: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_collations_sent_requested_total",
+					"infrablockspace_parachain_collations_sent_requested_total",
 					"A number of collations requested to be sent to validators.",
 				)?,
 				registry,
 			)?,
 			collations_sent: prometheus::register(
 				prometheus::Counter::new(
-					"polkadot_parachain_collations_sent_total",
+					"infrablockspace_parachain_collations_sent_total",
 					"A number of collations sent to validators.",
 				)?,
 				registry,
@@ -92,7 +92,7 @@ impl metrics::Metrics for Metrics {
 			process_msg: prometheus::register(
 				prometheus::Histogram::with_opts(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_collator_protocol_collator_process_msg",
+						"infrablockspace_parachain_collator_protocol_collator_process_msg",
 						"Time spent within `collator_protocol_collator::process_msg`",
 					)
 					.buckets(vec![
@@ -105,7 +105,7 @@ impl metrics::Metrics for Metrics {
 			collation_distribution_time: prometheus::register(
 				prometheus::HistogramVec::new(
 					prometheus::HistogramOpts::new(
-						"polkadot_parachain_collator_protocol_collator_distribution_time",
+						"infrablockspace_parachain_collator_protocol_collator_distribution_time",
 						"Time spent within `collator_protocol_collator::distribute_collation`",
 					)
 					.buckets(vec![

@@ -93,7 +93,7 @@ impl metrics::Metrics for Metrics {
 			sent_requests: prometheus::register(
 				CounterVec::new(
 					Opts::new(
-						"polkadot_parachain_dispute_distribution_sent_requests",
+						"infrablockspace_parachain_dispute_distribution_sent_requests",
 						"Total number of sent requests.",
 					),
 					&["success"],
@@ -102,7 +102,7 @@ impl metrics::Metrics for Metrics {
 			)?,
 			received_requests: prometheus::register(
 				Counter::new(
-					"polkadot_parachain_dispute_distribution_received_requests",
+					"infrablockspace_parachain_dispute_distribution_received_requests",
 					"Total number of received dispute requests.",
 				)?,
 				registry,
@@ -110,7 +110,7 @@ impl metrics::Metrics for Metrics {
 			imported_requests: prometheus::register(
 				CounterVec::new(
 					Opts::new(
-						"polkadot_parachain_dispute_distribution_imported_requests",
+						"infrablockspace_parachain_dispute_distribution_imported_requests",
 						"Total number of imported requests.",
 					),
 					&["success"],
@@ -119,7 +119,7 @@ impl metrics::Metrics for Metrics {
 			)?,
 			time_dispute_request: prometheus::register(
 				prometheus::Histogram::with_opts(prometheus::HistogramOpts::new(
-					"polkadot_parachain_dispute_distribution_time_dispute_request",
+					"infrablockspace_parachain_dispute_distribution_time_dispute_request",
 					"Time needed for dispute votes to get confirmed/fail getting transmitted.",
 				))?,
 				registry,

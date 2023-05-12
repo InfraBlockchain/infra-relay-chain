@@ -39,24 +39,24 @@ pub type InfrablockspaceChainSpec =
 	sc_service::GenericChainSpec<infrablockspace_test_runtime::GenesisConfig, Extensions>;
 
 /// Local testnet config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_config() -> InfrablockspaceChainSpec {
+pub fn infrablockspace_local_testnet_config() -> InfrablockspaceChainSpec {
 	InfrablockspaceChainSpec::from_genesis(
 		"Local Testnet",
 		"local_testnet",
 		ChainType::Local,
-		|| polkadot_local_testnet_genesis(),
+		|| infrablockspace_local_testnet_genesis(),
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(polkadot_chain_spec_properties()),
+		Some(infrablockspace_chain_spec_properties()),
 		Default::default(),
 	)
 }
 
 /// Local testnet genesis config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_genesis() -> infrablockspace_test_runtime::GenesisConfig {
-	polkadot_testnet_genesis(
+pub fn infrablockspace_local_testnet_genesis() -> infrablockspace_test_runtime::GenesisConfig {
+	infrablockspace_testnet_genesis(
 		vec![get_authority_keys_from_seed("Alice"), get_authority_keys_from_seed("Bob")],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
 		None,
@@ -96,7 +96,7 @@ fn testnet_accounts() -> Vec<AccountId> {
 }
 
 /// Helper function to create polkadot `GenesisConfig` for testing
-fn polkadot_testnet_genesis(
+fn infrablockspace_testnet_genesis(
 	initial_authorities: Vec<(
 		AccountId,
 		AccountId,
