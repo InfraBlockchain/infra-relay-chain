@@ -262,6 +262,8 @@ fn infrabs_staging_testnet_config_genesis(wasm_binary: &[u8]) -> infrabs::Genesi
 	const ENDOWMENT: u128 = 1_000_000 * DOT;
 	const STASH: u128 = 100 * DOT;
 
+	let root_key = get_account_id_from_seed::<sr25519::Public>("Alice");
+
 	infrabs::GenesisConfig {
 		system: infrabs::SystemConfig { code: wasm_binary.to_vec() },
 		balances: infrabs::BalancesConfig {
@@ -303,6 +305,7 @@ fn infrabs_staging_testnet_config_genesis(wasm_binary: &[u8]) -> infrabs::Genesi
 			slash_reward_fraction: Perbill::from_percent(10),
 			..Default::default()
 		},
+		sudo: infrabs::SudoConfig { key: Some(root_key) },
 		phragmen_election: Default::default(),
 		democracy: Default::default(),
 		council: infrabs::CouncilConfig { members: vec![], phantom: Default::default() },
@@ -1006,7 +1009,7 @@ pub fn infrabs_testnet_genesis(
 		AssignmentId,
 		AuthorityDiscoveryId,
 	)>,
-	_root_key: AccountId,
+	root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
 ) -> infrabs::GenesisConfig {
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
@@ -1051,6 +1054,7 @@ pub fn infrabs_testnet_genesis(
 			slash_reward_fraction: Perbill::from_percent(10),
 			..Default::default()
 		},
+		sudo: infrabs::SudoConfig { key: Some(root_key) },
 		phragmen_election: Default::default(),
 		democracy: infrabs::DemocracyConfig::default(),
 		council: infrabs::CouncilConfig { members: vec![], phantom: Default::default() },

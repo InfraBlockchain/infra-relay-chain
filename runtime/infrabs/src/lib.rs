@@ -23,7 +23,8 @@
 use pallet_transaction_payment::CurrencyAdapter;
 use runtime_common::{
 	auctions, claims, crowdloan, impl_runtime_weights, impls::DealWithFees, paras_registrar,
-	prod_or_fast, slots, BlockHashCount, BlockLength, CurrencyToVote, SlowAdjustingFeeUpdate,
+	paras_sudo_wrapper, prod_or_fast, slots, BlockHashCount, BlockLength, CurrencyToVote,
+	SlowAdjustingFeeUpdate,
 };
 
 use runtime_parachains::{
@@ -174,6 +175,13 @@ impl frame_system::Config for Runtime {
 	type OnSetCode = ();
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
+
+impl pallet_sudo::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+}
+
+impl paras_sudo_wrapper::Config for Runtime {}
 
 parameter_types! {
 	pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
@@ -1573,8 +1581,10 @@ construct_runtime! {
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 
-		// Pot Related
+		// InfraBlockSpace Pallets.
 		Pot: parachains_pot::{Pallet, Storage, Event} = 80,
+		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
+		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
