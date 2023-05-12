@@ -19,10 +19,10 @@ use frame_support::weights::Weight;
 use grandpa::AuthorityId as GrandpaId;
 
 // Polkadot Runtime Configuration
-#[cfg(feature = "infrabs-native")]
-use infrabs_runtime as infrabs;
-#[cfg(feature = "infrabs-native")]
-use infrabs_runtime_constants::currency::UNITS as DOT;
+#[cfg(feature = "infrablockspace-native")]
+use infrablockspace_runtime as infrablockspace;
+#[cfg(feature = "infrablockspace-native")]
+use infrablockspace_runtime_constants::currency::UNITS as DOT;
 #[cfg(feature = "kusama-native")]
 use kusama_runtime as kusama;
 #[cfg(feature = "kusama-native")]
@@ -43,7 +43,7 @@ use sp_core::{sr25519, Pair, Public};
 use sp_runtime::{traits::IdentifyAccount, Perbill};
 use telemetry::TelemetryEndpoints;
 
-#[cfg(feature = "infrabs-native")]
+#[cfg(feature = "infrablockspace-native")]
 const POLKADOT_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 #[cfg(feature = "kusama-native")]
 const KUSAMA_STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
@@ -68,16 +68,17 @@ pub struct Extensions {
 	pub light_sync_state: sc_sync_state_rpc::LightSyncStateExtension,
 }
 
-/// The `ChainSpec` parameterized for the infrabs runtime.
-#[cfg(feature = "infrabs-native")]
-pub type InfrabsChainSpec = service::GenericChainSpec<infrabs::GenesisConfig, Extensions>;
+/// The `ChainSpec` parameterized for the infrablockspace runtime.
+#[cfg(feature = "infrablockspace-native")]
+pub type InfrablockspaceChainSpec =
+	service::GenericChainSpec<infrablockspace::GenesisConfig, Extensions>;
 
 // Dummy chain spec, in case when we don't have the native runtime.
 pub type DummyChainSpec = service::GenericChainSpec<(), Extensions>;
 
 // Dummy chain spec, but that is fine when we don't have the native runtime.
-#[cfg(not(feature = "infrabs-native"))]
-pub type InfrabsChainSpec = DummyChainSpec;
+#[cfg(not(feature = "infrablockspace-native"))]
+pub type InfrablockspaceChainSpec = DummyChainSpec;
 
 /// The `ChainSpec` parameterized for the kusama runtime.
 #[cfg(feature = "kusama-native")]
@@ -121,8 +122,10 @@ impl sp_runtime::BuildStorage for RococoGenesisExt {
 	}
 }
 
-pub fn infrabs_config() -> Result<InfrabsChainSpec, String> {
-	InfrabsChainSpec::from_json_bytes(&include_bytes!("../chain-specs/infrabs.json")[..])
+pub fn infrablockspace_config() -> Result<InfrablockspaceChainSpec, String> {
+	InfrablockspaceChainSpec::from_json_bytes(
+		&include_bytes!("../chain-specs/infrablockspace.json")[..],
+	)
 }
 
 pub fn kusama_config() -> Result<KusamaChainSpec, String> {
@@ -134,7 +137,11 @@ pub fn rococo_config() -> Result<RococoChainSpec, String> {
 }
 
 /// The default parachains host configuration.
-#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "infrabs-native"))]
+#[cfg(any(
+	feature = "rococo-native",
+	feature = "kusama-native",
+	feature = "infrablockspace-native"
+))]
 fn default_parachains_host_configuration(
 ) -> infrablockspace_runtime_parachains::configuration::HostConfiguration<
 	infrablockspace_primitives::BlockNumber,
@@ -178,22 +185,26 @@ fn default_parachains_host_configuration(
 	}
 }
 
-#[cfg(any(feature = "rococo-native", feature = "kusama-native", feature = "infrabs-native"))]
+#[cfg(any(
+	feature = "rococo-native",
+	feature = "kusama-native",
+	feature = "infrablockspace-native"
+))]
 #[test]
 fn default_parachains_host_configuration_is_consistent() {
 	default_parachains_host_configuration().panic_if_not_consistent();
 }
 
-#[cfg(feature = "infrabs-native")]
-fn infrabs_session_keys(
+#[cfg(feature = "infrablockspace-native")]
+fn infrablockspace_session_keys(
 	babe: BabeId,
 	grandpa: GrandpaId,
 	im_online: ImOnlineId,
 	para_validator: ValidatorId,
 	para_assignment: AssignmentId,
 	authority_discovery: AuthorityDiscoveryId,
-) -> infrabs::SessionKeys {
-	infrabs::SessionKeys {
+) -> infrablockspace::SessionKeys {
+	infrablockspace::SessionKeys {
 		babe,
 		grandpa,
 		im_online,
@@ -243,8 +254,10 @@ fn rococo_session_keys(
 	}
 }
 
-#[cfg(feature = "infrabs-native")]
-fn infrabs_staging_testnet_config_genesis(wasm_binary: &[u8]) -> infrabs::GenesisConfig {
+#[cfg(feature = "infrablockspace-native")]
+fn infrablockspace_staging_testnet_config_genesis(
+	wasm_binary: &[u8],
+) -> infrablockspace::GenesisConfig {
 	// subkey inspect "$SECRET"
 	let endowed_accounts = vec![];
 
@@ -264,24 +277,24 @@ fn infrabs_staging_testnet_config_genesis(wasm_binary: &[u8]) -> infrabs::Genesi
 
 	let root_key = get_account_id_from_seed::<sr25519::Public>("Alice");
 
-	infrabs::GenesisConfig {
-		system: infrabs::SystemConfig { code: wasm_binary.to_vec() },
-		balances: infrabs::BalancesConfig {
+	infrablockspace::GenesisConfig {
+		system: infrablockspace::SystemConfig { code: wasm_binary.to_vec() },
+		balances: infrablockspace::BalancesConfig {
 			balances: endowed_accounts
 				.iter()
 				.map(|k: &AccountId| (k.clone(), ENDOWMENT))
 				.chain(initial_authorities.iter().map(|x| (x.0.clone(), STASH)))
 				.collect(),
 		},
-		indices: infrabs::IndicesConfig { indices: vec![] },
-		session: infrabs::SessionConfig {
+		indices: infrablockspace::IndicesConfig { indices: vec![] },
+		session: infrablockspace::SessionConfig {
 			keys: initial_authorities
 				.iter()
 				.map(|x| {
 					(
 						x.0.clone(),
 						x.0.clone(),
-						infrabs_session_keys(
+						infrablockspace_session_keys(
 							x.2.clone(),
 							x.3.clone(),
 							x.4.clone(),
@@ -293,39 +306,41 @@ fn infrabs_staging_testnet_config_genesis(wasm_binary: &[u8]) -> infrabs::Genesi
 				})
 				.collect::<Vec<_>>(),
 		},
-		staking: infrabs::StakingConfig {
+		staking: infrablockspace::StakingConfig {
 			validator_count: 50,
 			minimum_validator_count: 4,
 			stakers: initial_authorities
 				.iter()
-				.map(|x| (x.0.clone(), x.1.clone(), STASH, infrabs::StakerStatus::Validator))
+				.map(|x| {
+					(x.0.clone(), x.1.clone(), STASH, infrablockspace::StakerStatus::Validator)
+				})
 				.collect(),
 			invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
 			force_era: Forcing::ForceNone,
 			slash_reward_fraction: Perbill::from_percent(10),
 			..Default::default()
 		},
-		sudo: infrabs::SudoConfig { key: Some(root_key) },
+		sudo: infrablockspace::SudoConfig { key: Some(root_key) },
 		phragmen_election: Default::default(),
 		democracy: Default::default(),
-		council: infrabs::CouncilConfig { members: vec![], phantom: Default::default() },
-		technical_committee: infrabs::TechnicalCommitteeConfig {
+		council: infrablockspace::CouncilConfig { members: vec![], phantom: Default::default() },
+		technical_committee: infrablockspace::TechnicalCommitteeConfig {
 			members: vec![],
 			phantom: Default::default(),
 		},
 		technical_membership: Default::default(),
-		babe: infrabs::BabeConfig {
+		babe: infrablockspace::BabeConfig {
 			authorities: Default::default(),
-			epoch_config: Some(infrabs::BABE_GENESIS_EPOCH_CONFIG),
+			epoch_config: Some(infrablockspace::BABE_GENESIS_EPOCH_CONFIG),
 		},
 		grandpa: Default::default(),
 		im_online: Default::default(),
-		authority_discovery: infrabs::AuthorityDiscoveryConfig { keys: vec![] },
-		claims: infrabs::ClaimsConfig { claims: vec![], vesting: vec![] },
-		vesting: infrabs::VestingConfig { vesting: vec![] },
+		authority_discovery: infrablockspace::AuthorityDiscoveryConfig { keys: vec![] },
+		claims: infrablockspace::ClaimsConfig { claims: vec![], vesting: vec![] },
+		vesting: infrablockspace::VestingConfig { vesting: vec![] },
 		treasury: Default::default(),
 		hrmp: Default::default(),
-		configuration: infrabs::ConfigurationConfig {
+		configuration: infrablockspace::ConfigurationConfig {
 			config: default_parachains_host_configuration(),
 		},
 		paras: Default::default(),
@@ -838,8 +853,8 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 	}
 }
 
-/// Returns the properties for the [`InfrabsChainSpec`].
-pub fn infrabs_chain_spec_properties() -> serde_json::map::Map<String, serde_json::Value> {
+/// Returns the properties for the [`InfrablockspaceChainSpec`].
+pub fn infrablockspace_chain_spec_properties() -> serde_json::map::Map<String, serde_json::Value> {
 	serde_json::json!({
 		"tokenDecimals": 10,
 	})
@@ -849,16 +864,17 @@ pub fn infrabs_chain_spec_properties() -> serde_json::map::Map<String, serde_jso
 }
 
 /// Polkadot staging testnet config.
-#[cfg(feature = "infrabs-native")]
-pub fn infrabs_staging_testnet_config() -> Result<InfrabsChainSpec, String> {
-	let wasm_binary = infrabs::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+#[cfg(feature = "infrablockspace-native")]
+pub fn infrablockspace_staging_testnet_config() -> Result<InfrablockspaceChainSpec, String> {
+	let wasm_binary =
+		infrablockspace::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 	let boot_nodes = vec![];
 
-	Ok(InfrabsChainSpec::from_genesis(
+	Ok(InfrablockspaceChainSpec::from_genesis(
 		"Polkadot Staging Testnet",
-		"infrabs_staging_testnet",
+		"infrablockspace_staging_testnet",
 		ChainType::Live,
-		move || infrabs_staging_testnet_config_genesis(wasm_binary),
+		move || infrablockspace_staging_testnet_config_genesis(wasm_binary),
 		boot_nodes,
 		Some(
 			TelemetryEndpoints::new(vec![(POLKADOT_STAGING_TELEMETRY_URL.to_string(), 0)])
@@ -866,7 +882,7 @@ pub fn infrabs_staging_testnet_config() -> Result<InfrabsChainSpec, String> {
 		),
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(infrabs_chain_spec_properties()),
+		Some(infrablockspace_chain_spec_properties()),
 		Default::default(),
 	))
 }
@@ -995,9 +1011,9 @@ fn testnet_accounts() -> Vec<AccountId> {
 	]
 }
 
-/// Helper function to create infrabs `GenesisConfig` for testing
-#[cfg(feature = "infrabs-native")]
-pub fn infrabs_testnet_genesis(
+/// Helper function to create infrablockspace `GenesisConfig` for testing
+#[cfg(feature = "infrablockspace-native")]
+pub fn infrablockspace_testnet_genesis(
 	wasm_binary: &[u8],
 	initial_authorities: Vec<(
 		AccountId,
@@ -1011,26 +1027,26 @@ pub fn infrabs_testnet_genesis(
 	)>,
 	root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
-) -> infrabs::GenesisConfig {
+) -> infrablockspace::GenesisConfig {
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 
 	const ENDOWMENT: u128 = 1_000_000 * DOT;
 	const STASH: u128 = 100 * DOT;
 
-	infrabs::GenesisConfig {
-		system: infrabs::SystemConfig { code: wasm_binary.to_vec() },
-		indices: infrabs::IndicesConfig { indices: vec![] },
-		balances: infrabs::BalancesConfig {
+	infrablockspace::GenesisConfig {
+		system: infrablockspace::SystemConfig { code: wasm_binary.to_vec() },
+		indices: infrablockspace::IndicesConfig { indices: vec![] },
+		balances: infrablockspace::BalancesConfig {
 			balances: endowed_accounts.iter().map(|k| (k.clone(), ENDOWMENT)).collect(),
 		},
-		session: infrabs::SessionConfig {
+		session: infrablockspace::SessionConfig {
 			keys: initial_authorities
 				.iter()
 				.map(|x| {
 					(
 						x.0.clone(),
 						x.0.clone(),
-						infrabs_session_keys(
+						infrablockspace_session_keys(
 							x.2.clone(),
 							x.3.clone(),
 							x.4.clone(),
@@ -1042,39 +1058,41 @@ pub fn infrabs_testnet_genesis(
 				})
 				.collect::<Vec<_>>(),
 		},
-		staking: infrabs::StakingConfig {
+		staking: infrablockspace::StakingConfig {
 			minimum_validator_count: 1,
 			validator_count: initial_authorities.len() as u32,
 			stakers: initial_authorities
 				.iter()
-				.map(|x| (x.0.clone(), x.1.clone(), STASH, infrabs::StakerStatus::Validator))
+				.map(|x| {
+					(x.0.clone(), x.1.clone(), STASH, infrablockspace::StakerStatus::Validator)
+				})
 				.collect(),
 			invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
 			force_era: Forcing::NotForcing,
 			slash_reward_fraction: Perbill::from_percent(10),
 			..Default::default()
 		},
-		sudo: infrabs::SudoConfig { key: Some(root_key) },
+		sudo: infrablockspace::SudoConfig { key: Some(root_key) },
 		phragmen_election: Default::default(),
-		democracy: infrabs::DemocracyConfig::default(),
-		council: infrabs::CouncilConfig { members: vec![], phantom: Default::default() },
-		technical_committee: infrabs::TechnicalCommitteeConfig {
+		democracy: infrablockspace::DemocracyConfig::default(),
+		council: infrablockspace::CouncilConfig { members: vec![], phantom: Default::default() },
+		technical_committee: infrablockspace::TechnicalCommitteeConfig {
 			members: vec![],
 			phantom: Default::default(),
 		},
 		technical_membership: Default::default(),
-		babe: infrabs::BabeConfig {
+		babe: infrablockspace::BabeConfig {
 			authorities: Default::default(),
-			epoch_config: Some(infrabs::BABE_GENESIS_EPOCH_CONFIG),
+			epoch_config: Some(infrablockspace::BABE_GENESIS_EPOCH_CONFIG),
 		},
 		grandpa: Default::default(),
 		im_online: Default::default(),
-		authority_discovery: infrabs::AuthorityDiscoveryConfig { keys: vec![] },
-		claims: infrabs::ClaimsConfig { claims: vec![], vesting: vec![] },
-		vesting: infrabs::VestingConfig { vesting: vec![] },
+		authority_discovery: infrablockspace::AuthorityDiscoveryConfig { keys: vec![] },
+		claims: infrablockspace::ClaimsConfig { claims: vec![], vesting: vec![] },
+		vesting: infrablockspace::VestingConfig { vesting: vec![] },
 		treasury: Default::default(),
 		hrmp: Default::default(),
-		configuration: infrabs::ConfigurationConfig {
+		configuration: infrablockspace::ConfigurationConfig {
 			config: default_parachains_host_configuration(),
 		},
 		paras: Default::default(),
@@ -1255,9 +1273,11 @@ pub fn rococo_testnet_genesis(
 	}
 }
 
-#[cfg(feature = "infrabs-native")]
-fn infrabs_development_config_genesis(wasm_binary: &[u8]) -> infrabs::GenesisConfig {
-	infrabs_testnet_genesis(
+#[cfg(feature = "infrablockspace-native")]
+fn infrablockspace_development_config_genesis(
+	wasm_binary: &[u8],
+) -> infrablockspace::GenesisConfig {
+	infrablockspace_testnet_genesis(
 		wasm_binary,
 		vec![get_authority_keys_from_seed_no_beefy("Alice")],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -1286,20 +1306,21 @@ fn rococo_development_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::Gene
 }
 
 /// Polkadot development config (single validator Alice)
-#[cfg(feature = "infrabs-native")]
-pub fn infrabs_development_config() -> Result<InfrabsChainSpec, String> {
-	let wasm_binary = infrabs::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+#[cfg(feature = "infrablockspace-native")]
+pub fn infrablockspace_development_config() -> Result<InfrablockspaceChainSpec, String> {
+	let wasm_binary =
+		infrablockspace::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 
-	Ok(InfrabsChainSpec::from_genesis(
+	Ok(InfrablockspaceChainSpec::from_genesis(
 		"Development",
 		"dev",
 		ChainType::Development,
-		move || infrabs_development_config_genesis(wasm_binary),
+		move || infrablockspace_development_config_genesis(wasm_binary),
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(infrabs_chain_spec_properties()),
+		Some(infrablockspace_chain_spec_properties()),
 		Default::default(),
 	))
 }
@@ -1346,9 +1367,9 @@ pub fn rococo_development_config() -> Result<RococoChainSpec, String> {
 	))
 }
 
-#[cfg(feature = "infrabs-native")]
-fn infrabs_local_testnet_genesis(wasm_binary: &[u8]) -> infrabs::GenesisConfig {
-	infrabs_testnet_genesis(
+#[cfg(feature = "infrablockspace-native")]
+fn infrablockspace_local_testnet_genesis(wasm_binary: &[u8]) -> infrablockspace::GenesisConfig {
+	infrablockspace_testnet_genesis(
 		wasm_binary,
 		vec![
 			get_authority_keys_from_seed_no_beefy("Alice"),
@@ -1360,20 +1381,21 @@ fn infrabs_local_testnet_genesis(wasm_binary: &[u8]) -> infrabs::GenesisConfig {
 }
 
 /// Polkadot local testnet config (multivalidator Alice + Bob)
-#[cfg(feature = "infrabs-native")]
-pub fn infrabs_local_testnet_config() -> Result<InfrabsChainSpec, String> {
-	let wasm_binary = infrabs::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+#[cfg(feature = "infrablockspace-native")]
+pub fn infrablockspace_local_testnet_config() -> Result<InfrablockspaceChainSpec, String> {
+	let wasm_binary =
+		infrablockspace::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 
-	Ok(InfrabsChainSpec::from_genesis(
+	Ok(InfrablockspaceChainSpec::from_genesis(
 		"Local Testnet",
 		"local_testnet",
 		ChainType::Local,
-		move || infrabs_local_testnet_genesis(wasm_binary),
+		move || infrablockspace_local_testnet_genesis(wasm_binary),
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(infrabs_chain_spec_properties()),
+		Some(infrablockspace_chain_spec_properties()),
 		Default::default(),
 	))
 }

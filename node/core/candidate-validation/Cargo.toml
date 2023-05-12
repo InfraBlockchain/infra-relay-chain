@@ -21,7 +21,7 @@ infrablockspace-parachain = { path = "../../../parachain" }
 infrablockspace-node-primitives = { path = "../../primitives" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
 infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
-infrabs-node-metrics = { path = "../../metrics" }
+infrablockspace-node-metrics = { path = "../../metrics" }
 
 [target.'cfg(not(any(target_os = "android", target_os = "unknown")))'.dependencies]
 infrablockspace-node-core-pvf = { path = "../pvf" }

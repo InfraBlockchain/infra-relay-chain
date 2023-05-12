@@ -13,7 +13,7 @@ parking_lot = "0.12.0"
 infrablockspace-node-network-protocol = { path = "../network/protocol" }
 infrablockspace-node-primitives = { path = "../primitives" }
 infrablockspace-node-subsystem-types = { path = "../subsystem-types" }
-infrabs-node-metrics = { path = "../metrics" }
+infrablockspace-node-metrics = { path = "../metrics" }
 infrablockspace-primitives = { path = "../../primitives" }
 orchestra = "0.0.4"
 gum = { package = "tracing-gum", path = "../gum" }

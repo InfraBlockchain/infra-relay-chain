@@ -14,7 +14,7 @@ parity-scale-codec = { version = "3.3.0", default-features = false, features = [
 sc-network = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sc-network-common = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-consensus = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-infrabs-node-metrics = { path = "../../metrics" }
+infrablockspace-node-metrics = { path = "../../metrics" }
 infrablockspace-node-network-protocol = { path = "../protocol" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
 infrablockspace-overseer = { path = "../../overseer" }

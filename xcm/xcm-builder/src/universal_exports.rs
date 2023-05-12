@@ -1,18 +1,18 @@
 // Copyright 2021 Parity Technologies (UK) Ltd.
-// This file is part of Infrabs.
+// This file is part of Infrablockspace.
 
-// Infrabs is free software: you can redistribute it and/or modify
+// Infrablockspace is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Infrabs is distributed in the hope that it will be useful,
+// Infrablockspace is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
 
 //! Traits and utilities to help with origin mutation and bridging.
 
@@ -359,24 +359,24 @@ mod tests {
 
 	#[test]
 	fn ensure_is_remote_works() {
-		// A Kusama parachain is remote from the Infrabs Relay.
-		let x = ensure_is_remote(Infrabs, (Parent, Kusama, Parachain(1000)));
+		// A Kusama parachain is remote from the Infrablockspace Relay.
+		let x = ensure_is_remote(Infrablockspace, (Parent, Kusama, Parachain(1000)));
 		assert_eq!(x, Ok((Kusama, Parachain(1000).into())));
 
-		// Infrabs Relay is remote from a Kusama parachain.
-		let x = ensure_is_remote((Kusama, Parachain(1000)), (Parent, Parent, Infrabs));
-		assert_eq!(x, Ok((Infrabs, Here)));
+		// Infrablockspace Relay is remote from a Kusama parachain.
+		let x = ensure_is_remote((Kusama, Parachain(1000)), (Parent, Parent, Infrablockspace));
+		assert_eq!(x, Ok((Infrablockspace, Here)));
 
 		// Our own parachain is local.
-		let x = ensure_is_remote(Infrabs, Parachain(1000));
+		let x = ensure_is_remote(Infrablockspace, Parachain(1000));
 		assert_eq!(x, Err(Parachain(1000).into()));
 
-		// Infrabs's parachain is not remote if we are Infrabs.
-		let x = ensure_is_remote(Infrabs, (Parent, Infrabs, Parachain(1000)));
-		assert_eq!(x, Err((Parent, Infrabs, Parachain(1000)).into()));
+		// Infrablockspace's parachain is not remote if we are Infrablockspace.
+		let x = ensure_is_remote(Infrablockspace, (Parent, Infrablockspace, Parachain(1000)));
+		assert_eq!(x, Err((Parent, Infrablockspace, Parachain(1000)).into()));
 
 		// If we don't have a consensus ancestor, then we cannot determine remoteness.
-		let x = ensure_is_remote((), (Parent, Infrabs, Parachain(1000)));
-		assert_eq!(x, Err((Parent, Infrabs, Parachain(1000)).into()));
+		let x = ensure_is_remote((), (Parent, Infrablockspace, Parachain(1000)));
+		assert_eq!(x, Err((Parent, Infrablockspace, Parachain(1000)).into()));
 	}
 }

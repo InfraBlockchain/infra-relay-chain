@@ -12,7 +12,7 @@ infrablockspace-node-primitives = { path = "../../primitives" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
 infrablockspace-node-subsystem-util = { path = "../../subsystem-util" }
 erasure-coding = { package = "erasure-coding", path = "../../../erasure-coding" }
-statement-table = { package = "infrabs-statement-table", path = "../../../statement-table" }
+statement-table = { package = "infrablockspace-statement-table", path = "../../../statement-table" }
 bitvec = { version = "1.0.0", default-features = false, features = ["alloc"] }
 gum = { package = "tracing-gum", path = "../../gum" }
 thiserror = "1.0.31"

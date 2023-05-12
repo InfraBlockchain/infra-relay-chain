@@ -26,8 +26,8 @@ use sp_core::storage::Storage;
 use sp_runtime::BuildStorage;
 
 pub use block_builder::*;
-pub use infrabs_test_runtime as runtime;
-pub use infrabs_test_service::{
+pub use infrablockspace_test_runtime as runtime;
+pub use infrablockspace_test_service::{
 	construct_extrinsic, construct_transfer_extrinsic, Client, FullBackend,
 	PolkadotTestExecutorDispatch,
 };
@@ -97,7 +97,7 @@ mod tests {
 	fn ensure_test_client_can_build_and_import_block() {
 		let mut client = TestClientBuilder::new().build();
 
-		let block_builder = client.init_infrabs_block_builder();
+		let block_builder = client.init_infrablockspace_block_builder();
 		let block = block_builder.build().expect("Finalizes the block").block;
 
 		futures::executor::block_on(client.import(BlockOrigin::Own, block))
@@ -114,8 +114,10 @@ mod tests {
 			sp_keyring::Sr25519Keyring::Bob,
 			1000,
 		);
-		let mut block_builder = client.init_infrabs_block_builder();
-		block_builder.push_infrabs_extrinsic(transfer).expect("Pushes extrinsic");
+		let mut block_builder = client.init_infrablockspace_block_builder();
+		block_builder
+			.push_infrablockspace_extrinsic(transfer)
+			.expect("Pushes extrinsic");
 
 		let block = block_builder.build().expect("Finalizes the block").block;
 

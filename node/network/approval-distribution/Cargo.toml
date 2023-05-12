@@ -5,7 +5,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-infrabs-node-metrics = { path = "../../metrics" }
+infrablockspace-node-metrics = { path = "../../metrics" }
 infrablockspace-node-network-protocol = { path = "../protocol" }
 infrablockspace-node-primitives = { path = "../../primitives" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }

@@ -1,18 +1,18 @@
 // Copyright 2021 Parity Technologies (UK) Ltd.
-// This file is part of Infrabs.
+// This file is part of Infrablockspace.
 
-// Infrabs is free software: you can redistribute it and/or modify
+// Infrablockspace is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Infrabs is distributed in the hope that it will be useful,
+// Infrablockspace is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
 
 //! Make the set of voting bag thresholds to be used in `voter_bags.rs`.
 //!
@@ -22,7 +22,7 @@
 
 use clap::{Parser, ValueEnum};
 use generate_bags::generate_thresholds;
-use infrabs_runtime::Runtime as InfrabsRuntime;
+use infrablockspace_runtime::Runtime as InfrablockspaceRuntime;
 use kusama_runtime::Runtime as KusamaRuntime;
 use std::path::{Path, PathBuf};
 
@@ -30,7 +30,7 @@ use std::path::{Path, PathBuf};
 #[value(rename_all = "PascalCase")]
 enum Runtime {
 	Kusama,
-	Infrabs,
+	Infrablockspace,
 }
 
 impl Runtime {
@@ -39,7 +39,7 @@ impl Runtime {
 	) -> Box<dyn FnOnce(usize, &Path, u128, u128) -> Result<(), std::io::Error>> {
 		match self {
 			Runtime::Kusama => Box::new(generate_thresholds::<KusamaRuntime>),
-			Runtime::Infrabs => Box::new(generate_thresholds::<InfrabsRuntime>),
+			Runtime::Infrablockspace => Box::new(generate_thresholds::<InfrablockspaceRuntime>),
 		}
 	}
 }
@@ -51,7 +51,7 @@ struct Opt {
 	n_bags: usize,
 
 	/// Which runtime to generate.
-	#[arg(long, ignore_case = true, value_enum, default_value_t = Runtime::Infrabs)]
+	#[arg(long, ignore_case = true, value_enum, default_value_t = Runtime::Infrablockspace)]
 	runtime: Runtime,
 
 	/// Where to write the output.

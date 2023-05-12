@@ -22,8 +22,8 @@ use infrablockspace_test_client::{
 	BlockBuilderExt, ClientBlockImportExt, DefaultTestClientBuilderExt, ExecutionStrategy,
 	InitInfraBsBlockBuilder, TestClientBuilder, TestClientBuilderExt,
 };
+use infrablockspace_test_runtime::{pallet_test_notifier, xcm_config::XcmConfig};
 use infrablockspace_test_service::construct_extrinsic;
-use infrabs_test_runtime::{pallet_test_notifier, xcm_config::XcmConfig};
 use sp_runtime::traits::Block;
 use sp_state_machine::InspectState;
 use xcm::{latest::prelude::*, VersionedResponse, VersionedXcm};
@@ -42,11 +42,11 @@ fn basic_buy_fees_message_executes() {
 		DepositAsset { assets: Wild(AllCounted(1)), beneficiary: Parent.into() },
 	]);
 
-	let mut block_builder = client.init_infrabs_block_builder();
+	let mut block_builder = client.init_infrablockspace_block_builder();
 
 	let execute = construct_extrinsic(
 		&client,
-		infrabs_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
+		infrablockspace_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
 			message: Box::new(VersionedXcm::from(msg)),
 			max_weight: Weight::from_parts(1_000_000_000, 1024 * 1024),
 		}),
@@ -54,7 +54,7 @@ fn basic_buy_fees_message_executes() {
 		0,
 	);
 
-	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrablockspace_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -63,9 +63,9 @@ fn basic_buy_fees_message_executes() {
 		.expect("imports the block");
 
 	client.state_at(block_hash).expect("state should exist").inspect_state(|| {
-		assert!(infrabs_test_runtime::System::events().iter().any(|r| matches!(
+		assert!(infrablockspace_test_runtime::System::events().iter().any(|r| matches!(
 			r.event,
-			infrabs_test_runtime::RuntimeEvent::Xcm(pallet_xcm::Event::Attempted(
+			infrablockspace_test_runtime::RuntimeEvent::Xcm(pallet_xcm::Event::Attempted(
 				Outcome::Complete(_)
 			)),
 		)));
@@ -81,7 +81,7 @@ fn transact_recursion_limit_works() {
 
 	let mut msg = Xcm(vec![ClearOrigin]);
 	let max_weight = <XcmConfig as xcm_executor::Config>::Weigher::weight(&mut msg).unwrap();
-	let mut call = infrabs_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
+	let mut call = infrablockspace_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
 		message: Box::new(VersionedXcm::from(msg)),
 		max_weight,
 	});
@@ -97,17 +97,17 @@ fn transact_recursion_limit_works() {
 			},
 		]);
 		let max_weight = <XcmConfig as xcm_executor::Config>::Weigher::weight(&mut msg).unwrap();
-		call = infrabs_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
+		call = infrablockspace_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
 			message: Box::new(VersionedXcm::from(msg)),
 			max_weight,
 		});
 	}
 
-	let mut block_builder = client.init_infrabs_block_builder();
+	let mut block_builder = client.init_infrablockspace_block_builder();
 
 	let execute = construct_extrinsic(&client, call, sp_keyring::Sr25519Keyring::Alice, 0);
 
-	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrablockspace_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -116,9 +116,9 @@ fn transact_recursion_limit_works() {
 		.expect("imports the block");
 
 	client.state_at(block_hash).expect("state should exist").inspect_state(|| {
-		assert!(infrabs_test_runtime::System::events().iter().any(|r| matches!(
+		assert!(infrablockspace_test_runtime::System::events().iter().any(|r| matches!(
 			r.event,
-			infrabs_test_runtime::RuntimeEvent::Xcm(pallet_xcm::Event::Attempted(
+			infrablockspace_test_runtime::RuntimeEvent::Xcm(pallet_xcm::Event::Attempted(
 				Outcome::Incomplete(_, XcmError::ExceedsStackLimit)
 			)),
 		)));
@@ -127,7 +127,7 @@ fn transact_recursion_limit_works() {
 
 #[test]
 fn query_response_fires() {
-	use infrabs_test_runtime::RuntimeEvent::TestNotifier;
+	use infrablockspace_test_runtime::RuntimeEvent::TestNotifier;
 	use pallet_test_notifier::Event::*;
 	use pallet_xcm::QueryStatus;
 
@@ -136,18 +136,18 @@ fn query_response_fires() {
 		.set_execution_strategy(ExecutionStrategy::AlwaysWasm)
 		.build();
 
-	let mut block_builder = client.init_infrabs_block_builder();
+	let mut block_builder = client.init_infrablockspace_block_builder();
 
 	let execute = construct_extrinsic(
 		&client,
-		infrabs_test_runtime::RuntimeCall::TestNotifier(
+		infrablockspace_test_runtime::RuntimeCall::TestNotifier(
 			pallet_test_notifier::Call::prepare_new_query {},
 		),
 		sp_keyring::Sr25519Keyring::Alice,
 		0,
 	);
 
-	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrablockspace_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -157,7 +157,7 @@ fn query_response_fires() {
 
 	let mut query_id = None;
 	client.state_at(block_hash).expect("state should exist").inspect_state(|| {
-		for r in infrabs_test_runtime::System::events().iter() {
+		for r in infrablockspace_test_runtime::System::events().iter() {
 			match r.event {
 				TestNotifier(QueryPrepared(q)) => query_id = Some(q),
 				_ => (),
@@ -166,7 +166,7 @@ fn query_response_fires() {
 	});
 	let query_id = query_id.unwrap();
 
-	let mut block_builder = client.init_infrabs_block_builder();
+	let mut block_builder = client.init_infrablockspace_block_builder();
 
 	let response = Response::ExecutionResult(None);
 	let max_weight = Weight::from_parts(1_000_000, 1024 * 1024);
@@ -176,7 +176,7 @@ fn query_response_fires() {
 
 	let execute = construct_extrinsic(
 		&client,
-		infrabs_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
+		infrablockspace_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
 			message: msg,
 			max_weight: Weight::from_parts(1_000_000_000, 1024 * 1024),
 		}),
@@ -184,7 +184,7 @@ fn query_response_fires() {
 		1,
 	);
 
-	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrablockspace_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -193,15 +193,15 @@ fn query_response_fires() {
 		.expect("imports the block");
 
 	client.state_at(block_hash).expect("state should exist").inspect_state(|| {
-		assert!(infrabs_test_runtime::System::events().iter().any(|r| matches!(
+		assert!(infrablockspace_test_runtime::System::events().iter().any(|r| matches!(
 			r.event,
-			infrabs_test_runtime::RuntimeEvent::Xcm(pallet_xcm::Event::ResponseReady(
+			infrablockspace_test_runtime::RuntimeEvent::Xcm(pallet_xcm::Event::ResponseReady(
 				q,
 				Response::ExecutionResult(None),
 			)) if q == query_id,
 		)));
 		assert_eq!(
-			infrabs_test_runtime::Xcm::query(query_id),
+			infrablockspace_test_runtime::Xcm::query(query_id),
 			Some(QueryStatus::Ready {
 				response: VersionedResponse::V3(Response::ExecutionResult(None)),
 				at: 2u32.into()
@@ -212,7 +212,7 @@ fn query_response_fires() {
 
 #[test]
 fn query_response_elicits_handler() {
-	use infrabs_test_runtime::RuntimeEvent::TestNotifier;
+	use infrablockspace_test_runtime::RuntimeEvent::TestNotifier;
 	use pallet_test_notifier::Event::*;
 
 	sp_tracing::try_init_simple();
@@ -220,18 +220,18 @@ fn query_response_elicits_handler() {
 		.set_execution_strategy(ExecutionStrategy::AlwaysWasm)
 		.build();
 
-	let mut block_builder = client.init_infrabs_block_builder();
+	let mut block_builder = client.init_infrablockspace_block_builder();
 
 	let execute = construct_extrinsic(
 		&client,
-		infrabs_test_runtime::RuntimeCall::TestNotifier(
+		infrablockspace_test_runtime::RuntimeCall::TestNotifier(
 			pallet_test_notifier::Call::prepare_new_notify_query {},
 		),
 		sp_keyring::Sr25519Keyring::Alice,
 		0,
 	);
 
-	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrablockspace_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -241,7 +241,7 @@ fn query_response_elicits_handler() {
 
 	let mut query_id = None;
 	client.state_at(block_hash).expect("state should exist").inspect_state(|| {
-		for r in infrabs_test_runtime::System::events().iter() {
+		for r in infrablockspace_test_runtime::System::events().iter() {
 			match r.event {
 				TestNotifier(NotifyQueryPrepared(q)) => query_id = Some(q),
 				_ => (),
@@ -250,7 +250,7 @@ fn query_response_elicits_handler() {
 	});
 	let query_id = query_id.unwrap();
 
-	let mut block_builder = client.init_infrabs_block_builder();
+	let mut block_builder = client.init_infrablockspace_block_builder();
 
 	let response = Response::ExecutionResult(None);
 	let max_weight = Weight::from_parts(1_000_000, 1024 * 1024);
@@ -259,7 +259,7 @@ fn query_response_elicits_handler() {
 
 	let execute = construct_extrinsic(
 		&client,
-		infrabs_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
+		infrablockspace_test_runtime::RuntimeCall::Xcm(pallet_xcm::Call::execute {
 			message: Box::new(VersionedXcm::from(msg)),
 			max_weight: Weight::from_parts(1_000_000_000, 1024 * 1024),
 		}),
@@ -267,7 +267,7 @@ fn query_response_elicits_handler() {
 		1,
 	);
 
-	block_builder.push_infrabs_extrinsic(execute).expect("pushes extrinsic");
+	block_builder.push_infrablockspace_extrinsic(execute).expect("pushes extrinsic");
 
 	let block = block_builder.build().expect("Finalizes the block").block;
 	let block_hash = block.hash();
@@ -276,7 +276,7 @@ fn query_response_elicits_handler() {
 		.expect("imports the block");
 
 	client.state_at(block_hash).expect("state should exist").inspect_state(|| {
-		assert!(infrabs_test_runtime::System::events().iter().any(|r| matches!(
+		assert!(infrablockspace_test_runtime::System::events().iter().any(|r| matches!(
 			r.event,
 			TestNotifier(ResponseReceived(
 				MultiLocation { parents: 0, interior: X1(Junction::AccountId32 { .. }) },

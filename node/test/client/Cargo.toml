@@ -1,5 +1,5 @@
 [package]
-name = "infrabs-test-client"
+name = "infrablockspace-test-client"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
@@ -8,8 +8,8 @@ edition.workspace = true
 parity-scale-codec = { version = "3.3.0", default-features = false, features = ["derive"] }
 
 # Polkadot dependencies
-infrabs-test-runtime = { path = "../../../runtime/test-runtime" }
-infrabs-test-service = { path = "../service" }
+infrablockspace-test-runtime = { path = "../../../runtime/test-runtime" }
+infrablockspace-test-service = { path = "../service" }
 infrablockspace-primitives = { path = "../../../primitives" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
 
@@ -33,4 +33,4 @@ sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 futures = "0.3.21"
 
 [features]
-runtime-benchmarks = ["infrabs-test-runtime/runtime-benchmarks"]
+runtime-benchmarks = ["infrablockspace-test-runtime/runtime-benchmarks"]

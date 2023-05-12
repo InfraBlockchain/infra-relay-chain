@@ -12,7 +12,7 @@ lru = "0.9"
 sp-consensus-babe = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
 infrablockspace-primitives = { path = "../../../primitives" }
-infrabs-node-metrics = { path = "../../metrics" }
+infrablockspace-node-metrics = { path = "../../metrics" }
 infrablockspace-node-subsystem = { path = "../../subsystem" }
 infrablockspace-node-subsystem-types = { path = "../../subsystem-types" }
 

@@ -21,7 +21,7 @@
 #![deny(missing_docs)]
 #![deny(unused_crate_dependencies)]
 
-pub use infrabs_node_jaeger as jaeger;
+pub use infrablockspace_node_jaeger as jaeger;
 pub use jaeger::*;
 
 pub use infrablockspace_overseer::{self as overseer, *};

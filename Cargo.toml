@@ -1,9 +1,9 @@
 [[bin]]
-name = "infrabs"
+name = "infrablockspace"
 path = "src/main.rs"
 
 [package]
-name = "infrabs"
+name = "infrablockspace"
 description = "Implementation of a `https://polkadot.network` node in Rust based on the Substrate framework."
 license = "GPL-3.0-only"
 rust-version = "1.64.0"                                                                                       # workspace properties
@@ -46,8 +46,8 @@ members = [
 	"runtime/common/slot_range_helper",
 	"runtime/metrics",
 	"runtime/parachains",
-	"runtime/infrabs",
-	"runtime/infrabs/constants",
+	"runtime/infrablockspace",
+	"runtime/infrablockspace/constants",
 	"runtime/kusama",
 	"runtime/kusama/constants",
 	"runtime/rococo",
@@ -210,7 +210,7 @@ jemalloc-allocator = [
 
 # Configuration for building a .deb package - for use with `cargo-deb`
 [package.metadata.deb]
-name = "infrabs"
+name = "infrablockspace"
 extended-description = "Implementation of a https://polkadot.network node in Rust based on the Substrate framework."
 section = "misc"
 maintainer = "security@parity.io"
@@ -219,17 +219,17 @@ license-file = ["LICENSE", "0"]
 maintainer-scripts = "scripts/packaging/deb-maintainer-scripts"
 assets = [
 	[
-		"target/release/infrabs",
+		"target/release/infrablockspace",
 		"/usr/bin/",
 		"755",
 	],
 	[
-		"scripts/packaging/infrabs.service",
+		"scripts/packaging/infrablockspace.service",
 		"/lib/systemd/system/",
 		"644",
 	],
 ]
-conf-files = ["/etc/default/infrabs"]
+conf-files = ["/etc/default/infrablockspace"]
 
 [package.metadata.spellcheck]
 config = "./scripts/ci/gitlab/spellcheck.toml"

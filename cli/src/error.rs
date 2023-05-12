@@ -17,7 +17,7 @@
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
 	#[error(transparent)]
-	InfrabsService(#[from] service::Error),
+	InfrablockspaceService(#[from] service::Error),
 
 	#[error(transparent)]
 	SubstrateCli(#[from] sc_cli::Error),
@@ -30,7 +30,7 @@ pub enum Error {
 
 	#[error(transparent)]
 	#[cfg(feature = "hostperfcheck")]
-	PerfCheck(#[from] infrabs_performance_test::PerfCheckError),
+	PerfCheck(#[from] infrablockspace_performance_test::PerfCheckError),
 
 	#[cfg(not(feature = "pyroscope"))]
 	#[error("Binary was not compiled with `--feature=pyroscope`")]

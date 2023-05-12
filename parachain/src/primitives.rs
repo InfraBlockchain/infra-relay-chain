@@ -1,18 +1,18 @@
 // Copyright 2020 Parity Technologies (UK) Ltd.
-// This file is part of Infrabs.
+// This file is part of Infrablockspace.
 
-// Infrabs is free software: you can redistribute it and/or modify
+// Infrablockspace is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Infrabs is distributed in the hope that it will be useful,
+// Infrablockspace is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
 
 //! Primitive types which are strictly necessary from a parachain-execution point
 //! of view.
@@ -24,8 +24,7 @@ use frame_support::weights::Weight;
 use parity_scale_codec::{CompactAs, Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_core::{RuntimeDebug, TypeId};
-use sp_runtime::traits::Hash as _;
-use sp_runtime::generic::PotVotesResult;
+use sp_runtime::{generic::PotVotesResult, traits::Hash as _};
 
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};

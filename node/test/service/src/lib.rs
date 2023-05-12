@@ -33,7 +33,7 @@ use infrablockspace_runtime_parachains::paras::{ParaGenesisArgs, ParaKind};
 use infrablockspace_service::{
 	ClientHandle, Error, ExecuteWithClient, FullClient, IsCollator, NewFull, PrometheusConfig,
 };
-use infrabs_test_runtime::{
+use infrablockspace_test_runtime::{
 	ParasSudoWrapperCall, Runtime, SignedExtra, SignedPayload, SudoCall, UncheckedExtrinsic,
 	VERSION,
 };
@@ -70,16 +70,17 @@ impl sc_executor::NativeExecutionDispatch for PolkadotTestExecutorDispatch {
 	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		infrabs_test_runtime::api::dispatch(method, data)
+		infrablockspace_test_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		infrabs_test_runtime::native_version()
+		infrablockspace_test_runtime::native_version()
 	}
 }
 
 /// The client type being used by the test service.
-pub type Client = FullClient<infrabs_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch>;
+pub type Client =
+	FullClient<infrablockspace_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch>;
 
 pub use infrablockspace_service::FullBackend;
 
@@ -91,7 +92,7 @@ pub fn new_full(
 	worker_program_path: Option<PathBuf>,
 ) -> Result<NewFull<Arc<Client>>, Error> {
 	infrablockspace_service::new_full::<
-		infrabs_test_runtime::RuntimeApi,
+		infrablockspace_test_runtime::RuntimeApi,
 		PolkadotTestExecutorDispatch,
 		_,
 	>(
@@ -291,7 +292,7 @@ impl PolkadotTestNode {
 	/// Send an extrinsic to this node.
 	pub async fn send_extrinsic(
 		&self,
-		function: impl Into<infrabs_test_runtime::RuntimeCall>,
+		function: impl Into<infrablockspace_test_runtime::RuntimeCall>,
 		caller: Sr25519Keyring,
 	) -> Result<RpcTransactionOutput, RpcTransactionError> {
 		let extrinsic = construct_extrinsic(&*self.client, function, caller, 0);
@@ -348,7 +349,7 @@ impl PolkadotTestNode {
 /// Construct an extrinsic that can be applied to the test runtime.
 pub fn construct_extrinsic(
 	client: &Client,
-	function: impl Into<infrabs_test_runtime::RuntimeCall>,
+	function: impl Into<infrablockspace_test_runtime::RuntimeCall>,
 	caller: Sr25519Keyring,
 	nonce: u32,
 ) -> UncheckedExtrinsic {
@@ -386,7 +387,7 @@ pub fn construct_extrinsic(
 	let signature = raw_payload.using_encoded(|e| caller.sign(e));
 	UncheckedExtrinsic::new_signed(
 		function.clone(),
-		infrabs_test_runtime::Address::Id(caller.public().into()),
+		infrablockspace_test_runtime::Address::Id(caller.public().into()),
 		infrablockspace_primitives::Signature::Sr25519(signature.clone()),
 		extra.clone(),
 	)
@@ -399,10 +400,11 @@ pub fn construct_transfer_extrinsic(
 	dest: sp_keyring::AccountKeyring,
 	value: Balance,
 ) -> UncheckedExtrinsic {
-	let function = infrabs_test_runtime::RuntimeCall::Balances(pallet_balances::Call::transfer {
-		dest: MultiSigner::from(dest.public()).into_account().into(),
-		value,
-	});
+	let function =
+		infrablockspace_test_runtime::RuntimeCall::Balances(pallet_balances::Call::transfer {
+			dest: MultiSigner::from(dest.public()).into_account().into(),
+			value,
+		});
 
 	construct_extrinsic(client, function, origin, 0)
 }

@@ -49,7 +49,7 @@ const LOG_TARGET: &str = "parachain::runtime-api";
 const MAX_PARALLEL_REQUESTS: usize = 4;
 
 /// The name of the blocking task that executes a runtime API request.
-const API_REQUEST_TASK_NAME: &str = "infrabs-runtime-api-request";
+const API_REQUEST_TASK_NAME: &str = "infrablockspace-runtime-api-request";
 
 /// The `RuntimeApiSubsystem`. See module docs for more details.
 pub struct RuntimeApiSubsystem<Client> {

@@ -47,7 +47,7 @@ use infrablockspace_primitives::{
 	SignedAvailabilityBitfield, SignedAvailabilityBitfields, ValidationCode, ValidationCodeHash,
 	ValidatorId, ValidatorIndex, ValidatorSignature,
 };
-use infrabs_statement_table::v2::Misbehavior;
+use infrablockspace_statement_table::v2::Misbehavior;
 use std::{
 	collections::{BTreeMap, HashMap, HashSet},
 	sync::Arc,

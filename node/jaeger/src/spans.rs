@@ -19,7 +19,7 @@
 //! ```rust
 //! # use infrablockspace_primitives::{CandidateHash, Hash};
 //! # fn main() {
-//! use infrabs_node_jaeger as jaeger;
+//! use infrablockspace_node_jaeger as jaeger;
 //!
 //! let relay_parent = Hash::default();
 //! let candidate = CandidateHash::default();
@@ -53,7 +53,7 @@
 //! ```rust
 //! # use infrablockspace_primitives::{CandidateHash, Hash};
 //! # fn main() {
-//! # use infrabs_node_jaeger as jaeger;
+//! # use infrablockspace_node_jaeger as jaeger;
 //!
 //! # let relay_parent = Hash::default();
 //! # let candidate = CandidateHash::default();

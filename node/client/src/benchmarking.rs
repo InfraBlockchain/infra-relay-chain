@@ -1,18 +1,18 @@
 // Copyright 2022 Parity Technologies (UK) Ltd.
-// This file is part of Infrabs.
+// This file is part of Infrablockspace.
 
-// Infrabs is free software: you can redistribute it and/or modify
+// Infrablockspace is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Infrabs is distributed in the hope that it will be useful,
+// Infrablockspace is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
 
 //! Code related to benchmarking a [`crate::Client`].
 
@@ -129,20 +129,20 @@ trait BenchmarkCallSigner<RuntimeCall: Encode + Clone, Signer: Pair> {
 	) -> OpaqueExtrinsic;
 }
 
-#[cfg(feature = "infrabs")]
-impl BenchmarkCallSigner<infrabs_runtime::RuntimeCall, sp_core::sr25519::Pair>
-	for FullClient<infrabs_runtime::RuntimeApi, InfrabsExecutorDispatch>
+#[cfg(feature = "infrablockspace")]
+impl BenchmarkCallSigner<infrablockspace_runtime::RuntimeCall, sp_core::sr25519::Pair>
+	for FullClient<infrablockspace_runtime::RuntimeApi, InfrablockspaceExecutorDispatch>
 {
 	fn sign_call(
 		&self,
-		call: infrabs_runtime::RuntimeCall,
+		call: infrablockspace_runtime::RuntimeCall,
 		nonce: u32,
 		current_block: u64,
 		period: u64,
 		genesis: H256,
 		acc: sp_core::sr25519::Pair,
 	) -> OpaqueExtrinsic {
-		use infrabs_runtime as runtime;
+		use infrablockspace_runtime as runtime;
 
 		let extra: runtime::SignedExtra = (
 			frame_system::CheckNonZeroSender::<runtime::Runtime>::new(),
@@ -293,7 +293,7 @@ impl BenchmarkCallSigner<rococo_runtime::RuntimeCall, sp_core::sr25519::Pair>
 	}
 }
 
-/// Generates inherent data for benchmarking Infrabs, Kusama and Rococo.
+/// Generates inherent data for benchmarking Infrablockspace, Kusama and Rococo.
 ///
 /// Not to be used outside of benchmarking since it returns mocked values.
 pub fn benchmark_inherent_data(

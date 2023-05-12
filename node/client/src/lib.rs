@@ -1,20 +1,20 @@
 // Copyright 2017-2020 Parity Technologies (UK) Ltd.
-// This file is part of Infrabs.
+// This file is part of Infrablockspace.
 
-// Infrabs is free software: you can redistribute it and/or modify
+// Infrablockspace is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// Infrabs is distributed in the hope that it will be useful,
+// Infrablockspace is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Infrabs.  If not, see <http://www.gnu.org/licenses/>.
+// along with Infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
 
-//! Infrabs Client
+//! Infrablockspace Client
 //!
 //! Provides the [`AbstractClient`] trait that is a super trait that combines all the traits the client implements.
 //! There is also the [`Client`] enum that combines all the different clients into one common structure.
@@ -47,25 +47,25 @@ pub type FullClient<RuntimeApi, ExecutorDispatch> =
 #[cfg(not(any(
 	feature = "rococo",
 	feature = "kusama",
-	feature = "infrabs",
+	feature = "infrablockspace",
 	feauture = "infrablockspace",
 )))]
 compile_error!("at least one runtime feature must be enabled");
 
-/// The native executor instance for Infrabs.
-#[cfg(feature = "infrabs")]
-pub struct InfrabsExecutorDispatch;
+/// The native executor instance for Infrablockspace.
+#[cfg(feature = "infrablockspace")]
+pub struct InfrablockspaceExecutorDispatch;
 
-#[cfg(feature = "infrabs")]
-impl sc_executor::NativeExecutionDispatch for InfrabsExecutorDispatch {
+#[cfg(feature = "infrablockspace")]
+impl sc_executor::NativeExecutionDispatch for InfrablockspaceExecutorDispatch {
 	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		infrabs_runtime::api::dispatch(method, data)
+		infrablockspace_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		infrabs_runtime::native_version()
+		infrablockspace_runtime::native_version()
 	}
 }
 
@@ -187,7 +187,7 @@ where
 
 /// Execute something with the client instance.
 ///
-/// As there exist multiple chains inside Infrabs, like Infrabs itself, Kusama etc,
+/// As there exist multiple chains inside Infrablockspace, like Infrablockspace itself, Kusama etc,
 /// there can exist different kinds of client types. As these client types differ in the generics
 /// that are being used, we can not easily return them from a function. For returning them from a
 /// function there exists [`Client`]. However, the problem on how to use this client instance still
@@ -210,9 +210,9 @@ pub trait ExecuteWithClient {
 		Client: AbstractClient<Block, Backend, Api = Api> + 'static;
 }
 
-/// A handle to a Infrabs client instance.
+/// A handle to a Infrablockspace client instance.
 ///
-/// The Infrabs service supports multiple different runtimes (Infrabs itself, etc). As each runtime has a
+/// The Infrablockspace service supports multiple different runtimes (Infrablockspace itself, etc). As each runtime has a
 /// specialized client, we need to hide them behind a trait. This is this trait.
 ///
 /// When wanting to work with the inner client, you need to use `execute_with`.
@@ -235,10 +235,10 @@ macro_rules! with_client {
 		$code:expr
 	} => {
 		match $self {
-			#[cfg(feature = "infrabs")]
-			Client::Infrabs($client) => {
+			#[cfg(feature = "infrablockspace")]
+			Client::Infrablockspace($client) => {
 				#[allow(unused_imports)]
-				use infrabs_runtime as runtime;
+				use infrablockspace_runtime as runtime;
 
 				$code
 			},
@@ -262,15 +262,15 @@ macro_rules! with_client {
 // Make the macro available only within this crate.
 pub(crate) use with_client;
 
-/// A client instance of Infrabs.
+/// A client instance of Infrablockspace.
 ///
 /// See [`ExecuteWithClient`] for more information.
 #[derive(Clone)]
 pub enum Client {
 	#[cfg(feature = "infrablockspace")]
-	Infrabs(Arc<FullClient<infrablockspace::RuntimeApi, InfraBsExecutorDispatch>>),
-	#[cfg(feature = "infrabs")]
-	Infrabs(Arc<FullClient<infrabs_runtime::RuntimeApi, InfrabsExecutorDispatch>>),
+	Infrablockspace(
+		Arc<FullClient<infrablockspace_runtime::RuntimeApi, InfrablockspaceExecutorDispatch>>,
+	),
 	#[cfg(feature = "kusama")]
 	Kusama(Arc<FullClient<kusama_runtime::RuntimeApi, KusamaExecutorDispatch>>),
 	#[cfg(feature = "rococo")]

@@ -1,5 +1,5 @@
 [package]
-name = "infrabs-performance-test"
+name = "infrablockspace-performance-test"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

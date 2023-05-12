@@ -1,5 +1,5 @@
 [package]
-name = "infrabs-runtime-metrics"
+name = "infrablockspace-runtime-metrics"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
