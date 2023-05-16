@@ -30,8 +30,9 @@ use runtime_common::{
 use runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
-	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent,
+	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
+	origin as parachains_origin, paras as parachains_paras,
+	paras_inherent as parachains_paras_inherent, pot as parachains_pot,
 	reward_points as parachains_reward_points, runtime_api_impl::v2 as parachains_runtime_api_impl,
 	scheduler as parachains_scheduler, session_info as parachains_session_info,
 	shared as parachains_shared, ump as parachains_ump,
@@ -66,8 +67,10 @@ use sp_core::OpaqueMetadata;
 use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str,
-	curve::PiecewiseLinear, generic,
-	generic::{VoteAccountId, VoteWeight}, impl_opaque_keys,
+	curve::PiecewiseLinear,
+	generic,
+	generic::{VoteAccountId, VoteWeight},
+	impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
 		OpaqueKeys, SaturatedConversion, Verify,
@@ -364,7 +367,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = PotReward;
+	type SessionManager = InfraReward;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -1315,14 +1318,14 @@ impl pallet_infra_voting::Config for Runtime {
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = ();
 	type SessionInterface = ();
-	type SessionsPerEra = Sessions; 
+	type SessionsPerEra = Sessions;
 }
 
 impl pallet_infra_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
-impl parachains_pot_reward::Config for Runtime {
+impl parachains_infra_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
 }
@@ -1609,7 +1612,7 @@ construct_runtime! {
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
 		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
-		PotReward: parachains_pot_reward = 83,
+		InfraReward: parachains_infra_reward = 83,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,

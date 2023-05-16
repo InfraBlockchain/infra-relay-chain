@@ -17,8 +17,8 @@
 //! Mocks for all the traits.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, inclusion, initializer, origin, paras, paras_inherent, pot,
-	scheduler, session_info, shared,
+	configuration, disputes, dmp, hrmp, inclusion, infra_reward, initializer, origin, paras,
+	paras_inherent, pot, scheduler, session_info, shared,
 	ump::{self, MessageId, UmpSink},
 	ParaId,
 };
@@ -70,6 +70,7 @@ frame_support::construct_runtime!(
 		Disputes: disputes,
 		Babe: pallet_babe,
 		Pot: pot,
+		InfraReward: infra_reward,
 	}
 );
 
@@ -227,7 +228,7 @@ impl crate::pot::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 }
 
-impl crate::pot_reward::Config for Test {
+impl crate::infra_reward::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = MockValidatorSet;
 }
