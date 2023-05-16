@@ -21,13 +21,13 @@
 //! to included.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield,
-	scheduler::CoreAssignment, shared, ump
+	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield, pot,
+	scheduler::CoreAssignment, shared, ump,
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
-use pallet_infra_voting::VotingHandler;
 use pallet_infra_system_token_manager::SystemTokenInterface;
+use pallet_infra_voting::VotingHandler;
 use parity_scale_codec::{Decode, Encode};
 use primitives::{
 	AvailabilityBitfield, BackedCandidate, CandidateCommitments, CandidateDescriptor,
@@ -185,7 +185,7 @@ pub fn minimum_backing_votes(n_validators: usize) -> usize {
 pub mod pallet {
 	use pallet_infra_voting::VotingHandler;
 
-use super::*;
+	use super::*;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
@@ -786,7 +786,10 @@ impl<T: Config> Pallet<T> {
 		if let Some(vote_result) = commitments.vote_result {
 			let para_id = receipt.descriptor.para_id;
 			for vote in vote_result.clone().into_iter() {
-				if let Some(asset_id) = T::SystemTokenManager::convert_to_relay_system_token(para_id.into(), vote.asset_id) {
+				if let Some(asset_id) = T::SystemTokenManager::convert_to_relay_system_token(
+					para_id.into(),
+					vote.asset_id,
+				) {
 					let who = vote.account_id;
 					let weight = vote.vote_weight;
 					let adjusted_weight = T::SystemTokenManager::adjusted_weight(asset_id, weight);

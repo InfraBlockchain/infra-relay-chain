@@ -28,7 +28,7 @@ use sp_runtime::{
 	MultiSignature,
 };
 
-pub use sp_runtime::traits::{BlakeTwo256, Hash as HashT, ConstU32};
+pub use sp_runtime::traits::{BlakeTwo256, ConstU32, Hash as HashT};
 
 /// The block number type used by Polkadot.
 /// 32-bits will allow for 136 years of blocks assuming 1 block per second.

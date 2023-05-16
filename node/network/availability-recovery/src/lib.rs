@@ -36,8 +36,8 @@ use futures::{
 use lru::LruCache;
 use rand::seq::SliceRandom;
 
-use fatality::Nested;
 use erasure_coding::{branch_hash, branches, obtain_chunks_v1, recovery_threshold};
+use fatality::Nested;
 #[cfg(not(test))]
 use infrablockspace_node_network_protocol::request_response::CHUNK_REQUEST_TIMEOUT;
 use infrablockspace_node_network_protocol::{

@@ -17,7 +17,6 @@
 use super::{AuthorityDiscoveryApi, Block, Error, Hash, IsCollator, Registry};
 use sp_core::traits::SpawnNamed;
 
-use lru::LruCache;
 use infrablockspace_availability_distribution::IncomingRequestReceivers;
 use infrablockspace_node_core_approval_voting::Config as ApprovalVotingConfig;
 use infrablockspace_node_core_av_store::Config as AvailabilityConfig;
@@ -37,6 +36,7 @@ use infrablockspace_overseer::{
 	metrics::Metrics as OverseerMetrics, InitializedOverseerBuilder, MetricsTrait, Overseer,
 	OverseerConnector, OverseerHandle, SpawnGlue,
 };
+use lru::LruCache;
 
 use infrablockspace_primitives::runtime_api::ParachainHost;
 use sc_authority_discovery::Service as AuthorityDiscoveryService;

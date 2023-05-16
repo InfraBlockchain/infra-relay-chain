@@ -66,7 +66,8 @@ pub fn measure_pvf_prepare(wasm_code: &[u8]) -> Result<Duration, PerfCheckError>
 		.or(Err(PerfCheckError::CodeDecompressionFailed))?;
 
 	// Recreate the pipeline from the pvf prepare worker.
-	let blob = infrablockspace_node_core_pvf::prevalidate(code.as_ref()).map_err(PerfCheckError::from)?;
+	let blob =
+		infrablockspace_node_core_pvf::prevalidate(code.as_ref()).map_err(PerfCheckError::from)?;
 	infrablockspace_node_core_pvf::prepare(blob, &ExecutorParams::default())
 		.map_err(PerfCheckError::from)?;
 

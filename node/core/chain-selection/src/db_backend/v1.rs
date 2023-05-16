@@ -40,8 +40,8 @@ use crate::{
 use infrablockspace_node_primitives::BlockWeight;
 use infrablockspace_primitives::{BlockNumber, Hash};
 
-use parity_scale_codec::{Decode, Encode};
 use infrablockspace_node_subsystem_util::database::{DBTransaction, Database};
+use parity_scale_codec::{Decode, Encode};
 
 use std::sync::Arc;
 

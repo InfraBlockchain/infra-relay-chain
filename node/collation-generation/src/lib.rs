@@ -19,7 +19,6 @@
 #![deny(missing_docs)]
 
 use futures::{channel::mpsc, future::FutureExt, join, select, sink::SinkExt, stream::StreamExt};
-use parity_scale_codec::Encode;
 use infrablockspace_node_primitives::{AvailableData, CollationGenerationConfig, PoV};
 use infrablockspace_node_subsystem::{
 	messages::{CollationGenerationMessage, CollatorProtocolMessage},
@@ -35,6 +34,7 @@ use infrablockspace_primitives::{
 	CoreState, Hash, Id as ParaId, OccupiedCoreAssumption, PersistedValidationData,
 	ValidationCodeHash,
 };
+use parity_scale_codec::Encode;
 use sp_core::crypto::Pair;
 use std::sync::Arc;
 

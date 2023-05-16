@@ -31,7 +31,9 @@ use infrablockspace_node_subsystem::{
 	overseer, ActiveLeavesUpdate, RecoveryError,
 };
 use infrablockspace_node_subsystem_util::runtime::get_validation_code_by_hash;
-use infrablockspace_primitives::{BlockNumber, CandidateHash, CandidateReceipt, Hash, SessionIndex};
+use infrablockspace_primitives::{
+	BlockNumber, CandidateHash, CandidateReceipt, Hash, SessionIndex,
+};
 
 use crate::LOG_TARGET;
 

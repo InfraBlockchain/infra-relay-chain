@@ -24,9 +24,9 @@
 //! f is the maximum number of faulty validators in the system.
 //! The data is coded so any f+1 chunks can be used to reconstruct the full data.
 
-use parity_scale_codec::{Decode, Encode};
 use infrablockspace_node_primitives::{AvailableData, Proof};
 use infrablockspace_primitives::{BlakeTwo256, Hash as H256, HashT};
+use parity_scale_codec::{Decode, Encode};
 use sp_core::Blake2Hasher;
 use sp_trie::{
 	trie_types::{TrieDBBuilder, TrieDBMutBuilderV0 as TrieDBMutBuilder},

@@ -25,7 +25,6 @@ use super::*;
 use ::test_helpers::{
 	dummy_candidate_commitments, dummy_candidate_receipt_bad_sig, dummy_digest, dummy_hash,
 };
-use parity_scale_codec::Encode;
 use infrablockspace_node_primitives::{AvailableData, BlockData, InvalidCandidate, PoV};
 use infrablockspace_node_subsystem::{
 	jaeger,
@@ -41,6 +40,7 @@ use infrablockspace_node_subsystem_test_helpers::{
 use infrablockspace_primitives::{
 	BlakeTwo256, CandidateCommitments, HashT, Header, PersistedValidationData, ValidationCode,
 };
+use parity_scale_codec::Encode;
 
 type VirtualOverseer = TestSubsystemContextHandle<DisputeCoordinatorMessage>;
 

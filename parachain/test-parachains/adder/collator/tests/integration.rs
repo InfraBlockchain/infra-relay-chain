@@ -41,7 +41,8 @@ async fn collating_using_adder_collator() {
 	);
 
 	// start alice
-	let alice = infrablockspace_test_service::run_validator_node(alice_config, Some(PUPPET_EXE.into()));
+	let alice =
+		infrablockspace_test_service::run_validator_node(alice_config, Some(PUPPET_EXE.into()));
 
 	let bob_config = infrablockspace_test_service::node_config(
 		|| {},
