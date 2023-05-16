@@ -35,9 +35,9 @@ use infrablockspace_node_subsystem::{
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, LeafStatus,
 };
+use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::TimeoutExt as _;
 use infrablockspace_primitives::{GroupIndex, IndexedVec};
-use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use test_helpers::mock::make_ferdie_keystore;
 
 use super::*;

@@ -21,7 +21,9 @@ use parity_scale_codec::Encode;
 use std::collections::BTreeMap;
 
 use infrablockspace_node_primitives::BlockWeight;
-use infrablockspace_node_subsystem_test_helpers::{make_subsystem_context, TestSubsystemContextHandle};
+use infrablockspace_node_subsystem_test_helpers::{
+	make_subsystem_context, TestSubsystemContextHandle,
+};
 use infrablockspace_primitives::{BlockNumber, Hash, Header};
 use sp_blockchain::Info as BlockInfo;
 use sp_core::testing::TaskExecutor;

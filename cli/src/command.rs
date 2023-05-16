@@ -126,7 +126,6 @@ impl SubstrateCli for Cli {
 	}
 
 	fn native_runtime_version(spec: &Box<dyn service::ChainSpec>) -> &'static RuntimeVersion {
-
 		#[cfg(feature = "rococo-native")]
 		if spec.is_rococo() {
 			return &service::rococo_runtime::VERSION
@@ -146,8 +145,7 @@ impl SubstrateCli for Cli {
 }
 
 fn set_default_ss58_version(_spec: &Box<dyn service::ChainSpec>) {
-	let ss58_version = Ss58AddressFormatRegistry::PolkadotAccount
-	.into();
+	let ss58_version = Ss58AddressFormatRegistry::PolkadotAccount.into();
 
 	sp_core::crypto::set_default_ss58_version(ss58_version);
 }

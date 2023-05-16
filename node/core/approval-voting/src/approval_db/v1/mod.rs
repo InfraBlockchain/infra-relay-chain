@@ -16,7 +16,6 @@
 
 //! Version 1 of the DB schema.
 
-use parity_scale_codec::{Decode, Encode};
 use infrablockspace_node_primitives::approval::{AssignmentCert, DelayTranche};
 use infrablockspace_node_subsystem::{SubsystemError, SubsystemResult};
 use infrablockspace_node_subsystem_util::database::{DBTransaction, Database};
@@ -24,6 +23,7 @@ use infrablockspace_primitives::{
 	BlockNumber, CandidateHash, CandidateReceipt, CoreIndex, GroupIndex, Hash, SessionIndex,
 	ValidatorIndex, ValidatorSignature,
 };
+use parity_scale_codec::{Decode, Encode};
 use sp_consensus_slots::Slot;
 
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};

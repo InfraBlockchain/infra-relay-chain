@@ -21,7 +21,9 @@ use rand::{seq::SliceRandom, thread_rng};
 
 use infrablockspace_node_subsystem::overseer;
 use infrablockspace_node_subsystem_util::runtime::RuntimeInfo;
-use infrablockspace_primitives::{AuthorityDiscoveryId, GroupIndex, Hash, SessionIndex, ValidatorIndex};
+use infrablockspace_primitives::{
+	AuthorityDiscoveryId, GroupIndex, Hash, SessionIndex, ValidatorIndex,
+};
 
 use crate::{
 	error::{Error, Result},

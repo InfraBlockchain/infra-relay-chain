@@ -22,9 +22,9 @@
 use super::database::{DBTransaction, Database};
 use kvdb::{DBKey, DBOp};
 
-use parity_scale_codec::{Decode, Encode};
 pub use infrablockspace_node_primitives::{new_session_window_size, SessionWindowSize};
 use infrablockspace_primitives::{BlockNumber, Hash, SessionIndex, SessionInfo};
+use parity_scale_codec::{Decode, Encode};
 use std::sync::Arc;
 
 use futures::channel::oneshot;

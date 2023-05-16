@@ -48,6 +48,7 @@ use infrablockspace_primitives::{
 	BlockNumber, CandidateEvent, CandidateHash, CandidateReceipt, ConsensusLog, CoreIndex,
 	GroupIndex, Hash, Header, SessionIndex,
 };
+use polkadot_node_jaeger as jaeger;
 use sc_keystore::LocalKeystore;
 use sp_consensus_slots::Slot;
 

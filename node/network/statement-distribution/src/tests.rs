@@ -18,7 +18,6 @@ use super::{metrics::Metrics, *};
 use assert_matches::assert_matches;
 use futures::executor::{self, block_on};
 use futures_timer::Delay;
-use parity_scale_codec::{Decode, Encode};
 use infrablockspace_node_network_protocol::{
 	grid_topology::{SessionGridTopology, TopologyPeerInfo},
 	peer_set::ValidationVersion,
@@ -41,6 +40,7 @@ use infrablockspace_primitives::{
 use infrablockspace_primitives_test_helpers::{
 	dummy_committed_candidate_receipt, dummy_hash, AlwaysZeroRng,
 };
+use parity_scale_codec::{Decode, Encode};
 use sc_keystore::LocalKeystore;
 use sp_application_crypto::{sr25519::Pair, AppKey, Pair as TraitPair};
 use sp_authority_discovery::AuthorityPair;
@@ -729,7 +729,8 @@ fn receiving_from_one_sends_to_another_and_to_candidate_backing() {
 	let session_index = 1;
 
 	let pool = sp_core::testing::TaskExecutor::new();
-	let (ctx, mut handle) = infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
+	let (ctx, mut handle) =
+		infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
 
 	let req_protocol_names = ReqProtocolNames::new(&GENESIS_HASH, None);
 	let (statement_req_receiver, _) = IncomingRequest::get_config_receiver(&req_protocol_names);
@@ -933,7 +934,8 @@ fn receiving_large_statement_from_one_sends_to_another_and_to_candidate_backing(
 	let session_index = 1;
 
 	let pool = sp_core::testing::TaskExecutor::new();
-	let (ctx, mut handle) = infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
+	let (ctx, mut handle) =
+		infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
 
 	let req_protocol_names = ReqProtocolNames::new(&GENESIS_HASH, None);
 	let (statement_req_receiver, mut req_cfg) =
@@ -1447,7 +1449,8 @@ fn share_prioritizes_backing_group() {
 	let session_index = 1;
 
 	let pool = sp_core::testing::TaskExecutor::new();
-	let (ctx, mut handle) = infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
+	let (ctx, mut handle) =
+		infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
 
 	let req_protocol_names = ReqProtocolNames::new(&GENESIS_HASH, None);
 	let (statement_req_receiver, mut req_cfg) =
@@ -1744,7 +1747,8 @@ fn peer_cant_flood_with_large_statements() {
 	let session_index = 1;
 
 	let pool = sp_core::testing::TaskExecutor::new();
-	let (ctx, mut handle) = infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
+	let (ctx, mut handle) =
+		infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
 
 	let req_protocol_names = ReqProtocolNames::new(&GENESIS_HASH, None);
 	let (statement_req_receiver, _) = IncomingRequest::get_config_receiver(&req_protocol_names);
@@ -1949,7 +1953,8 @@ fn handle_multiple_seconded_statements() {
 	let session_index = 1;
 
 	let pool = sp_core::testing::TaskExecutor::new();
-	let (ctx, mut handle) = infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
+	let (ctx, mut handle) =
+		infrablockspace_node_subsystem_test_helpers::make_subsystem_context(pool);
 
 	let req_protocol_names = ReqProtocolNames::new(&GENESIS_HASH, None);
 	let (statement_req_receiver, _) = IncomingRequest::get_config_receiver(&req_protocol_names);

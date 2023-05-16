@@ -40,7 +40,9 @@ use infrablockspace_node_subsystem::{
 	SubsystemSender,
 };
 use infrablockspace_node_subsystem_util::executor_params_at_relay_parent;
-use infrablockspace_parachain::primitives::{ValidationParams, ValidationResult as WasmValidationResult};
+use infrablockspace_parachain::primitives::{
+	ValidationParams, ValidationResult as WasmValidationResult,
+};
 use infrablockspace_primitives::{
 	vstaging::ExecutorParams, CandidateCommitments, CandidateDescriptor, CandidateReceipt, Hash,
 	OccupiedCoreAssumption, PersistedValidationData, ValidationCode, ValidationCodeHash,

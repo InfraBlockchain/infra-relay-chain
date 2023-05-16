@@ -15,7 +15,8 @@
 
 #[cfg(feature = "full-node")]
 use {
-	infrablockspace_node_subsystem_util::database::Database, std::io, std::path::PathBuf, std::sync::Arc,
+	infrablockspace_node_subsystem_util::database::Database, std::io, std::path::PathBuf,
+	std::sync::Arc,
 };
 
 #[cfg(feature = "full-node")]

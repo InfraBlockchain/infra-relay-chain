@@ -33,7 +33,9 @@ use infrablockspace_node_network_protocol::{
 	v1::{self as protocol_v1, StatementMetadata},
 	IfDisconnected, PeerId, UnifiedReputationChange as Rep, Versioned, View,
 };
-use infrablockspace_node_primitives::{SignedFullStatement, Statement, UncheckedSignedFullStatement};
+use infrablockspace_node_primitives::{
+	SignedFullStatement, Statement, UncheckedSignedFullStatement,
+};
 use infrablockspace_node_subsystem_util::{self as util, rand, MIN_GOSSIP_PEERS};
 
 use infrablockspace_node_subsystem::{

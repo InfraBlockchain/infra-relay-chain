@@ -188,7 +188,8 @@ impl CandidateVoteState<CandidateVotes> {
 
 		let n_validators = env.validators().len();
 
-		let supermajority_threshold = infrablockspace_primitives::supermajority_threshold(n_validators);
+		let supermajority_threshold =
+			infrablockspace_primitives::supermajority_threshold(n_validators);
 
 		// We have a dispute, if we have votes on both sides:
 		let is_disputed = !votes.invalid.is_empty() && !votes.valid.raw().is_empty();
