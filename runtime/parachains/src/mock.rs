@@ -227,6 +227,11 @@ impl crate::pot::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 }
 
+impl crate::pot_reward::Config for Test {
+	type RuntimeEvent = RuntimeEvent;
+	type ValidatorSet = MockValidatorSet;
+}
+
 impl crate::dmp::Config for Test {}
 
 parameter_types! {
