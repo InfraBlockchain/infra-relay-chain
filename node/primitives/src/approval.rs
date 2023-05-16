@@ -19,11 +19,11 @@
 pub use sp_consensus_babe::Slot;
 pub use sp_consensus_vrf::schnorrkel::{Randomness, VRFOutput, VRFProof};
 
-use parity_scale_codec::{Decode, Encode};
 use infrablockspace_primitives::{
 	BlockNumber, CandidateHash, CandidateIndex, CoreIndex, Hash, Header, SessionIndex,
 	ValidatorIndex, ValidatorSignature,
 };
+use parity_scale_codec::{Decode, Encode};
 use sp_application_crypto::ByteArray;
 use sp_consensus_babe as babe_primitives;
 

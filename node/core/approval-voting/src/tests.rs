@@ -252,13 +252,17 @@ where
 		_relay_vrf_story: infrablockspace_node_primitives::approval::RelayVRFStory,
 		_assignment: &infrablockspace_node_primitives::approval::AssignmentCert,
 		_backing_group: infrablockspace_primitives::GroupIndex,
-	) -> Result<infrablockspace_node_primitives::approval::DelayTranche, criteria::InvalidAssignment> {
+	) -> Result<infrablockspace_node_primitives::approval::DelayTranche, criteria::InvalidAssignment>
+	{
 		self.1(validator_index)
 	}
 }
 
 impl<F>
-	MockAssignmentCriteria<fn() -> HashMap<infrablockspace_primitives::CoreIndex, criteria::OurAssignment>, F>
+	MockAssignmentCriteria<
+		fn() -> HashMap<infrablockspace_primitives::CoreIndex, criteria::OurAssignment>,
+		F,
+	>
 {
 	fn check_only(f: F) -> Self {
 		MockAssignmentCriteria(Default::default, f)

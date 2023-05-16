@@ -20,7 +20,9 @@
 
 use crate::{error::GetOnchainDisputesError, metrics, LOG_TARGET};
 use futures::channel::oneshot;
-use infrablockspace_node_primitives::{dispute_is_inactive, CandidateVotes, DisputeStatus, Timestamp};
+use infrablockspace_node_primitives::{
+	dispute_is_inactive, CandidateVotes, DisputeStatus, Timestamp,
+};
 use infrablockspace_node_subsystem::{
 	errors::RuntimeApiError,
 	messages::{DisputeCoordinatorMessage, RuntimeApiMessage, RuntimeApiRequest},

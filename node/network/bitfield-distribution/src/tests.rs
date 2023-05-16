@@ -18,7 +18,6 @@ use super::*;
 use assert_matches::assert_matches;
 use bitvec::bitvec;
 use futures::executor;
-use maplit::hashmap;
 use infrablockspace_node_network_protocol::{
 	grid_topology::{SessionBoundGridTopologyStorage, SessionGridTopology, TopologyPeerInfo},
 	our_view,
@@ -32,6 +31,7 @@ use infrablockspace_node_subsystem::{
 use infrablockspace_node_subsystem_test_helpers::make_subsystem_context;
 use infrablockspace_node_subsystem_util::TimeoutExt;
 use infrablockspace_primitives::{AvailabilityBitfield, Signed, ValidatorIndex};
+use maplit::hashmap;
 use rand_chacha::ChaCha12Rng;
 use sp_application_crypto::AppKey;
 use sp_authority_discovery::AuthorityPair as AuthorityDiscoveryPair;

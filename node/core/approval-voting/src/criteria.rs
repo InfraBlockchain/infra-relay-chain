@@ -16,7 +16,6 @@
 
 //! Assignment criteria VRF generation and checking.
 
-use parity_scale_codec::{Decode, Encode};
 use infrablockspace_node_primitives::approval::{
 	self as approval_types, AssignmentCert, AssignmentCertKind, DelayTranche, RelayVRFStory,
 };
@@ -24,6 +23,7 @@ use infrablockspace_primitives::{
 	AssignmentId, AssignmentPair, CandidateHash, CoreIndex, GroupIndex, IndexedVec, SessionInfo,
 	ValidatorIndex,
 };
+use parity_scale_codec::{Decode, Encode};
 use sc_keystore::LocalKeystore;
 use sp_application_crypto::ByteArray;
 

@@ -28,8 +28,8 @@ use std::{
 
 use futures::{channel::oneshot, future, select, FutureExt};
 use futures_timer::Delay;
-use parity_scale_codec::{Decode, Encode, Error as CodecError, Input};
 use infrablockspace_node_subsystem_util::database::{DBTransaction, Database};
+use parity_scale_codec::{Decode, Encode, Error as CodecError, Input};
 use sp_consensus::SyncOracle;
 
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};

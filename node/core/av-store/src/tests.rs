@@ -20,7 +20,6 @@ use assert_matches::assert_matches;
 use futures::{channel::oneshot, executor, future, Future};
 
 use ::test_helpers::TestCandidateBuilder;
-use parking_lot::Mutex;
 use infrablockspace_node_primitives::{AvailableData, BlockData, PoV, Proof};
 use infrablockspace_node_subsystem::{
 	errors::RuntimeApiError,
@@ -34,6 +33,7 @@ use infrablockspace_primitives::{
 	CandidateHash, CandidateReceipt, CoreIndex, GroupIndex, HeadData, Header,
 	PersistedValidationData, ValidatorId,
 };
+use parking_lot::Mutex;
 use sp_keyring::Sr25519Keyring;
 
 mod columns {
@@ -209,8 +209,10 @@ fn candidate_included(receipt: CandidateReceipt) -> CandidateEvent {
 #[cfg(test)]
 fn test_store() -> Arc<dyn Database> {
 	let db = kvdb_memorydb::create(columns::NUM_COLUMNS);
-	let db =
-		infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(db, &[columns::META]);
+	let db = infrablockspace_node_subsystem_util::database::kvdb_impl::DbAdapter::new(
+		db,
+		&[columns::META],
+	);
 	Arc::new(db)
 }
 

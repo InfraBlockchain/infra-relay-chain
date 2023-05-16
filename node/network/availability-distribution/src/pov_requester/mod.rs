@@ -168,7 +168,8 @@ mod tests {
 			TaskExecutor,
 		>(pool.clone());
 		let keystore = make_ferdie_keystore();
-		let mut runtime = infrablockspace_node_subsystem_util::runtime::RuntimeInfo::new(Some(keystore));
+		let mut runtime =
+			infrablockspace_node_subsystem_util::runtime::RuntimeInfo::new(Some(keystore));
 
 		let (tx, rx) = oneshot::channel();
 		let testee = async {

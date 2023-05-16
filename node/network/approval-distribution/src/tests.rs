@@ -26,7 +26,9 @@ use infrablockspace_node_network_protocol::{
 use infrablockspace_node_primitives::approval::{
 	AssignmentCertKind, VRFOutput, VRFProof, RELAY_VRF_MODULO_CONTEXT,
 };
-use infrablockspace_node_subsystem::messages::{network_bridge_event, AllMessages, ApprovalCheckError};
+use infrablockspace_node_subsystem::messages::{
+	network_bridge_event, AllMessages, ApprovalCheckError,
+};
 use infrablockspace_node_subsystem_test_helpers as test_helpers;
 use infrablockspace_node_subsystem_util::TimeoutExt as _;
 use infrablockspace_primitives::{AuthorityDiscoveryId, BlakeTwo256, HashT};

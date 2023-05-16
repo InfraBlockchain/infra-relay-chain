@@ -18,7 +18,9 @@ use std::collections::{hash_map::Entry, HashMap, VecDeque};
 
 use futures::future::pending;
 use futures_timer::Delay;
-use infrablockspace_node_network_protocol::request_response::{v1::DisputeRequest, IncomingRequest};
+use infrablockspace_node_network_protocol::request_response::{
+	v1::DisputeRequest, IncomingRequest,
+};
 use infrablockspace_primitives::AuthorityDiscoveryId;
 
 use crate::RECEIVE_RATE_LIMIT;

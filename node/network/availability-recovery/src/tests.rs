@@ -20,8 +20,8 @@ use assert_matches::assert_matches;
 use futures::{executor, future};
 use futures_timer::Delay;
 
-use parity_scale_codec::Encode;
 use infrablockspace_node_network_protocol::request_response::{IncomingRequest, ReqProtocolNames};
+use parity_scale_codec::Encode;
 
 use super::*;
 
@@ -34,7 +34,9 @@ use infrablockspace_node_subsystem::{
 	messages::{AllMessages, RuntimeApiMessage, RuntimeApiRequest},
 	ActivatedLeaf, LeafStatus,
 };
-use infrablockspace_node_subsystem_test_helpers::{make_subsystem_context, TestSubsystemContextHandle};
+use infrablockspace_node_subsystem_test_helpers::{
+	make_subsystem_context, TestSubsystemContextHandle,
+};
 use infrablockspace_node_subsystem_util::TimeoutExt;
 use infrablockspace_primitives::{
 	AuthorityDiscoveryId, Hash, HeadData, IndexedVec, PersistedValidationData, ValidatorId,

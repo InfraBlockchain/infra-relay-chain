@@ -19,9 +19,9 @@ use crate::{
 	Overseer, OverseerMetrics, OverseerSignal, OverseerSubsystemContext, SpawnGlue,
 	KNOWN_LEAVES_CACHE_SIZE,
 };
+use infrablockspace_node_subsystem_types::{errors::SubsystemError, messages::*};
 use lru::LruCache;
 use orchestra::{FromOrchestra, SpawnedSubsystem, Subsystem, SubsystemContext};
-use infrablockspace_node_subsystem_types::{errors::SubsystemError, messages::*};
 // Generated dummy messages
 use crate::messages::*;
 

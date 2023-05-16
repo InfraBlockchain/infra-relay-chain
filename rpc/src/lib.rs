@@ -20,8 +20,8 @@
 
 use std::sync::Arc;
 
-use jsonrpsee::RpcModule;
 use infrablockspace_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Nonce};
+use jsonrpsee::RpcModule;
 use sc_client_api::AuxStore;
 use sc_consensus_babe::{BabeConfiguration, Epoch};
 use sc_consensus_beefy::communication::notification::{

@@ -360,11 +360,11 @@ mod tests {
 
 	#[test]
 	fn test_rocksdb_migrate_1_to_2() {
-		use kvdb::{DBKey, DBOp};
-		use kvdb_rocksdb::{Database, DatabaseConfig};
 		use infrablockspace_node_subsystem_util::database::{
 			kvdb_impl::DbAdapter, DBTransaction, KeyValueDB,
 		};
+		use kvdb::{DBKey, DBOp};
+		use kvdb_rocksdb::{Database, DatabaseConfig};
 
 		let db_dir = tempfile::tempdir().unwrap();
 		let db_path = db_dir.path().to_str().unwrap();

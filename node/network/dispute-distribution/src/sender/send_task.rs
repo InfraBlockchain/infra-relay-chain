@@ -27,7 +27,9 @@ use infrablockspace_node_network_protocol::{
 	IfDisconnected,
 };
 use infrablockspace_node_subsystem::{messages::NetworkBridgeTxMessage, overseer};
-use infrablockspace_node_subsystem_util::{metrics, nesting_sender::NestingSender, runtime::RuntimeInfo};
+use infrablockspace_node_subsystem_util::{
+	metrics, nesting_sender::NestingSender, runtime::RuntimeInfo,
+};
 use infrablockspace_primitives::{
 	AuthorityDiscoveryId, CandidateHash, Hash, SessionIndex, ValidatorIndex,
 };
