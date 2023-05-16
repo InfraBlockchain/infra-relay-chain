@@ -40,9 +40,9 @@ use runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	disputes::slashing as parachains_slashing,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
-	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
+	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
+	origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent, pot as parachains_pot,
-	pot_reward as parachains_pot_reward,
 	runtime_api_impl::{
 		v2 as parachains_runtime_api_impl, vstaging as parachains_runtime_api_impl_staging,
 	},
@@ -1075,7 +1075,7 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
-impl parachains_pot_reward::Config for Runtime {
+impl parachains_infra_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
 }
@@ -1488,7 +1488,7 @@ construct_runtime! {
 
 		// Pot Related
 		Pot: parachains_pot::{Pallet, Storage, Event} = 80,
-		PotReward: parachains_pot_reward = 81,
+		InfraReward: parachains_infra_reward = 81,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,

@@ -29,8 +29,6 @@
 // Ensure we're `no_std` when compiling for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use std::collections::HashMap;
-
 use frame_support::{
 	dispatch::{DispatchInfo, DispatchResult, PostDispatchInfo},
 	pallet_prelude::*,
@@ -53,7 +51,7 @@ use sp_runtime::{
 	RuntimeDebug,
 };
 use sp_staking::SessionIndex;
-use sp_std::prelude::*;
+use sp_std::{collections::btree_map::BTreeMap, prelude::*};
 
 pub use pallet::*;
 
@@ -164,7 +162,7 @@ impl<T: Config> Pallet<T> {
 	fn end_session(_end_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
 		// TODO: need to change "real" system token
-		let system_token_set = HashMap::from([(1, 100), (2, 200), (3, 150)]);
+		let system_token_set = BTreeMap::from([(1, 100), (2, 200), (3, 150)]);
 		for validator in current_validators.iter() {
 			if ValidatorRewards::<T>::contains_key(validator) {
 				let _ = ValidatorRewards::<T>::try_mutate_exists(
