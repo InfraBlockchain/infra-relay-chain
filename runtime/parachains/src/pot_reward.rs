@@ -29,6 +29,8 @@
 // Ensure we're `no_std` when compiling for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use std::collections::HashMap;
+
 use frame_support::{
 	dispatch::{DispatchInfo, DispatchResult, PostDispatchInfo},
 	pallet_prelude::*,
@@ -46,7 +48,10 @@ use log::{debug, error, info, trace, warn};
 use pallet_session::historical;
 use primitives::AccountId;
 use scale_info::TypeInfo;
-use sp_runtime::{traits::StaticLookup, RuntimeDebug};
+use sp_runtime::{
+	traits::{Convert, StaticLookup},
+	RuntimeDebug,
+};
 use sp_staking::SessionIndex;
 use sp_std::prelude::*;
 
@@ -90,7 +95,7 @@ pub mod pallet {
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		/// A type for retrieving the validators supposed to be online in a session.
-		type ValidatorSet: ValidatorSetWithIdentification<Self::AccountId>;
+		type ValidatorSet: ValidatorSet<Self::AccountId>;
 	}
 
 	#[pallet::storage]
@@ -102,8 +107,8 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
-		/// The validator has been rewarded by this amount.
-		Rewarded { stash: ValidatorId<T>, amount: u128 },
+		/// The validator has been rewarded.
+		Rewarded { stash: ValidatorId<T> },
 	}
 
 	#[pallet::error]
@@ -112,6 +117,9 @@ pub mod pallet {
 		NotController,
 		/// Rewards already been claimed for this validator.
 		AlreadyClaimed,
+		NothingToClaim,
+		NeedOriginSignature,
+		NoAssociatedValidatorId,
 		Unknown,
 	}
 
@@ -120,6 +128,26 @@ pub mod pallet {
 		#[pallet::call_index(0)]
 		#[pallet::weight(0)]
 		pub fn claim(origin: OriginFor<T>, controller: AccountIdLookupOf<T>) -> DispatchResult {
+			let origin = ensure_signed(origin)?;
+			let controller = T::Lookup::lookup(controller)?;
+			ensure!(origin == controller, Error::<T>::NeedOriginSignature);
+			let who = <T::ValidatorSet as ValidatorSet<T::AccountId>>::ValidatorIdOf::convert(
+				controller.clone(),
+			)
+			.ok_or(Error::<T>::NoAssociatedValidatorId)?;
+			ensure!(ValidatorRewards::<T>::contains_key(who.clone()), Error::<T>::NothingToClaim);
+			let mut rewards: Vec<ValidatorReward> =
+				ValidatorRewards::<T>::get(who.clone()).unwrap();
+			ensure!(rewards.len() != 0, Error::<T>::AlreadyClaimed);
+			for reward in rewards.iter_mut() {
+				// TODO: send asset to validator with DMP
+				reward.amount = 0;
+			}
+			rewards.retain(|r| r.amount != 0);
+			ValidatorRewards::<T>::remove(who.clone());
+			ValidatorRewards::<T>::insert(who.clone(), rewards);
+
+			Self::deposit_event(Event::Rewarded { stash: who.into() });
 			Ok(())
 		}
 	}
@@ -135,21 +163,31 @@ impl<T: Config> Pallet<T> {
 	fn start_session(_start_index: SessionIndex) {}
 	fn end_session(_end_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
+		// TODO: need to change "real" system token
+		let system_token_set = HashMap::from([(1, 100), (2, 200), (3, 150)]);
 		for validator in current_validators.iter() {
-			// TODO: need to change system token
 			if ValidatorRewards::<T>::contains_key(validator) {
 				let _ = ValidatorRewards::<T>::try_mutate_exists(
 					validator,
 					|maybe_rewards| -> Result<(), DispatchError> {
 						let rewards = maybe_rewards.as_mut().ok_or(Error::<T>::Unknown)?;
 						for reward in rewards.iter_mut() {
-							reward.amount += 10;
+							let amount = *system_token_set.get(&reward.asset_id).unwrap_or(&0) /
+								current_validators.len() as u128;
+							reward.amount += amount;
 						}
 						Ok(())
 					},
 				);
 			} else {
-				let rewards = vec![ValidatorReward::new(1, 10)];
+				// TODO: need to change "real" system token
+				let rewards = {
+					let mut rewards = Vec::new();
+					for system_token in system_token_set.iter() {
+						rewards.push(ValidatorReward::new(*system_token.0, *system_token.1));
+					}
+					rewards
+				};
 				ValidatorRewards::<T>::insert(validator, rewards);
 			}
 		}
