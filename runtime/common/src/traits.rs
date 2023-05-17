@@ -21,7 +21,20 @@ use frame_support::{
 	traits::{Currency, ReservableCurrency},
 };
 use primitives::{HeadData, Id as ParaId, ValidationCode};
+use sp_runtime::generic::{VoteAssetId, VoteWeight};
 use sp_std::vec::*;
+
+pub type ParachainAssetId = VoteAssetId;
+pub type RelayChainAssetId = VoteAssetId;
+
+/// System tokens API.
+pub trait SystemTokenInterface {
+	fn convert_to_relay_system_token(
+		para_id: ParaId,
+		asset_id: ParachainAssetId,
+	) -> Option<RelayChainAssetId>;
+	fn adjusted_weight(asset_id: RelayChainAssetId) -> VoteWeight;
+}
 
 /// Parachain registration API.
 pub trait Registrar {
