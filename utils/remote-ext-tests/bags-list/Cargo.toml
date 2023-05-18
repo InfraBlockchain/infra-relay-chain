@@ -6,9 +6,7 @@ edition.workspace = true
 
 [dependencies]
 infrablockspace-runtime = { path = "../../../runtime/infrablockspace" }
-kusama-runtime = { path = "../../../runtime/kusama" }
 infrablockspace-runtime-constants = { path = "../../../runtime/infrablockspace/constants" }
-kusama-runtime-constants = { path = "../../../runtime/kusama/constants" }
 
 pallet-bags-list-remote-tests = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-tracing = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }

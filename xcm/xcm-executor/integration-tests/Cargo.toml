@@ -10,9 +10,7 @@ frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", br
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 futures = "0.3.21"
 pallet-xcm = { path = "../../pallet-xcm" }
-infrablockspace-test-client = { path = "../../../node/test/client" }
 infrablockspace-test-runtime = { path = "../../../runtime/test-runtime" }
-infrablockspace-test-service = { path = "../../../node/test/service" }
 sp-consensus = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-keyring = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }

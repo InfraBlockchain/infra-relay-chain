@@ -23,7 +23,7 @@ color-eyre = { version = "0.6.1", default-features = false }
 tikv-jemallocator = "0.5.0"
 
 # Crates in our workspace, defined as dependencies so we can pass them feature flags.
-infrablockspace-cli = { path = "cli", features = ["kusama-native", "rococo-native"] }
+infrablockspace-cli = { path = "cli", features = ["rococo-native"] }
 infrablockspace-node-core-pvf = { path = "node/core/pvf" }
 infrablockspace-overseer = { path = "node/overseer" }
 
@@ -48,8 +48,6 @@ members = [
 	"runtime/parachains",
 	"runtime/infrablockspace",
 	"runtime/infrablockspace/constants",
-	"runtime/kusama",
-	"runtime/kusama/constants",
 	"runtime/rococo",
 	"runtime/rococo/constants",
 	"runtime/test-runtime",
@@ -102,9 +100,6 @@ members = [
 	"node/gum",
 	"node/gum/proc-macro",
 	"node/metrics",
-	"node/test/client",
-	"node/test/performance-test",
-	"node/test/service",
 	"node/zombienet-backchannel",
 	"rpc",
 	"parachain",

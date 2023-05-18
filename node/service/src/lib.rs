@@ -83,13 +83,10 @@ use telemetry::{Telemetry, TelemetryWorkerHandle};
 #[cfg(feature = "rococo-native")]
 pub use infrablockspace_client::RococoExecutorDispatch;
 
-#[cfg(feature = "kusama-native")]
-pub use infrablockspace_client::KusamaExecutorDispatch;
-
 #[cfg(feature = "infrablockspace-native")]
 pub use infrablockspace_client::InfrablockspaceExecutorDispatch;
 
-pub use chain_spec::{InfrablockspaceChainSpec, KusamaChainSpec, RococoChainSpec};
+pub use chain_spec::{InfrablockspaceChainSpec, RococoChainSpec};
 pub use consensus_common::{block_validation::Chain, Proposal, SelectChain};
 use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
 #[cfg(feature = "full-node")]
@@ -121,8 +118,6 @@ pub use sp_runtime::{
 // Infrablockspace Native Runtimes
 #[cfg(feature = "infrablockspace-native")]
 pub use {infrablockspace_runtime, infrablockspace_runtime_constants};
-#[cfg(feature = "kusama-native")]
-pub use {kusama_runtime, kusama_runtime_constants};
 #[cfg(feature = "rococo-native")]
 pub use {rococo_runtime, rococo_runtime_constants};
 
@@ -231,7 +226,7 @@ pub enum Error {
 	DatabasePathRequired,
 
 	#[cfg(feature = "full-node")]
-	#[error("Expected at least one of polkadot, kusama or rococo runtime feature")]
+	#[error("Expected at least one of polkadot or rococo runtime feature")]
 	NoRuntime,
 }
 
@@ -239,9 +234,6 @@ pub enum Error {
 pub trait IdentifyVariant {
 	/// Returns if this is a configuration for the `Infrablockspace` network.
 	fn is_infrablockspace(&self) -> bool;
-
-	/// Returns if this is a configuration for the `Kusama` network.
-	fn is_kusama(&self) -> bool;
 
 	/// Returns if this is a configuration for the `Rococo` network.
 	fn is_rococo(&self) -> bool;
@@ -253,9 +245,6 @@ pub trait IdentifyVariant {
 impl IdentifyVariant for Box<dyn ChainSpec> {
 	fn is_infrablockspace(&self) -> bool {
 		self.id().starts_with("infrablockspace") || self.id().starts_with("dot")
-	}
-	fn is_kusama(&self) -> bool {
-		self.id().starts_with("kusama") || self.id().starts_with("ksm")
 	}
 	fn is_rococo(&self) -> bool {
 		self.id().starts_with("rococo") || self.id().starts_with("rco")
@@ -474,11 +463,13 @@ where
 		client.clone(),
 	);
 
-	let grandpa_hard_forks = if config.chain_spec.is_kusama() {
-		grandpa_support::kusama_hard_forks()
-	} else {
-		Vec::new()
-	};
+	// let grandpa_hard_forks = if config.chain_spec.is_kusama() {
+	// 	grandpa_support::kusama_hard_forks()
+	// } else {
+	// 	Vec::new()
+	// };
+
+	let grandpa_hard_forks = Vec::new();
 
 	let (grandpa_block_import, grandpa_link) = grandpa::block_import_with_authority_set_hard_forks(
 		client.clone(),
@@ -820,11 +811,13 @@ where
 	let (dispute_req_receiver, cfg) = IncomingRequest::get_config_receiver(&req_protocol_names);
 	config.network.request_response_protocols.push(cfg);
 
-	let grandpa_hard_forks = if config.chain_spec.is_kusama() {
-		grandpa_support::kusama_hard_forks()
-	} else {
-		Vec::new()
-	};
+	// let grandpa_hard_forks = if config.chain_spec.is_kusama() {
+	// 	grandpa_support::kusama_hard_forks()
+	// } else {
+	// 	Vec::new()
+	// };
+
+	let grandpa_hard_forks = Vec::new();
 
 	let warp_sync = Arc::new(grandpa::warp_proof::NetworkProvider::new(
 		backend.clone(),
@@ -1292,11 +1285,6 @@ pub fn new_chain_ops(
 		return chain_ops!(config, jaeger_agent, None; rococo_runtime, RococoExecutorDispatch, Rococo)
 	}
 
-	#[cfg(feature = "kusama-native")]
-	if config.chain_spec.is_kusama() {
-		return chain_ops!(config, jaeger_agent, None; kusama_runtime, KusamaExecutorDispatch, Kusama)
-	}
-
 	#[cfg(feature = "infrablockspace-native")]
 	{
 		return chain_ops!(config, jaeger_agent, None; infrablockspace_runtime, InfrablockspaceExecutorDispatch, Infrablockspace)
@@ -1350,25 +1338,6 @@ pub fn build_full(
 			hwbench,
 		)
 		.map(|full| full.with_client(Client::Rococo))
-	}
-
-	#[cfg(feature = "kusama-native")]
-	if config.chain_spec.is_kusama() {
-		return new_full::<kusama_runtime::RuntimeApi, KusamaExecutorDispatch, _>(
-			config,
-			is_collator,
-			grandpa_pause,
-			enable_beefy,
-			jaeger_agent,
-			telemetry_worker_handle,
-			None,
-			overseer_enable_anyways,
-			overseer_gen,
-			overseer_message_channel_override,
-			malus_finality_delay,
-			hwbench,
-		)
-		.map(|full| full.with_client(Client::Kusama))
 	}
 
 	#[cfg(feature = "infrablockspace-native")]

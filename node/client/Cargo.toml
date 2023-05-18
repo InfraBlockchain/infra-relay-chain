@@ -40,7 +40,6 @@ sc-service = { git = "https://github.com/InfraBlockchain/infra-substrate", branc
 
 # Polkadot Runtimes
 infrablockspace-runtime = { path = "../../runtime/infrablockspace", optional = true }
-kusama-runtime = { path = "../../runtime/kusama", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
 infrablockspace-core-primitives = { path = "../../core-primitives" }
@@ -51,10 +50,8 @@ infrablockspace-runtime-common = { path = "../../runtime/common" }
 [features]
 default = ["infrablockspace"]
 infrablockspace = ["infrablockspace-runtime"]
-kusama = ["kusama-runtime"]
 rococo = ["rococo-runtime"]
 runtime-metrics = [
     "rococo-runtime/runtime-metrics",
-    "kusama-runtime/runtime-metrics",
     "infrablockspace-runtime/runtime-metrics",
 ]

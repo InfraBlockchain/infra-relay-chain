@@ -23,13 +23,11 @@
 use clap::{Parser, ValueEnum};
 use generate_bags::generate_thresholds;
 use infrablockspace_runtime::Runtime as InfrablockspaceRuntime;
-use kusama_runtime::Runtime as KusamaRuntime;
 use std::path::{Path, PathBuf};
 
 #[derive(Clone, Debug, ValueEnum)]
 #[value(rename_all = "PascalCase")]
 enum Runtime {
-	Kusama,
 	Infrablockspace,
 }
 
@@ -38,7 +36,6 @@ impl Runtime {
 		&self,
 	) -> Box<dyn FnOnce(usize, &Path, u128, u128) -> Result<(), std::io::Error>> {
 		match self {
-			Runtime::Kusama => Box::new(generate_thresholds::<KusamaRuntime>),
 			Runtime::Infrablockspace => Box::new(generate_thresholds::<InfrablockspaceRuntime>),
 		}
 	}

@@ -90,7 +90,7 @@
 //! # How versioned methods are used for `ParachainHost`
 //!
 //! Let's introduce two types of `ParachainHost` API implementation:
-//! * stable - used on stable production networks like Polkadot and Kusama. There is only one
+//! * stable - used on stable production networks like Polkadot. There is only one
 //!   stable API at a single point in time.
 //! * staging - used on test networks like Rococo. Depending on the development needs
 //!   there can be zero, one or multiple staging APIs.

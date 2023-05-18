@@ -179,7 +179,6 @@ impl Default for TestState {
 	fn default() -> TestState {
 		let p1 = Pair::from_string("//Polka", None).unwrap();
 		let p2 = Pair::from_string("//Dot", None).unwrap();
-		let p3 = Pair::from_string("//Kusama", None).unwrap();
 		let validators = vec![
 			(Sr25519Keyring::Alice.pair(), Sr25519Keyring::Alice.to_seed()),
 			(Sr25519Keyring::Bob.pair(), Sr25519Keyring::Bob.to_seed()),
@@ -191,7 +190,6 @@ impl Default for TestState {
 			// Two more keys needed so disputes are not confirmed already with only 3 statements.
 			(p1, "//Polka".into()),
 			(p2, "//Dot".into()),
-			(p3, "//Kusama".into()),
 		];
 
 		let validator_public = validators

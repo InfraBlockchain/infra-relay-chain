@@ -23,7 +23,6 @@ pyro = { package = "pyroscope", version = "0.3.1", optional = true }
 service = { package = "infrablockspace-service", path = "../node/service", default-features = false, optional = true }
 infrablockspace-client = { path = "../node/client", optional = true }
 infrablockspace-node-core-pvf = { path = "../node/core/pvf", optional = true }
-infrablockspace-performance-test = { path = "../node/test/performance-test", optional = true }
 
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
@@ -57,19 +56,16 @@ cli = [
 runtime-benchmarks = [
 	"service/runtime-benchmarks",
 	"infrablockspace-node-metrics/runtime-benchmarks",
-	"infrablockspace-performance-test?/runtime-benchmarks",
 ]
 full-node = ["service/full-node"]
 try-runtime = ["service/try-runtime", "try-runtime-cli/try-runtime"]
 fast-runtime = ["service/fast-runtime"]
 pyroscope = ["pyro"]
-hostperfcheck = ["infrablockspace-performance-test"]
 
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
 # Validators require the native runtime currently
 infrablockspace-native = ["service/infrablockspace-native"]
-kusama-native = ["service/kusama-native"]
 rococo-native = ["service/rococo-native"]
 
 malus = ["full-node", "service/malus"]

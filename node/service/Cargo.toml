@@ -97,12 +97,10 @@ infrablockspace-node-network-protocol = { path = "../network/protocol" }
 
 # Polkadot Runtime Constants
 infrablockspace-runtime-constants = { path = "../../runtime/infrablockspace/constants", optional = true }
-kusama-runtime-constants = { path = "../../runtime/kusama/constants", optional = true }
 rococo-runtime-constants = { path = "../../runtime/rococo/constants", optional = true }
 
 # Polkadot Runtimes
 infrablockspace-runtime = { path = "../../runtime/infrablockspace", optional = true }
-kusama-runtime = { path = "../../runtime/kusama", optional = true }
 rococo-runtime = { path = "../../runtime/rococo", optional = true }
 
 # Infrablockspace Subsystems
@@ -129,7 +127,6 @@ infrablockspace-node-core-runtime-api = { path = "../core/runtime-api", optional
 infrablockspace-statement-distribution = { path = "../network/statement-distribution", optional = true }
 
 [dev-dependencies]
-infrablockspace-test-client = { path = "../test/client" }
 infrablockspace-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }
 env_logger = "0.9.0"
 assert_matches = "1.5.0"
@@ -171,29 +168,24 @@ full-node = [
 #
 # Validators require the native runtime currently
 infrablockspace-native = ["infrablockspace-runtime", "infrablockspace-runtime-constants", "infrablockspace-client/infrablockspace"]
-kusama-native = ["kusama-runtime", "kusama-runtime-constants", "infrablockspace-client/kusama"]
 rococo-native = ["rococo-runtime", "rococo-runtime-constants", "infrablockspace-client/rococo"]
 
 runtime-benchmarks = [
 	"infrablockspace-runtime?/runtime-benchmarks",
-	"kusama-runtime?/runtime-benchmarks",
 	"rococo-runtime?/runtime-benchmarks",
 	"service/runtime-benchmarks",
 ]
 try-runtime = [
 	"infrablockspace-runtime?/try-runtime",
-	"kusama-runtime?/try-runtime",
 	"rococo-runtime?/try-runtime",
 ]
 fast-runtime = [
 	"infrablockspace-runtime?/fast-runtime",
-	"kusama-runtime?/fast-runtime",
 	"rococo-runtime?/fast-runtime",
 ]
 
 malus = ["full-node"]
 runtime-metrics = [
 	"rococo-runtime?/runtime-metrics",
-	"kusama-runtime?/runtime-metrics",
 	"infrablockspace-runtime?/runtime-metrics",
 ]

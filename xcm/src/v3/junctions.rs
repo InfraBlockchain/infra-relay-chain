@@ -635,17 +635,17 @@ mod tests {
 		use Junctions::*;
 		use NetworkId::*;
 		assert_eq!(
-			X1(Infrablockspace.into()).relative_to(&X1(Kusama.into())),
+			X1(Infrablockspace.into()).relative_to(&X1(Infrablockspace.into())),
 			(Parent, Infrablockspace).into()
 		);
-		let base = X3(Kusama.into(), Parachain(1), PalletInstance(1));
+		let base = X3(Infrablockspace.into(), Parachain(1), PalletInstance(1));
 
 		// Ancestors.
 		assert_eq!(Here.relative_to(&base), (Parent, Parent, Parent).into());
-		assert_eq!(X1(Kusama.into()).relative_to(&base), (Parent, Parent).into());
-		assert_eq!(X2(Kusama.into(), Parachain(1)).relative_to(&base), (Parent,).into());
+		assert_eq!(X1(Infrablockspace.into()).relative_to(&base), (Parent, Parent).into());
+		assert_eq!(X2(Infrablockspace.into(), Parachain(1)).relative_to(&base), (Parent,).into());
 		assert_eq!(
-			X3(Kusama.into(), Parachain(1), PalletInstance(1)).relative_to(&base),
+			X3(Infrablockspace.into(), Parachain(1), PalletInstance(1)).relative_to(&base),
 			Here.into()
 		);
 
@@ -655,15 +655,15 @@ mod tests {
 			(Parent, Parent, Parent, Infrablockspace).into()
 		);
 		assert_eq!(
-			X2(Kusama.into(), Parachain(2)).relative_to(&base),
+			X2(Infrablockspace.into(), Parachain(2)).relative_to(&base),
 			(Parent, Parent, Parachain(2)).into()
 		);
 		assert_eq!(
-			X3(Kusama.into(), Parachain(1), PalletInstance(2)).relative_to(&base),
+			X3(Infrablockspace.into(), Parachain(1), PalletInstance(2)).relative_to(&base),
 			(Parent, PalletInstance(2)).into()
 		);
 		assert_eq!(
-			X4(Kusama.into(), Parachain(1), PalletInstance(1), [1u8; 32].into()).relative_to(&base),
+			X4(Infrablockspace.into(), Parachain(1), PalletInstance(1), [1u8; 32].into()).relative_to(&base),
 			([1u8; 32],).into()
 		);
 
@@ -673,15 +673,15 @@ mod tests {
 			(Parent, Parent, Parent, Infrablockspace, Parachain(1)).into()
 		);
 		assert_eq!(
-			X3(Kusama.into(), Parachain(2), PalletInstance(1)).relative_to(&base),
+			X3(Infrablockspace.into(), Parachain(2), PalletInstance(1)).relative_to(&base),
 			(Parent, Parent, Parachain(2), PalletInstance(1)).into()
 		);
 		assert_eq!(
-			X4(Kusama.into(), Parachain(1), PalletInstance(2), [1u8; 32].into()).relative_to(&base),
+			X4(Infrablockspace.into(), Parachain(1), PalletInstance(2), [1u8; 32].into()).relative_to(&base),
 			(Parent, PalletInstance(2), [1u8; 32]).into()
 		);
 		assert_eq!(
-			X5(Kusama.into(), Parachain(1), PalletInstance(1), [1u8; 32].into(), 1u128.into())
+			X5(Infrablockspace.into(), Parachain(1), PalletInstance(1), [1u8; 32].into(), 1u128.into())
 				.relative_to(&base),
 			([1u8; 32], 1u128).into()
 		);
@@ -692,10 +692,10 @@ mod tests {
 		use Junctions::*;
 		use NetworkId::*;
 		assert_eq!(X1(Infrablockspace.into()).global_consensus(), Ok(Infrablockspace));
-		assert_eq!(X2(Kusama.into(), 1u64.into()).global_consensus(), Ok(Kusama));
+		assert_eq!(X2(Infrablockspace.into(), 1u64.into()).global_consensus(), Ok(Infrablockspace));
 		assert_eq!(Here.global_consensus(), Err(()));
 		assert_eq!(X1(1u64.into()).global_consensus(), Err(()));
-		assert_eq!(X2(1u64.into(), Kusama.into()).global_consensus(), Err(()));
+		assert_eq!(X2(1u64.into(), Infrablockspace.into()).global_consensus(), Err(()));
 	}
 
 	#[test]
@@ -705,7 +705,7 @@ mod tests {
 		assert_eq!(x, X1(GlobalConsensus(Infrablockspace)));
 		let x: Junctions = Infrablockspace.into();
 		assert_eq!(x, X1(GlobalConsensus(Infrablockspace)));
-		let x: Junctions = (Infrablockspace, Kusama).into();
-		assert_eq!(x, X2(GlobalConsensus(Infrablockspace), GlobalConsensus(Kusama)));
+		let x: Junctions = (Infrablockspace, Infrablockspace).into();
+		assert_eq!(x, X2(GlobalConsensus(Infrablockspace), GlobalConsensus(Infrablockspace)));
 	}
 }

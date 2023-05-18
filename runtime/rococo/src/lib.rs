@@ -46,7 +46,7 @@ use runtime_parachains::{
 		v2 as parachains_runtime_api_impl, vstaging as parachains_runtime_api_impl_staging,
 	},
 	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump, pot as parachains_pot,
+	shared as parachains_shared, ump as parachains_ump
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -77,6 +77,7 @@ use sp_runtime::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConstU32, ConvertInto,
 		Extrinsic as ExtrinsicT, Keccak256, OpaqueKeys, SaturatedConversion, Verify,
 	},
+	generic::{VoteAccountId, VoteWeight},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult, KeyTypeId, Perbill, Percent, Permill,
 };
@@ -1049,11 +1050,32 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
+	type VotingManager = InfraVoting;
+	type SystemTokenManager = ();
 }
 
-impl parachains_pot::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
+parameter_types! {
+	pub const MaxValidators: u32 = 3;
+	pub const MaxSeedTrustValidators: u32 = 3;
+	pub const MaxPotValidators: u32 = 0;
+	pub const Sessions: u32 = 1;
 }
+
+impl pallet_infra_voting::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type MaxValidators = MaxValidators;
+	type MaxSeedTrustValidators = MaxSeedTrustValidators;
+	type MaxPotValidators = MaxPotValidators;
+	type InfraVoteId = VoteAccountId;
+	type InfraVotePoints = VoteWeight;
+	type NextNewSession = ();
+	type SessionInterface = ();
+	type SessionsPerEra = Sessions; 
+}
+
+// impl pallet_infra_system_token_manager::Config for Runtime {
+// 	type RuntimeEvent = RuntimeEvent;
+// }
 
 parameter_types! {
 	pub const ParasUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
@@ -1461,8 +1483,9 @@ construct_runtime! {
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 
-		// Pot Related
-		Pot: parachains_pot::{Pallet, Storage, Event} = 80, 
+		// Infra Related
+		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>} = 80,
+		// InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Event<T>} = 81,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,

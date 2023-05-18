@@ -3,7 +3,7 @@
 
 ### Burn In
 
-Ensure that Parity DevOps has run the new release on Westend, Kusama, and
+Ensure that Parity DevOps has run the new release on Westend, and
 Polkadot validators for at least 12 hours prior to publishing the release.
 
 ### Build Artifacts

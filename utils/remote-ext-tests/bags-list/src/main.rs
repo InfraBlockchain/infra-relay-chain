@@ -30,14 +30,13 @@ enum Command {
 #[value(rename_all = "PascalCase")]
 enum Runtime {
 	Infrablockspace,
-	Kusama,
 }
 
 #[derive(Parser)]
 struct Cli {
-	#[arg(long, short, default_value = "wss://kusama-rpc.polkadot.io:443")]
+	#[arg(long, short, default_value = "wss://infrablockspace-rpc.polkadot.io:443")]
 	uri: String,
-	#[arg(long, short, ignore_case = true, value_enum, default_value_t = Runtime::Kusama)]
+	#[arg(long, short, ignore_case = true, value_enum, default_value_t = Runtime::Infrablockspace)]
 	runtime: Runtime,
 	#[arg(long, short, ignore_case = true, value_enum, default_value_t = Command::SanityCheck)]
 	command: Command,
@@ -63,34 +62,9 @@ async fn main() {
 			infrablockspace_runtime::Runtime as frame_system::Config >
 				::SS58Prefix::get().try_into().unwrap(),
 		),
-		Runtime::Kusama => sp_core::crypto::set_default_ss58_version(
-			<kusama_runtime::Runtime as frame_system::Config>::SS58Prefix::get()
-				.try_into()
-				.unwrap(),
-		),
 	};
 
 	match (options.runtime, options.command) {
-		(Runtime::Kusama, Command::CheckMigration) => {
-			use kusama_runtime::{Block, Runtime};
-			use kusama_runtime_constants::currency::UNITS;
-			migration::execute::<Runtime, Block>(UNITS as u64, "KSM", options.uri.clone()).await;
-		},
-		(Runtime::Kusama, Command::SanityCheck) => {
-			use kusama_runtime::{Block, Runtime};
-			use kusama_runtime_constants::currency::UNITS;
-			try_state::execute::<Runtime, Block>(UNITS as u64, "KSM", options.uri.clone()).await;
-		},
-		(Runtime::Kusama, Command::Snapshot) => {
-			use kusama_runtime::{Block, Runtime};
-			use kusama_runtime_constants::currency::UNITS;
-			snapshot::execute::<Runtime, Block>(
-				options.snapshot_limit,
-				UNITS.try_into().unwrap(),
-				options.uri.clone(),
-			)
-			.await;
-		},
 		(Runtime::Infrablockspace, Command::CheckMigration) => {
 			use infrablockspace_runtime::{Block, Runtime};
 			use infrablockspace_runtime_constants::currency::UNITS;

@@ -87,16 +87,6 @@ impl SubstrateCli for Cli {
 			id
 		};
 		Ok(match id {
-			"kusama" => Box::new(service::chain_spec::kusama_config()?),
-			#[cfg(feature = "kusama-native")]
-			"kusama-dev" => Box::new(service::chain_spec::kusama_development_config()?),
-			#[cfg(feature = "kusama-native")]
-			"kusama-local" => Box::new(service::chain_spec::kusama_local_testnet_config()?),
-			#[cfg(feature = "kusama-native")]
-			"kusama-staging" => Box::new(service::chain_spec::kusama_staging_testnet_config()?),
-			#[cfg(not(feature = "kusama-native"))]
-			name if name.starts_with("kusama-") && !name.ends_with(".json") =>
-				Err(format!("`{}` only supported with `kusama-native` feature enabled.", name))?,
 			"infrablockspace" => Box::new(service::chain_spec::infrablockspace_config()?),
 			#[cfg(feature = "infrablockspace-native")]
 			"infrablockspace-dev" | "dev" =>
@@ -128,8 +118,6 @@ impl SubstrateCli for Cli {
 				// we use the chain spec for the specific chain.
 				if self.run.force_rococo || chain_spec.is_rococo() {
 					Box::new(service::RococoChainSpec::from_json_file(path)?)
-				} else if self.run.force_kusama || chain_spec.is_kusama() {
-					Box::new(service::KusamaChainSpec::from_json_file(path)?)
 				} else {
 					chain_spec
 				}
@@ -138,17 +126,13 @@ impl SubstrateCli for Cli {
 	}
 
 	fn native_runtime_version(spec: &Box<dyn service::ChainSpec>) -> &'static RuntimeVersion {
-		#[cfg(feature = "kusama-native")]
-		if spec.is_kusama() {
-			return &service::kusama_runtime::VERSION
-		}
 
 		#[cfg(feature = "rococo-native")]
 		if spec.is_rococo() {
 			return &service::rococo_runtime::VERSION
 		}
 
-		#[cfg(not(all(feature = "rococo-native", feature = "kusama-native")))]
+		#[cfg(not(all(feature = "rococo-native")))]
 		let _ = spec;
 
 		#[cfg(feature = "infrablockspace-native")]
@@ -157,23 +141,19 @@ impl SubstrateCli for Cli {
 		}
 
 		#[cfg(not(feature = "infrablockspace-native"))]
-		panic!("No runtime feature (infrablockspace, kusama, rococo) is enabled")
+		panic!("No runtime feature (infrablockspace, rococo) is enabled")
 	}
 }
 
 fn set_default_ss58_version(spec: &Box<dyn service::ChainSpec>) {
-	let ss58_version = if spec.is_kusama() {
-		Ss58AddressFormatRegistry::KusamaAccount
-	} else {
-		Ss58AddressFormatRegistry::PolkadotAccount
-	}
+	let ss58_version = Ss58AddressFormatRegistry::PolkadotAccount
 	.into();
 
 	sp_core::crypto::set_default_ss58_version(ss58_version);
 }
 
 const DEV_ONLY_ERROR_PATTERN: &'static str =
-	"can only use subcommand with --chain [infrablockspace-dev, kusama-dev, rococo-dev], got ";
+	"can only use subcommand with --chain [infrablockspace-dev, rococo-dev], got ";
 
 fn ensure_dev(spec: &Box<dyn service::ChainSpec>) -> std::result::Result<(), String> {
 	if spec.is_dev() {
@@ -192,8 +172,6 @@ macro_rules! unwrap_client {
 		match $client.as_ref() {
 			#[cfg(feature = "infrablockspace-native")]
 			infrablockspace_client::Client::Infrablockspace($client) => $code,
-			#[cfg(feature = "kusama-native")]
-			infrablockspace_client::Client::Kusama($client) => $code,
 			#[cfg(feature = "rococo-native")]
 			infrablockspace_client::Client::Rococo($client) => $code,
 			#[allow(unreachable_patterns)]
@@ -255,7 +233,7 @@ where
 	let chain_spec = &runner.config().chain_spec;
 
 	// Disallow BEEFY on production networks.
-	if cli.run.beefy && (chain_spec.is_infrablockspace() || chain_spec.is_kusama()) {
+	if cli.run.beefy && (chain_spec.is_infrablockspace()) {
 		return Err(Error::Other("BEEFY disallowed on production networks".to_string()))
 	}
 
@@ -266,14 +244,6 @@ where
 	} else {
 		Some((cli.run.grandpa_pause[0], cli.run.grandpa_pause[1]))
 	};
-
-	if chain_spec.is_kusama() {
-		info!("----------------------------");
-		info!("This chain is not in any way");
-		info!("      endorsed by the       ");
-		info!("     KUSAMA FOUNDATION      ");
-		info!("----------------------------");
-	}
 
 	let jaeger_agent = if let Some(ref jaeger_agent) = cli.run.jaeger_agent {
 		Some(
@@ -555,14 +525,6 @@ pub fn run() -> Result<()> {
 					set_default_ss58_version(chain_spec);
 					ensure_dev(chain_spec).map_err(Error::Other)?;
 
-					#[cfg(feature = "kusama-native")]
-					if chain_spec.is_kusama() {
-						return runner.sync_run(|config| {
-							cmd.run::<service::kusama_runtime::Block, service::KusamaExecutorDispatch>(config)
-								.map_err(|e| Error::SubstrateCli(e))
-						})
-					}
-
 					// else we assume it is infrablockspace.
 					#[cfg(feature = "infrablockspace-native")]
 					{
@@ -614,19 +576,6 @@ pub fn run() -> Result<()> {
 
 			ensure_dev(chain_spec).map_err(Error::Other)?;
 
-			#[cfg(feature = "kusama-native")]
-			if chain_spec.is_kusama() {
-				return runner.async_run(|_| {
-					Ok((
-						cmd.run::<service::kusama_runtime::Block, HostFunctionsOf<service::KusamaExecutorDispatch>, _>(
-							Some(timestamp_with_babe_info(service::kusama_runtime_constants::time::MILLISECS_PER_BLOCK))
-						)
-						.map_err(Error::SubstrateCli),
-						task_manager,
-					))
-				})
-			}
-
 			// else we assume it is infrablockspace.
 			#[cfg(feature = "infrablockspace-native")]
 			{
@@ -641,7 +590,7 @@ pub fn run() -> Result<()> {
 				})
 			}
 			#[cfg(not(feature = "infrablockspace-native"))]
-			panic!("No runtime feature (infrablockspace, kusama, rococo) is enabled")
+			panic!("No runtime feature (infrablockspace, rococo) is enabled")
 		},
 		#[cfg(not(feature = "try-runtime"))]
 		Some(Subcommand::TryRuntime) => Err(Error::Other(
