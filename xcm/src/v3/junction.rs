@@ -44,8 +44,6 @@ pub enum NetworkId {
 	ByFork { block_number: u64, block_hash: [u8; 32] },
 	/// The Polkadot mainnet Relay-chain.
 	Infrablockspace,
-	/// The Kusama canary-net Relay-chain.
-	Kusama,
 	/// The Rococo testnet Relay-chain.
 	Rococo,
 	/// An Ethereum network specified by its chain ID.
@@ -67,7 +65,6 @@ impl From<OldNetworkId> for Option<NetworkId> {
 			Any => None,
 			Named(_) => None,
 			Infrablockspace => Some(NetworkId::Infrablockspace),
-			Kusama => Some(NetworkId::Kusama),
 		}
 	}
 }

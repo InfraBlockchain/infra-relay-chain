@@ -113,8 +113,6 @@ pub enum NetworkId {
 	Named(WeakBoundedVec<u8, ConstU32<32>>),
 	/// The Polkadot Relay chain
 	Infrablockspace,
-	/// Kusama.
-	Kusama,
 }
 
 impl TryInto<NetworkId> for Option<NewNetworkId> {
@@ -124,7 +122,6 @@ impl TryInto<NetworkId> for Option<NewNetworkId> {
 		Ok(match self {
 			None => NetworkId::Any,
 			Some(Infrablockspace) => NetworkId::Infrablockspace,
-			Some(Kusama) => NetworkId::Kusama,
 			_ => return Err(()),
 		})
 	}

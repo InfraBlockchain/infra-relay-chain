@@ -46,9 +46,7 @@ pub type FullClient<RuntimeApi, ExecutorDispatch> =
 
 #[cfg(not(any(
 	feature = "rococo",
-	feature = "kusama",
 	feature = "infrablockspace",
-	feauture = "infrablockspace",
 )))]
 compile_error!("at least one runtime feature must be enabled");
 
@@ -66,23 +64,6 @@ impl sc_executor::NativeExecutionDispatch for InfrablockspaceExecutorDispatch {
 
 	fn native_version() -> sc_executor::NativeVersion {
 		infrablockspace_runtime::native_version()
-	}
-}
-
-#[cfg(feature = "kusama")]
-/// The native executor instance for Kusama.
-pub struct KusamaExecutorDispatch;
-
-#[cfg(feature = "kusama")]
-impl sc_executor::NativeExecutionDispatch for KusamaExecutorDispatch {
-	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
-
-	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		kusama_runtime::api::dispatch(method, data)
-	}
-
-	fn native_version() -> sc_executor::NativeVersion {
-		kusama_runtime::native_version()
 	}
 }
 
@@ -187,7 +168,7 @@ where
 
 /// Execute something with the client instance.
 ///
-/// As there exist multiple chains inside Infrablockspace, like Infrablockspace itself, Kusama etc,
+/// As there exist multiple chains inside Infrablockspace, like Infrablockspace itself etc,
 /// there can exist different kinds of client types. As these client types differ in the generics
 /// that are being used, we can not easily return them from a function. For returning them from a
 /// function there exists [`Client`]. However, the problem on how to use this client instance still
@@ -242,13 +223,6 @@ macro_rules! with_client {
 
 				$code
 			},
-			#[cfg(feature = "kusama")]
-			Client::Kusama($client) => {
-				#[allow(unused_imports)]
-				use kusama_runtime as runtime;
-
-				$code
-			},
 			#[cfg(feature = "rococo")]
 			Client::Rococo($client) => {
 				#[allow(unused_imports)]
@@ -271,8 +245,6 @@ pub enum Client {
 	Infrablockspace(
 		Arc<FullClient<infrablockspace_runtime::RuntimeApi, InfrablockspaceExecutorDispatch>>,
 	),
-	#[cfg(feature = "kusama")]
-	Kusama(Arc<FullClient<kusama_runtime::RuntimeApi, KusamaExecutorDispatch>>),
 	#[cfg(feature = "rococo")]
 	Rococo(Arc<FullClient<rococo_runtime::RuntimeApi, RococoExecutorDispatch>>),
 }

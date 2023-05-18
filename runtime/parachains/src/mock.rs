@@ -17,7 +17,7 @@
 //! Mocks for all the traits.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, pot, inclusion, initializer, origin, paras, paras_inherent,
+	configuration, disputes, dmp, hrmp, inclusion, initializer, origin, paras, paras_inherent,
 	scheduler, session_info, shared,
 	ump::{self, MessageId, UmpSink},
 	ParaId,
@@ -38,6 +38,7 @@ use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup},
+	generic::{VoteAssetId, VoteWeight, VoteAccountId},
 	transaction_validity::TransactionPriority,
 	KeyTypeId, Permill,
 };
@@ -68,7 +69,8 @@ frame_support::construct_runtime!(
 		SessionInfo: session_info,
 		Disputes: disputes,
 		Babe: pallet_babe,
-		Pot: pot,
+		InfraVoting: pallet_infra_voting,
+		InfraSystemTokenManager: pallet_infra_system_token_manager,
 	}
 );
 
@@ -222,10 +224,6 @@ impl crate::paras::Config for Test {
 	type NextSessionRotation = TestNextSessionRotation;
 }
 
-impl crate::pot::Config for Test {
-	type RuntimeEvent = RuntimeEvent;
-}
-
 impl crate::dmp::Config for Test {}
 
 parameter_types! {
@@ -307,6 +305,31 @@ impl crate::inclusion::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = Disputes;
 	type RewardValidators = TestRewardValidators;
+	type VotingManager = InfraVoting;
+	type SystemTokenManager = InfraSystemTokenManager;
+}
+
+parameter_types! {
+	pub const MaxValidators: u32 = 3;
+	pub const MaxSeedTrustValidators: u32 = 3;
+	pub const MaxPotValidators: u32 = 0;
+	pub const SessionsPerEra: u32 = 1;
+}
+
+impl pallet_infra_voting::Config for Test {
+	type RuntimeEvent = RuntimeEvent;
+	type MaxValidators = MaxValidators;
+	type MaxSeedTrustValidators = MaxSeedTrustValidators;
+	type MaxPotValidators = MaxPotValidators;
+	type InfraVoteId = VoteAccountId;
+	type InfraVotePoints = VoteWeight;
+	type NextNewSession = ();
+	type SessionInterface = ();
+	type SessionsPerEra = SessionsPerEra; 
+}
+
+impl pallet_infra_system_token_manager::Config for Test {
+	type RuntimeEvent = RuntimeEvent;
 }
 
 impl crate::paras_inherent::Config for Test {

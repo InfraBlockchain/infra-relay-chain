@@ -16,7 +16,6 @@ path = "src/malus.rs"
 infrablockspace-cli = { path = "../../cli", features = [
     "malus",
     "rococo-native",
-    "kusama-native",
     "infrablockspace-native",
 ] }
 infrablockspace-node-subsystem = { path = "../subsystem" }

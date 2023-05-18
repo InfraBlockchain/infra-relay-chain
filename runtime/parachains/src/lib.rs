@@ -38,7 +38,6 @@ pub mod scheduler;
 pub mod session_info;
 pub mod shared;
 pub mod ump;
-pub mod pot;
 
 pub mod runtime_api_impl;
 

@@ -10,5 +10,4 @@ clap = { version = "4.0.9", features = ["derive"] }
 generate-bags = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 
-kusama-runtime = { path = "../../runtime/kusama" }
 infrablockspace-runtime = { path = "../../runtime/infrablockspace" }

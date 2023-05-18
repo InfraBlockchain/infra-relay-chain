@@ -22,10 +22,12 @@
 
 use crate::{
 	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield,
-	scheduler::CoreAssignment, shared, ump, pot
+	scheduler::CoreAssignment, shared, ump
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
+use pallet_infra_voting::VotingHandler;
+use pallet_infra_system_token_manager::SystemTokenInterface;
 use parity_scale_codec::{Decode, Encode};
 use primitives::{
 	AvailabilityBitfield, BackedCandidate, CandidateCommitments, CandidateDescriptor,
@@ -181,7 +183,9 @@ pub fn minimum_backing_votes(n_validators: usize) -> usize {
 
 #[frame_support::pallet]
 pub mod pallet {
-	use super::*;
+	use pallet_infra_voting::VotingHandler;
+
+use super::*;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
@@ -196,12 +200,13 @@ pub mod pallet {
 		+ dmp::Config
 		+ ump::Config
 		+ hrmp::Config
-		+ pot::Config
 		+ configuration::Config
 	{
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		type DisputesHandler: disputes::DisputesHandler<Self::BlockNumber>;
 		type RewardValidators: RewardValidators;
+		type VotingManager: VotingHandler<Self>;
+		type SystemTokenManager: SystemTokenInterface;
 	}
 
 	#[pallet::event]
@@ -779,10 +784,16 @@ impl<T: Config> Pallet<T> {
 		);
 
 		if let Some(vote_result) = commitments.vote_result {
-			<pot::Pallet<T>>::aggregate_vote_result(
-				receipt.descriptor.para_id,
-				vote_result
-			)
+			let session_index = shared::Pallet::<T>::session_index();
+			let para_id = receipt.descriptor.para_id;
+			for vote in vote_result.clone().into_iter() {
+				if let Some(asset_id) = T::SystemTokenManager::convert_to_relay_system_token(para_id.into(), vote.asset_id) {
+					let who = vote.account_id;
+					let weight = vote.vote_weight;
+					let adjusted_weight = T::SystemTokenManager::adjusted_weight(asset_id, weight);
+					T::VotingManager::update_vote_weight(session_index, who, adjusted_weight);
+				};
+			}
 		};
 
 		Self::deposit_event(Event::<T>::CandidateIncluded(
