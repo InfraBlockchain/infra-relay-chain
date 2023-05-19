@@ -60,7 +60,7 @@ use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str,
 	curve::PiecewiseLinear,
-	generic, impl_opaque_keys,
+	generic, generic::{VoteAccountId, VoteWeight}, impl_opaque_keys,
 	traits::{
 		BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT, OpaqueKeys,
 		SaturatedConversion, StaticLookup, Verify,
@@ -713,6 +713,10 @@ construct_runtime! {
 		Dmp: parachains_dmp::{Pallet, Call, Storage},
 		Xcm: pallet_xcm::{Pallet, Call, Event<T>, Origin},
 		ParasDisputes: parachains_disputes::{Pallet, Storage, Event<T>},
+
+		// Infra Related
+		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>},
+		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>},
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>},
 
