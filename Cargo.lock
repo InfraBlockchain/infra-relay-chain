@@ -4316,6 +4316,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "infrablockspace-performance-test"
+version = "0.9.37"
+dependencies = [
+ "env_logger 0.9.3",
+ "erasure-coding",
+ "infrablockspace-node-core-pvf",
+ "infrablockspace-node-primitives",
+ "infrablockspace-primitives",
+ "infrablockspace-runtime",
+ "log",
+ "quote",
+ "thiserror",
+]
+
+[[package]]
 name = "infrablockspace-primitives"
 version = "0.9.37"
 dependencies = [
@@ -4764,6 +4779,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "infrablockspace-test-client"
+version = "0.9.37"
+dependencies = [
+ "futures",
+ "infrablockspace-node-subsystem",
+ "infrablockspace-primitives",
+ "infrablockspace-test-runtime",
+ "infrablockspace-test-service",
+ "parity-scale-codec",
+ "sc-block-builder",
+ "sc-consensus",
+ "sc-service",
+ "sp-api",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-consensus-babe",
+ "sp-core",
+ "sp-inherents",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-state-machine",
+ "sp-timestamp",
+ "substrate-test-client",
+]
+
+[[package]]
 name = "infrablockspace-test-malus"
 version = "0.9.37"
 dependencies = [
@@ -4854,6 +4895,60 @@ dependencies = [
  "xcm",
  "xcm-builder",
  "xcm-executor",
+]
+
+[[package]]
+name = "infrablockspace-test-service"
+version = "0.9.37"
+dependencies = [
+ "frame-benchmarking",
+ "frame-system",
+ "futures",
+ "hex",
+ "infrablockspace-node-primitives",
+ "infrablockspace-node-subsystem",
+ "infrablockspace-overseer",
+ "infrablockspace-parachain",
+ "infrablockspace-primitives",
+ "infrablockspace-rpc",
+ "infrablockspace-runtime-common",
+ "infrablockspace-runtime-parachains",
+ "infrablockspace-service",
+ "infrablockspace-test-runtime",
+ "pallet-balances",
+ "pallet-staking",
+ "pallet-transaction-payment",
+ "rand 0.8.5",
+ "sc-authority-discovery",
+ "sc-chain-spec",
+ "sc-cli",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-consensus-babe",
+ "sc-consensus-grandpa",
+ "sc-executor",
+ "sc-network",
+ "sc-service",
+ "sc-tracing",
+ "sc-transaction-pool",
+ "serde_json",
+ "sp-arithmetic",
+ "sp-authority-discovery",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-consensus-babe",
+ "sp-consensus-grandpa",
+ "sp-core",
+ "sp-inherents",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-state-machine",
+ "substrate-test-client",
+ "substrate-test-utils",
+ "tempfile",
+ "test-runtime-constants",
+ "tokio",
+ "tracing-gum",
 ]
 
 [[package]]
@@ -11540,6 +11635,32 @@ dependencies = [
  "sp-state-machine",
  "sp-trie",
  "trie-db",
+]
+
+[[package]]
+name = "substrate-test-client"
+version = "2.0.1"
+source = "git+https://github.com/InfraBlockchain/infra-substrate?branch=master#de1a7eec7c0705fd684e722f54c2be6f5c5a8d5b"
+dependencies = [
+ "array-bytes",
+ "async-trait",
+ "futures",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sc-client-db",
+ "sc-consensus",
+ "sc-executor",
+ "sc-offchain",
+ "sc-service",
+ "serde",
+ "serde_json",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-keyring",
+ "sp-keystore",
+ "sp-runtime",
+ "sp-state-machine",
 ]
 
 [[package]]
