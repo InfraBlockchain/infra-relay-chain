@@ -1073,9 +1073,9 @@ impl pallet_infra_voting::Config for Runtime {
 	type SessionsPerEra = Sessions; 
 }
 
-// impl pallet_infra_system_token_manager::Config for Runtime {
-// 	type RuntimeEvent = RuntimeEvent;
-// }
+impl pallet_infra_system_token_manager::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
 
 parameter_types! {
 	pub const ParasUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
@@ -1483,12 +1483,12 @@ construct_runtime! {
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 
-		// Infra Related
-		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>} = 80,
-		// InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Event<T>} = 81,
-
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
+
+		// Infra Related
+		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>} = 100,
+		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 101,
 
 		// Rococo specific pallets (not included in Kusama). Start indices at 240
 		//

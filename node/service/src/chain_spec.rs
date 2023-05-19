@@ -22,7 +22,7 @@ use grandpa::AuthorityId as GrandpaId;
 #[cfg(feature = "infrablockspace-native")]
 use infrablockspace_runtime as infrablockspace;
 #[cfg(feature = "infrablockspace-native")]
-use infrablockspace_runtime_constants::currency::UNITS as DOT;
+use infrablockspace_runtime_constants::currency::UNITS;
 #[cfg(feature = "rococo-native")]
 use rococo_runtime as rococo;
 #[cfg(feature = "rococo-native")]
@@ -232,8 +232,8 @@ fn infrablockspace_staging_testnet_config_genesis(
 		AuthorityDiscoveryId,
 	)> = vec![];
 
-	const ENDOWMENT: u128 = 1_000_000 * DOT;
-	const STASH: u128 = 100 * DOT;
+	const ENDOWMENT: u128 = 1_000_000 * UNITS;
+	const STASH: u128 = 100 * UNITS;
 
 	let root_key = get_account_id_from_seed::<sr25519::Public>("Alice");
 
@@ -306,6 +306,7 @@ fn infrablockspace_staging_testnet_config_genesis(
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
 		nomination_pools: Default::default(),
+		infra_system_token_manager: Default::default(),
 	}
 }
 
@@ -613,6 +614,7 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 		},
 		xcm_pallet: Default::default(),
 		nis_counterpart_balances: Default::default(),
+		infra_system_token_manager: Default::default(),
 	}
 }
 
@@ -770,8 +772,8 @@ pub fn infrablockspace_testnet_genesis(
 ) -> infrablockspace::GenesisConfig {
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 
-	const ENDOWMENT: u128 = 1_000_000 * DOT;
-	const STASH: u128 = 100 * DOT;
+	const ENDOWMENT: u128 = 1_000_000 * UNITS;
+	const STASH: u128 = 100 * UNITS;
 
 	infrablockspace::GenesisConfig {
 		system: infrablockspace::SystemConfig { code: wasm_binary.to_vec() },
@@ -838,6 +840,7 @@ pub fn infrablockspace_testnet_genesis(
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
 		nomination_pools: Default::default(),
+		infra_system_token_manager: Default::default(),
 	}
 }
 
@@ -922,6 +925,7 @@ pub fn rococo_testnet_genesis(
 		},
 		xcm_pallet: Default::default(),
 		nis_counterpart_balances: Default::default(),
+		infra_system_token_manager: Default::default(),
 	}
 }
 
