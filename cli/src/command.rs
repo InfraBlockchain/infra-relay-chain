@@ -20,7 +20,7 @@ use futures::future::TryFutureExt;
 use infrablockspace_client::benchmarking::{
 	benchmark_inherent_data, ExistentialDepositProvider, RemarkBuilder, TransferKeepAliveBuilder,
 };
-use log::info;
+// use log::info;
 use sc_cli::{RuntimeVersion, SubstrateCli};
 use service::{self, HeaderBackend, IdentifyVariant};
 use sp_core::crypto::Ss58AddressFormatRegistry;
@@ -145,7 +145,7 @@ impl SubstrateCli for Cli {
 	}
 }
 
-fn set_default_ss58_version(spec: &Box<dyn service::ChainSpec>) {
+fn set_default_ss58_version(_spec: &Box<dyn service::ChainSpec>) {
 	let ss58_version = Ss58AddressFormatRegistry::PolkadotAccount
 	.into();
 

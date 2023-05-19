@@ -1296,7 +1296,7 @@ impl parachains_inclusion::Config for Runtime {
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = parachains_reward_points::RewardValidatorsWithEraPoints<Runtime>;
 	type VotingManager = InfraVoting;
-	type SystemTokenManager = ();
+	type SystemTokenManager = InfraSystemTokenManager;
 }
 
 parameter_types! {
@@ -1318,9 +1318,9 @@ impl pallet_infra_voting::Config for Runtime {
 	type SessionsPerEra = Sessions; 
 }
 
-// impl pallet_infra_system_token_manager::Config for Runtime {
-// 	type RuntimeEvent = RuntimeEvent;
-// }
+impl pallet_infra_system_token_manager::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
 
 parameter_types! {
 	pub const ParasUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
@@ -1596,10 +1596,6 @@ construct_runtime! {
 		ParaSessionInfo: parachains_session_info::{Pallet, Storage} = 61,
 		ParasDisputes: parachains_disputes::{Pallet, Call, Storage, Event<T>} = 62,
 
-		// Infra Related
-		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>} = 63,
-		// InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 64,
-
 		// Parachain Onboarding Pallets. Start indices at 70 to leave room.
 		Registrar: paras_registrar::{Pallet, Call, Storage, Event<T>} = 70,
 		Slots: slots::{Pallet, Call, Storage, Event<T>} = 71,
@@ -1611,6 +1607,10 @@ construct_runtime! {
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
+
+		// Infra Related
+		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>} = 100,
+		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 101,
 	}
 }
 
