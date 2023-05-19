@@ -1051,7 +1051,7 @@ impl parachains_inclusion::Config for Runtime {
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
 	type VotingManager = InfraVoting;
-	type SystemTokenManager = ();
+	type SystemTokenManager = InfraSystemTokenManager;
 }
 
 parameter_types! {

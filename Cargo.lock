@@ -4854,6 +4854,8 @@ dependencies = [
  "pallet-balances",
  "pallet-grandpa",
  "pallet-indices",
+ "pallet-infra-system-token-manager",
+ "pallet-infra-voting",
  "pallet-offences",
  "pallet-session",
  "pallet-staking",

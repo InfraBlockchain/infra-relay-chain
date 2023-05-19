@@ -488,6 +488,31 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidatorsWithEraPoints<Runtime>;
+	type VotingManager = InfraVoting;
+	type SystemTokenManager = InfraSystemTokenManager;
+}
+
+parameter_types! {
+	pub const MaxValidators: u32 = 3;
+	pub const MaxSeedTrustValidators: u32 = 3;
+	pub const MaxPotValidators: u32 = 0;
+	pub const Sessions: u32 = 1;
+}
+
+impl pallet_infra_voting::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type MaxValidators = MaxValidators;
+	type MaxSeedTrustValidators = MaxSeedTrustValidators;
+	type MaxPotValidators = MaxPotValidators;
+	type InfraVoteId = VoteAccountId;
+	type InfraVotePoints = VoteWeight;
+	type NextNewSession = ();
+	type SessionInterface = ();
+	type SessionsPerEra = Sessions; 
+}
+
+impl pallet_infra_system_token_manager::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
 }
 
 impl parachains_disputes::Config for Runtime {
