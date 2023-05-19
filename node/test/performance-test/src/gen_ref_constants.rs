@@ -16,7 +16,7 @@
 
 //! Generate reference performance check results.
 
-use polkadot_performance_test::PerfCheckError;
+use infrablockspace_performance_test::PerfCheckError;
 
 fn main() -> Result<(), PerfCheckError> {
 	#[cfg(build_type = "release")]
@@ -31,9 +31,9 @@ fn main() -> Result<(), PerfCheckError> {
 
 #[cfg(build_type = "release")]
 mod run {
-	use polkadot_node_core_pvf::sp_maybe_compressed_blob;
-	use polkadot_node_primitives::VALIDATION_CODE_BOMB_LIMIT;
-	use polkadot_performance_test::{
+	use infrablockspace_node_core_pvf::sp_maybe_compressed_blob;
+	use infrablockspace_node_primitives::VALIDATION_CODE_BOMB_LIMIT;
+	use infrablockspace_performance_test::{
 		measure_erasure_coding, measure_pvf_prepare, PerfCheckError, ERASURE_CODING_N_VALIDATORS,
 	};
 	use std::{
@@ -71,7 +71,7 @@ mod run {
 		let _ = env_logger::builder().filter(None, log::LevelFilter::Info).try_init();
 
 		let wasm_code =
-			polkadot_performance_test::WASM_BINARY.ok_or(PerfCheckError::WasmBinaryMissing)?;
+			infrablockspace_performance_test::WASM_BINARY.ok_or(PerfCheckError::WasmBinaryMissing)?;
 
 		log::info!("Running the benchmark, number of iterations: {}", WARM_UP_RUNS);
 

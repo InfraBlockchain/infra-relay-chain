@@ -59,7 +59,7 @@ async fn main() {
 	use pallet_bags_list_remote_tests::*;
 	match options.runtime {
 		Runtime::Infrablockspace => sp_core::crypto::set_default_ss58_version(
-			infrablockspace_runtime::Runtime as frame_system::Config >
+			<infrablockspace_runtime::Runtime as frame_system::Config>
 				::SS58Prefix::get().try_into().unwrap(),
 		),
 	};

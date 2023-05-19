@@ -19,11 +19,11 @@
 use babe_primitives::AuthorityId as BabeId;
 use grandpa::AuthorityId as GrandpaId;
 use pallet_staking::Forcing;
-use polkadot_primitives::{AccountId, AssignmentId, ValidatorId, MAX_CODE_SIZE, MAX_POV_SIZE};
-use polkadot_service::chain_spec::{
-	get_account_id_from_seed, get_from_seed, polkadot_chain_spec_properties, Extensions,
+use infrablockspace_primitives::{AccountId, AssignmentId, ValidatorId, MAX_CODE_SIZE, MAX_POV_SIZE};
+use infrablockspace_service::chain_spec::{
+	get_account_id_from_seed, get_from_seed, infrablockspace_chain_spec_properties, Extensions,
 };
-use polkadot_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
+use infrablockspace_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
 use sc_chain_spec::{ChainSpec, ChainType};
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::sr25519;
@@ -33,28 +33,28 @@ use test_runtime_constants::currency::DOTS;
 const DEFAULT_PROTOCOL_ID: &str = "dot";
 
 /// The `ChainSpec` parameterized for polkadot test runtime.
-pub type PolkadotChainSpec =
-	sc_service::GenericChainSpec<polkadot_test_runtime::GenesisConfig, Extensions>;
+pub type InfraBlockspaceChainSpec =
+	sc_service::GenericChainSpec<infrablockspace_test_runtime::GenesisConfig, Extensions>;
 
 /// Local testnet config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_config() -> PolkadotChainSpec {
-	PolkadotChainSpec::from_genesis(
+pub fn infrablockspace_local_testnet_config() -> InfraBlockspaceChainSpec {
+	InfraBlockspaceChainSpec::from_genesis(
 		"Local Testnet",
 		"local_testnet",
 		ChainType::Local,
-		|| polkadot_local_testnet_genesis(),
+		|| infrablockspace_local_testnet_genesis(),
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),
 		None,
-		Some(polkadot_chain_spec_properties()),
+		Some(infrablockspace_chain_spec_properties()),
 		Default::default(),
 	)
 }
 
 /// Local testnet genesis config (multivalidator Alice + Bob)
-pub fn polkadot_local_testnet_genesis() -> polkadot_test_runtime::GenesisConfig {
-	polkadot_testnet_genesis(
+pub fn infrablockspace_local_testnet_genesis() -> infrablockspace_test_runtime::GenesisConfig {
+	infrablockspace_testnet_genesis(
 		vec![get_authority_keys_from_seed("Alice"), get_authority_keys_from_seed("Bob")],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
 		None,
@@ -94,7 +94,7 @@ fn testnet_accounts() -> Vec<AccountId> {
 }
 
 /// Helper function to create polkadot `GenesisConfig` for testing
-fn polkadot_testnet_genesis(
+fn infrablockspace_testnet_genesis(
 	initial_authorities: Vec<(
 		AccountId,
 		AccountId,
@@ -106,8 +106,8 @@ fn polkadot_testnet_genesis(
 	)>,
 	root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
-) -> polkadot_test_runtime::GenesisConfig {
-	use polkadot_test_runtime as runtime;
+) -> infrablockspace_test_runtime::GenesisConfig {
+	use infrablockspace_test_runtime as runtime;
 
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 
@@ -163,7 +163,7 @@ fn polkadot_testnet_genesis(
 		vesting: runtime::VestingConfig { vesting: vec![] },
 		sudo: runtime::SudoConfig { key: Some(root_key) },
 		configuration: runtime::ConfigurationConfig {
-			config: polkadot_runtime_parachains::configuration::HostConfiguration {
+			config: infrablockspace_runtime_parachains::configuration::HostConfiguration {
 				validation_upgrade_cooldown: 10u32,
 				validation_upgrade_delay: 5,
 				code_retention_period: 1200,
@@ -178,6 +178,7 @@ fn polkadot_testnet_genesis(
 				..Default::default()
 			},
 		},
+		infra_system_token_manager: Default::default(),
 	}
 }
 

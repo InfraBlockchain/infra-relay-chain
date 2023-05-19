@@ -22,29 +22,29 @@ pub mod chain_spec;
 
 pub use chain_spec::*;
 use futures::future::Future;
-use polkadot_node_primitives::{CollationGenerationConfig, CollatorFn};
-use polkadot_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
-use polkadot_overseer::Handle;
-use polkadot_primitives::{Balance, CollatorPair, HeadData, Id as ParaId, ValidationCode};
-use polkadot_runtime_common::BlockHashCount;
-use polkadot_runtime_parachains::paras::{ParaGenesisArgs, ParaKind};
-use polkadot_service::{
+use infrablockspace_node_primitives::{CollationGenerationConfig, CollatorFn};
+use infrablockspace_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
+use infrablockspace_overseer::Handle;
+use infrablockspace_primitives::{Balance, CollatorPair, HeadData, Id as ParaId, ValidationCode};
+use infrablockspace_runtime_common::BlockHashCount;
+use infrablockspace_runtime_parachains::paras::{ParaGenesisArgs, ParaKind};
+use infrablockspace_service::{
 	ClientHandle, Error, ExecuteWithClient, FullClient, IsCollator, NewFull, PrometheusConfig,
 };
-use polkadot_test_runtime::{
+use infrablockspace_test_runtime::{
 	ParasSudoWrapperCall, Runtime, SignedExtra, SignedPayload, SudoCall, UncheckedExtrinsic,
 	VERSION,
 };
 use sc_chain_spec::ChainSpec;
 use sc_client_api::execution_extensions::ExecutionStrategies;
 use sc_network::{
-	config::{NetworkConfiguration, TransportConfig},
+	config::NetworkConfiguration,
 	multiaddr, NetworkStateInfo,
 };
 use sc_service::{
 	config::{
 		DatabaseSource, KeystoreConfig, MultiaddrWithPeerId, WasmExecutionMethod,
-		WasmtimeInstantiationStrategy,
+		WasmtimeInstantiationStrategy, TransportConfig
 	},
 	BasePath, BlocksPruning, Configuration, Role, RpcHandlers, TaskManager,
 };
@@ -64,24 +64,24 @@ use substrate_test_client::{
 
 /// Declare an instance of the native executor named `PolkadotTestExecutorDispatch`. Include the wasm binary as the
 /// equivalent wasm code.
-pub struct PolkadotTestExecutorDispatch;
+pub struct InfraBlockspaceTestExecutorDispatch;
 
-impl sc_executor::NativeExecutionDispatch for PolkadotTestExecutorDispatch {
+impl sc_executor::NativeExecutionDispatch for InfraBlockspaceTestExecutorDispatch {
 	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		polkadot_test_runtime::api::dispatch(method, data)
+		infrablockspace_test_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		polkadot_test_runtime::native_version()
+		infrablockspace_test_runtime::native_version()
 	}
 }
 
 /// The client type being used by the test service.
-pub type Client = FullClient<polkadot_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch>;
+pub type Client = FullClient<infrablockspace_test_runtime::RuntimeApi, InfraBlockspaceTestExecutorDispatch>;
 
-pub use polkadot_service::FullBackend;
+pub use infrablockspace_service::FullBackend;
 
 /// Create a new full node.
 #[sc_tracing::logging::prefix_logs_with(config.network.node_name.as_str())]
@@ -90,7 +90,7 @@ pub fn new_full(
 	is_collator: IsCollator,
 	worker_program_path: Option<PathBuf>,
 ) -> Result<NewFull<Arc<Client>>, Error> {
-	polkadot_service::new_full::<polkadot_test_runtime::RuntimeApi, PolkadotTestExecutorDispatch, _>(
+	infrablockspace_service::new_full::<infrablockspace_test_runtime::RuntimeApi, InfraBlockspaceTestExecutorDispatch, _>(
 		config,
 		is_collator,
 		None,
@@ -99,7 +99,7 @@ pub fn new_full(
 		None,
 		worker_program_path,
 		false,
-		polkadot_service::RealOverseerGen,
+		infrablockspace_service::RealOverseerGen,
 		None,
 		None,
 		None,
@@ -111,7 +111,7 @@ pub struct TestClient(pub Arc<Client>);
 
 impl ClientHandle for TestClient {
 	fn execute_with<T: ExecuteWithClient>(&self, t: T) -> T::Output {
-		T::execute_with_client::<_, _, polkadot_service::FullBackend>(t, self.0.clone())
+		T::execute_with_client::<_, _, infrablockspace_service::FullBackend>(t, self.0.clone())
 	}
 }
 
@@ -141,7 +141,7 @@ pub fn node_config(
 	let root = base_path.path().join(key.to_string());
 	let role = if is_validator { Role::Authority } else { Role::Full };
 	let key_seed = key.to_seed();
-	let mut spec = polkadot_local_testnet_config();
+	let mut spec = infrablockspace_local_testnet_config();
 	let mut storage = spec.as_storage_builder().build_storage().expect("could not build storage");
 
 	BasicExternalities::execute_with_storage(&mut storage, storage_update_func);
@@ -166,13 +166,14 @@ pub fn node_config(
 	network_config.transport = TransportConfig::MemoryOnly;
 
 	Configuration {
-		impl_name: "polkadot-test-node".to_string(),
+		impl_name: "infrablockspace-test-node".to_string(),
 		impl_version: "0.1".to_string(),
 		role,
 		tokio_handle,
 		transaction_pool: Default::default(),
 		network: network_config,
 		keystore: KeystoreConfig::InMemory,
+		keystore_remote: None,
 		database: DatabaseSource::RocksDb { path: root.join("db"), cache_size: 128 },
 		trie_cache_maximum_size: Some(64 * 1024 * 1024),
 		state_pruning: Default::default(),
@@ -223,17 +224,17 @@ pub fn node_config(
 pub fn run_validator_node(
 	config: Configuration,
 	worker_program_path: Option<PathBuf>,
-) -> PolkadotTestNode {
+) -> InfraBlockspaceTestNode {
 	let multiaddr = config.network.listen_addresses[0].clone();
 	let NewFull { task_manager, client, network, rpc_handlers, overseer_handle, .. } =
 		new_full(config, IsCollator::No, worker_program_path)
-			.expect("could not create Polkadot test service");
+			.expect("could not create InfraBlockspace test service");
 
 	let overseer_handle = overseer_handle.expect("test node must have an overseer handle");
 	let peer_id = network.local_peer_id().clone();
 	let addr = MultiaddrWithPeerId { multiaddr, peer_id };
 
-	PolkadotTestNode { task_manager, client, overseer_handle, addr, rpc_handlers }
+	InfraBlockspaceTestNode { task_manager, client, overseer_handle, addr, rpc_handlers }
 }
 
 /// Run a test collator node that uses the test runtime.
@@ -254,22 +255,22 @@ pub fn run_collator_node(
 	storage_update_func: impl Fn(),
 	boot_nodes: Vec<MultiaddrWithPeerId>,
 	collator_pair: CollatorPair,
-) -> PolkadotTestNode {
+) -> InfraBlockspaceTestNode {
 	let config = node_config(storage_update_func, tokio_handle, key, boot_nodes, false);
 	let multiaddr = config.network.listen_addresses[0].clone();
 	let NewFull { task_manager, client, network, rpc_handlers, overseer_handle, .. } =
 		new_full(config, IsCollator::Yes(collator_pair), None)
-			.expect("could not create Polkadot test service");
+			.expect("could not create InfraBlockspace test service");
 
 	let overseer_handle = overseer_handle.expect("test node must have an overseer handle");
 	let peer_id = network.local_peer_id().clone();
 	let addr = MultiaddrWithPeerId { multiaddr, peer_id };
 
-	PolkadotTestNode { task_manager, client, overseer_handle, addr, rpc_handlers }
+	InfraBlockspaceTestNode { task_manager, client, overseer_handle, addr, rpc_handlers }
 }
 
 /// A Polkadot test node instance used for testing.
-pub struct PolkadotTestNode {
+pub struct InfraBlockspaceTestNode {
 	/// `TaskManager`'s instance.
 	pub task_manager: TaskManager,
 	/// Client's instance.
@@ -282,11 +283,11 @@ pub struct PolkadotTestNode {
 	pub rpc_handlers: RpcHandlers,
 }
 
-impl PolkadotTestNode {
+impl InfraBlockspaceTestNode {
 	/// Send an extrinsic to this node.
 	pub async fn send_extrinsic(
 		&self,
-		function: impl Into<polkadot_test_runtime::RuntimeCall>,
+		function: impl Into<infrablockspace_test_runtime::RuntimeCall>,
 		caller: Sr25519Keyring,
 	) -> Result<RpcTransactionOutput, RpcTransactionError> {
 		let extrinsic = construct_extrinsic(&*self.client, function, caller, 0);
@@ -343,7 +344,7 @@ impl PolkadotTestNode {
 /// Construct an extrinsic that can be applied to the test runtime.
 pub fn construct_extrinsic(
 	client: &Client,
-	function: impl Into<polkadot_test_runtime::RuntimeCall>,
+	function: impl Into<infrablockspace_test_runtime::RuntimeCall>,
 	caller: Sr25519Keyring,
 	nonce: u32,
 ) -> UncheckedExtrinsic {
@@ -381,8 +382,8 @@ pub fn construct_extrinsic(
 	let signature = raw_payload.using_encoded(|e| caller.sign(e));
 	UncheckedExtrinsic::new_signed(
 		function.clone(),
-		polkadot_test_runtime::Address::Id(caller.public().into()),
-		polkadot_primitives::Signature::Sr25519(signature.clone()),
+		infrablockspace_test_runtime::Address::Id(caller.public().into()),
+		infrablockspace_primitives::Signature::Sr25519(signature.clone()),
 		extra.clone(),
 	)
 }
@@ -395,7 +396,7 @@ pub fn construct_transfer_extrinsic(
 	value: Balance,
 ) -> UncheckedExtrinsic {
 	let function =
-		polkadot_test_runtime::RuntimeCall::Balances(pallet_balances::Call::transfer_allow_death {
+		infrablockspace_test_runtime::RuntimeCall::Balances(pallet_balances::Call::transfer {
 			dest: MultiSigner::from(dest.public()).into_account().into(),
 			value,
 		});

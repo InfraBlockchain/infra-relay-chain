@@ -16,20 +16,20 @@
 
 //! A Polkadot performance tests utilities.
 
-use polkadot_erasure_coding::{obtain_chunks, reconstruct};
-use polkadot_node_core_pvf::{sc_executor_common, sp_maybe_compressed_blob};
-use polkadot_primitives::ExecutorParams;
+use erasure_coding::{obtain_chunks, reconstruct};
+use infrablockspace_node_core_pvf::{sc_executor_common, sp_maybe_compressed_blob};
+use infrablockspace_primitives::vstaging::ExecutorParams;
 use std::time::{Duration, Instant};
 
 mod constants;
 
 pub use constants::*;
-pub use polkadot_node_primitives::VALIDATION_CODE_BOMB_LIMIT;
+pub use infrablockspace_node_primitives::VALIDATION_CODE_BOMB_LIMIT;
 
 /// Value used for reference benchmark of erasure-coding.
 pub const ERASURE_CODING_N_VALIDATORS: usize = 1024;
 
-pub use kusama_runtime::WASM_BINARY;
+pub use infrablockspace_runtime::WASM_BINARY;
 
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
@@ -47,7 +47,7 @@ pub enum PerfCheckError {
 	Wasm(#[from] sc_executor_common::error::WasmError),
 
 	#[error(transparent)]
-	ErasureCoding(#[from] polkadot_erasure_coding::Error),
+	ErasureCoding(#[from] erasure_coding::Error),
 
 	#[error(transparent)]
 	Io(#[from] std::io::Error),
@@ -66,8 +66,8 @@ pub fn measure_pvf_prepare(wasm_code: &[u8]) -> Result<Duration, PerfCheckError>
 		.or(Err(PerfCheckError::CodeDecompressionFailed))?;
 
 	// Recreate the pipeline from the pvf prepare worker.
-	let blob = polkadot_node_core_pvf::prevalidate(code.as_ref()).map_err(PerfCheckError::from)?;
-	polkadot_node_core_pvf::prepare(blob, &ExecutorParams::default())
+	let blob = infrablockspace_node_core_pvf::prevalidate(code.as_ref()).map_err(PerfCheckError::from)?;
+	infrablockspace_node_core_pvf::prepare(blob, &ExecutorParams::default())
 		.map_err(PerfCheckError::from)?;
 
 	Ok(start.elapsed())
