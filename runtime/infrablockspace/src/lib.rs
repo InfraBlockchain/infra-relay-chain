@@ -1299,6 +1299,7 @@ impl parachains_inclusion::Config for Runtime {
 	type RewardValidators = parachains_reward_points::RewardValidatorsWithEraPoints<Runtime>;
 	type VotingManager = InfraVoting;
 	type SystemTokenManager = InfraSystemTokenManager;
+	type RewardAggregateHandler = InfraReward;
 }
 
 parameter_types! {
@@ -1327,7 +1328,6 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 impl parachains_infra_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
-	type SystemTokenManager = InfraSystemTokenManager;
 }
 
 parameter_types! {
@@ -1612,7 +1612,7 @@ construct_runtime! {
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
 		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
-		InfraReward: parachains_infra_reward = 83,
+		InfraReward: parachains_infra_reward::{Pallet, Call, Storage, Event<T>} = 83,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,

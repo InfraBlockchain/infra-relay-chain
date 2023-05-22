@@ -1054,6 +1054,7 @@ impl parachains_inclusion::Config for Runtime {
 	type RewardValidators = RewardValidators;
 	type VotingManager = InfraVoting;
 	type SystemTokenManager = InfraSystemTokenManager;
+	type RewardAggregateHandler = InfraReward;
 }
 
 parameter_types! {
@@ -1082,7 +1083,6 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 impl parachains_infra_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
-	type SystemTokenManager = InfraSystemTokenManager;
 }
 
 parameter_types! {
@@ -1492,7 +1492,7 @@ construct_runtime! {
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 
 		// Pot Related
-		InfraReward: parachains_infra_reward = 81,
+		InfraReward: parachains_infra_reward::{Pallet, Call, Storage, Event<T>} = 81,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
