@@ -4591,6 +4591,7 @@ dependencies = [
  "infrablockspace-primitives-test-helpers",
  "infrablockspace-runtime-metrics",
  "log",
+ "pallet-assets",
  "pallet-authority-discovery",
  "pallet-authorship",
  "pallet-babe",
