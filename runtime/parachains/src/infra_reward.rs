@@ -30,26 +30,15 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_support::{
-	dispatch::{DispatchInfo, DispatchResult, PostDispatchInfo},
+	dispatch::DispatchResult,
 	pallet_prelude::*,
-	traits::{
-		tokens::{
-			fungibles::{Balanced, CreditOf, Inspect},
-			AssetId, Balance, WithdrawConsequence,
-		},
-		IsType, ValidatorSet, ValidatorSetWithIdentification,
-	},
-	DefaultNoBound,
+	traits::{IsType, ValidatorSet},
 };
 use frame_system::pallet_prelude::*;
-use log::{debug, error, info, trace, warn};
-use pallet_session::historical;
-use primitives::AccountId;
+use log::info;
+use primitives::{Balance, Id as ParaId};
 use scale_info::TypeInfo;
-use sp_runtime::{
-	traits::{Convert, StaticLookup},
-	RuntimeDebug,
-};
+use sp_runtime::traits::{Convert, StaticLookup};
 use sp_staking::SessionIndex;
 use sp_std::{collections::btree_map::BTreeMap, prelude::*};
 
@@ -78,6 +67,8 @@ impl ValidatorReward {
 
 #[frame_support::pallet]
 pub mod pallet {
+	use crate::{configuration, dmp, paras};
+
 	use super::*;
 
 	/// The current storage version.
@@ -89,7 +80,13 @@ pub mod pallet {
 	pub struct Pallet<T>(_);
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config:
+		frame_system::Config
+		+ configuration::Config
+		+ paras::Config
+		+ dmp::Config
+		+ pallet_balances::Config
+	{
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		/// A type for retrieving the validators supposed to be online in a session.
@@ -118,6 +115,7 @@ pub mod pallet {
 		NothingToClaim,
 		NeedOriginSignature,
 		NoAssociatedValidatorId,
+		ExceedsMaxMessageSize,
 		Unknown,
 	}
 
@@ -127,10 +125,10 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn claim(origin: OriginFor<T>, controller: AccountIdLookupOf<T>) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
-			let controller = T::Lookup::lookup(controller)?;
-			ensure!(origin == controller, Error::<T>::NeedOriginSignature);
+			let validator = T::Lookup::lookup(controller.clone())?;
+			ensure!(origin == validator, Error::<T>::NeedOriginSignature);
 			let who = <T::ValidatorSet as ValidatorSet<T::AccountId>>::ValidatorIdOf::convert(
-				controller.clone(),
+				validator.clone(),
 			)
 			.ok_or(Error::<T>::NoAssociatedValidatorId)?;
 			ensure!(ValidatorRewards::<T>::contains_key(who.clone()), Error::<T>::NothingToClaim);
@@ -138,12 +136,44 @@ pub mod pallet {
 				ValidatorRewards::<T>::get(who.clone()).unwrap();
 			ensure!(rewards.len() != 0, Error::<T>::AlreadyClaimed);
 			for reward in rewards.iter_mut() {
-				// TODO: send asset to validator with DMP
+				let config = <configuration::Pallet<T>>::config();
+				let xcm = {
+					use parity_scale_codec::Encode as _;
+					use xcm::opaque::{latest::prelude::*, VersionedXcm};
+
+					let mut encoded: Vec<u8> = [10].into();
+					// TODO: Need to change asset pallets
+					let mut call_encode: Vec<u8> = pallet_balances::Call::<T>::set_balance {
+						who: controller.clone(),
+						new_free: T::Balance::from(1000000000 as u32),
+						new_reserved: T::Balance::from(10000000 as u32),
+					}
+					.encode();
+
+					encoded.append(&mut call_encode);
+
+					VersionedXcm::from(Xcm(vec![Transact {
+						origin_kind: OriginKind::Superuser,
+						require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
+						call: encoded.into(),
+					}]))
+					.encode()
+				};
+				if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
+					<dmp::Pallet<T>>::queue_downward_message(&config, ParaId::from(1000_u32), xcm)
+				{
+					log::error!(
+						target: "runtime::infra_reward",
+						"sending 'dmp' failed."
+					);
+				};
 				reward.amount = 0;
 			}
 			rewards.retain(|r| r.amount != 0);
 			ValidatorRewards::<T>::remove(who.clone());
-			ValidatorRewards::<T>::insert(who.clone(), rewards);
+			if rewards.len() != 0 {
+				ValidatorRewards::<T>::insert(who.clone(), rewards);
+			}
 
 			Self::deposit_event(Event::Rewarded { stash: who.into() });
 			Ok(())
@@ -162,7 +192,7 @@ impl<T: Config> Pallet<T> {
 	fn end_session(_end_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
 		// TODO: need to change "real" system token
-		let system_token_set = BTreeMap::from([(1, 100), (2, 200), (3, 150)]);
+		let system_token_set = BTreeMap::from([(1, 100)]);
 		for validator in current_validators.iter() {
 			if ValidatorRewards::<T>::contains_key(validator) {
 				let _ = ValidatorRewards::<T>::try_mutate_exists(

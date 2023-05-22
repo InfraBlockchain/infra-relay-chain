@@ -720,7 +720,7 @@ construct_runtime! {
 		Ump: parachains_ump::{Pallet, Call, Storage, Event},
 		Dmp: parachains_dmp::{Pallet, Call, Storage},
 		Pot: parachains_pot::{Pallet, Storage, Event},
-		InfraReward: parachains_infra_reward::{Pallet, Storage, Event},
+		InfraReward: parachains_infra_reward,
 		Xcm: pallet_xcm::{Pallet, Call, Event<T>, Origin},
 		ParasDisputes: parachains_disputes::{Pallet, Storage, Event<T>},
 
