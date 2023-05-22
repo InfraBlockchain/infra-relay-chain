@@ -21,7 +21,7 @@
 //! to included.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield, pot,
+	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield,
 	scheduler::CoreAssignment, shared, ump,
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
@@ -784,7 +784,19 @@ impl<T: Config> Pallet<T> {
 		);
 
 		if let Some(vote_result) = commitments.vote_result {
-			<pot::Pallet<T>>::aggregate_vote_result(receipt.descriptor.para_id, vote_result)
+			let session_index = shared::Pallet::<T>::session_index();
+			let para_id = receipt.descriptor.para_id;
+			for vote in vote_result.clone().into_iter() {
+				if let Some(asset_id) = T::SystemTokenManager::convert_to_relay_system_token(
+					para_id.into(),
+					vote.asset_id,
+				) {
+					let who = vote.account_id;
+					let weight = vote.vote_weight;
+					let adjusted_weight = T::SystemTokenManager::adjusted_weight(asset_id, weight);
+					T::VotingManager::update_vote_weight(session_index, who, adjusted_weight);
+				};
+			}
 		};
 
 		Self::deposit_event(Event::<T>::CandidateIncluded(

@@ -42,7 +42,7 @@ use runtime_parachains::{
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
 	origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent, pot as parachains_pot,
+	paras_inherent as parachains_paras_inherent,
 	runtime_api_impl::{
 		v2 as parachains_runtime_api_impl, vstaging as parachains_runtime_api_impl_staging,
 	},
@@ -1082,6 +1082,7 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 impl parachains_infra_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
+	type SystemTokenManager = InfraSystemTokenManager;
 }
 
 parameter_types! {
@@ -1491,7 +1492,6 @@ construct_runtime! {
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 
 		// Pot Related
-		Pot: parachains_pot::{Pallet, Storage, Event} = 80,
 		InfraReward: parachains_infra_reward = 81,
 
 		// Pallet for sending XCM.

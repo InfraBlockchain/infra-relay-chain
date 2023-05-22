@@ -69,7 +69,6 @@ frame_support::construct_runtime!(
 		SessionInfo: session_info,
 		Disputes: disputes,
 		Babe: pallet_babe,
-		Pot: pot,
 		InfraReward: infra_reward,
 	}
 );
@@ -222,10 +221,6 @@ impl crate::paras::Config for Test {
 	type WeightInfo = crate::paras::TestWeightInfo;
 	type UnsignedPriority = ParasUnsignedPriority;
 	type NextSessionRotation = TestNextSessionRotation;
-}
-
-impl crate::pot::Config for Test {
-	type RuntimeEvent = RuntimeEvent;
 }
 
 impl crate::infra_reward::Config for Test {

@@ -32,10 +32,9 @@ use runtime_parachains::{
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
 	origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent, pot as parachains_pot,
-	reward_points as parachains_reward_points, runtime_api_impl::v2 as parachains_runtime_api_impl,
-	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump,
+	paras_inherent as parachains_paras_inherent, reward_points as parachains_reward_points,
+	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
+	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -1328,6 +1327,7 @@ impl pallet_infra_system_token_manager::Config for Runtime {
 impl parachains_infra_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
+	type SystemTokenManager = InfraSystemTokenManager;
 }
 
 parameter_types! {
