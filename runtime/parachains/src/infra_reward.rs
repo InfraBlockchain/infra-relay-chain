@@ -36,12 +36,14 @@ use frame_support::{
 };
 use frame_system::pallet_prelude::*;
 use log::info;
-use pallet_infra_system_token_manager::SystemTokenInterface;
 use primitives::Id as ParaId;
 use scale_info::TypeInfo;
-use sp_runtime::traits::{Convert, StaticLookup};
+use sp_runtime::{
+	generic::{VoteAssetId, VoteWeight},
+	traits::{Convert, StaticLookup},
+};
 use sp_staking::SessionIndex;
-use sp_std::{collections::btree_map::BTreeMap, prelude::*};
+use sp_std::prelude::*;
 
 pub use pallet::*;
 
@@ -92,7 +94,6 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		/// A type for retrieving the validators supposed to be online in a session.
 		type ValidatorSet: ValidatorSet<Self::AccountId>;
-		type SystemTokenManager: SystemTokenInterface;
 	}
 
 	#[pallet::storage]
@@ -100,6 +101,12 @@ pub mod pallet {
 	#[pallet::unbounded]
 	pub type ValidatorRewards<T: Config> =
 		StorageMap<_, Twox64Concat, ValidatorId<T>, Vec<ValidatorReward>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn session_rewards)]
+	#[pallet::unbounded]
+	pub type TotalSessionRewards<T: Config> =
+		StorageMap<_, Twox64Concat, SessionIndex, Vec<ValidatorReward>>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
@@ -114,6 +121,7 @@ pub mod pallet {
 		NotController,
 		/// Rewards already been claimed for this validator.
 		AlreadyClaimed,
+		EmptyAggregatedRewards,
 		NothingToClaim,
 		NeedOriginSignature,
 		NoAssociatedValidatorId,
@@ -129,6 +137,7 @@ pub mod pallet {
 			let origin = ensure_signed(origin)?;
 			let validator = T::Lookup::lookup(controller.clone())?;
 			ensure!(origin == validator, Error::<T>::NeedOriginSignature);
+
 			let who = <T::ValidatorSet as ValidatorSet<T::AccountId>>::ValidatorIdOf::convert(
 				validator.clone(),
 			)
@@ -137,14 +146,15 @@ pub mod pallet {
 			let mut rewards: Vec<ValidatorReward> =
 				ValidatorRewards::<T>::get(who.clone()).unwrap();
 			ensure!(rewards.len() != 0, Error::<T>::AlreadyClaimed);
+
 			for reward in rewards.iter_mut() {
 				let config = <configuration::Pallet<T>>::config();
 				let xcm = {
 					use parity_scale_codec::Encode as _;
 					use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
-					let mut encoded: Vec<u8> = [10].into();
 					// TODO: Need to change asset pallets
+					let mut encoded: Vec<u8> = [10].into(); // Statemint asset pallet number
 					let mut call_encode: Vec<u8> = pallet_balances::Call::<T>::set_balance {
 						who: controller.clone(),
 						new_free: T::Balance::from(1000000000 as u32),
@@ -190,11 +200,23 @@ impl<T: Config> Pallet<T> {
 	fn new_session_genesis(_new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
 		None
 	}
-	fn start_session(_start_index: SessionIndex) {}
-	fn end_session(_end_index: SessionIndex) {
+	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight) {
+		let asset_id: u32 = asset_id.into();
+		let amount: u128 = amount.into();
+
+		if let Some(rewards) = TotalSessionRewards::<T>::get(session_index) {
+			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == asset_id) {
+				reward.amount += amount;
+			}
+		} else {
+			let rewards = vec![ValidatorReward::new(asset_id, amount)];
+			TotalSessionRewards::<T>::insert(session_index, rewards);
+		}
+	}
+	fn distribute_reward(session_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
-		// TODO: need to change "real" system token
-		let system_token_set = BTreeMap::from([(1, 100)]);
+		let aggregated_rewards = TotalSessionRewards::<T>::get(session_index).unwrap();
+
 		for validator in current_validators.iter() {
 			if ValidatorRewards::<T>::contains_key(validator) {
 				let _ = ValidatorRewards::<T>::try_mutate_exists(
@@ -202,22 +224,27 @@ impl<T: Config> Pallet<T> {
 					|maybe_rewards| -> Result<(), DispatchError> {
 						let rewards = maybe_rewards.as_mut().ok_or(Error::<T>::Unknown)?;
 						for reward in rewards.iter_mut() {
-							let amount = *system_token_set.get(&reward.asset_id).unwrap_or(&0) /
-								current_validators.len() as u128;
-							reward.amount += amount;
+							if let Some(aggregated_reward) =
+								aggregated_rewards.iter().find(|ar| ar.asset_id == reward.asset_id)
+							{
+								let amount =
+									aggregated_reward.amount / current_validators.len() as u128;
+								reward.amount += amount;
+							}
 						}
 						Ok(())
 					},
 				);
 			} else {
-				// TODO: need to change "real" system token
-				let rewards = {
-					let mut rewards = Vec::new();
-					for system_token in system_token_set.iter() {
-						rewards.push(ValidatorReward::new(*system_token.0, *system_token.1));
-					}
-					rewards
-				};
+				let rewards: Vec<ValidatorReward> = aggregated_rewards
+					.iter()
+					.map(|reward| {
+						ValidatorReward::new(
+							reward.asset_id,
+							reward.amount / current_validators.len() as u128,
+						)
+					})
+					.collect();
 				ValidatorRewards::<T>::insert(validator, rewards);
 			}
 		}
@@ -236,14 +263,23 @@ impl<T: Config> pallet_session::SessionManager<T::AccountId> for Pallet<T> {
 	}
 	fn new_session_genesis(new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
 		info!("🏁 planning new session {} at genesis", new_index);
-		Self::new_session(new_index)
+		Self::new_session_genesis(new_index)
 	}
 	fn start_session(start_index: SessionIndex) {
 		info!("🏁 starting session {}", start_index);
-		Self::start_session(start_index)
 	}
 	fn end_session(end_index: SessionIndex) {
 		info!("🏁 ending session {}", end_index);
-		Self::end_session(end_index)
+		Self::distribute_reward(end_index)
+	}
+}
+
+pub trait RewardAggregateHandler {
+	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight);
+}
+
+impl<T: Config> RewardAggregateHandler for Pallet<T> {
+	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight) {
+		Self::aggregate_reward(session_index, asset_id, amount);
 	}
 }
