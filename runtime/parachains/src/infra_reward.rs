@@ -36,7 +36,8 @@ use frame_support::{
 };
 use frame_system::pallet_prelude::*;
 use log::info;
-use primitives::{Balance, Id as ParaId};
+use pallet_infra_system_token_manager::SystemTokenInterface;
+use primitives::Id as ParaId;
 use scale_info::TypeInfo;
 use sp_runtime::traits::{Convert, StaticLookup};
 use sp_staking::SessionIndex;
@@ -91,6 +92,7 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		/// A type for retrieving the validators supposed to be online in a session.
 		type ValidatorSet: ValidatorSet<Self::AccountId>;
+		type SystemTokenManager: SystemTokenInterface;
 	}
 
 	#[pallet::storage]
