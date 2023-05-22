@@ -18,7 +18,7 @@
 
 use crate::{
 	configuration, disputes, dmp, hrmp, inclusion, infra_reward, initializer, origin, paras,
-	paras_inherent, pot, scheduler, session_info, shared,
+	paras_inherent, scheduler, session_info, shared,
 	ump::{self, MessageId, UmpSink},
 	ParaId,
 };
@@ -70,6 +70,9 @@ frame_support::construct_runtime!(
 		Disputes: disputes,
 		Babe: pallet_babe,
 		InfraReward: infra_reward,
+		InfraVoting: pallet_infra_voting,
+		InfraSystemTokenManager: pallet_infra_system_token_manager,
+
 	}
 );
 
@@ -311,6 +314,7 @@ impl crate::inclusion::Config for Test {
 	type RewardValidators = TestRewardValidators;
 	type VotingManager = InfraVoting;
 	type SystemTokenManager = InfraSystemTokenManager;
+	type RewardAggregateHandler = InfraReward;
 }
 
 parameter_types! {
