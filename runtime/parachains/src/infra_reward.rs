@@ -88,7 +88,7 @@ pub mod pallet {
 		+ configuration::Config
 		+ paras::Config
 		+ dmp::Config
-		+ pallet_balances::Config
+		+ pallet_assets::Config
 	{
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
@@ -130,12 +130,21 @@ pub mod pallet {
 	}
 
 	#[pallet::call]
-	impl<T: Config> Pallet<T> {
+	impl<T: Config> Pallet<T>
+	where
+		u32: PartialEq<<T as pallet_assets::Config>::AssetId>,
+	{
 		#[pallet::call_index(0)]
 		#[pallet::weight(0)]
-		pub fn claim(origin: OriginFor<T>, controller: AccountIdLookupOf<T>) -> DispatchResult {
+		pub fn claim(
+			origin: OriginFor<T>,
+			controller: AccountIdLookupOf<T>,
+			asset_id: T::AssetIdParameter,
+		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
 			let validator = T::Lookup::lookup(controller.clone())?;
+			let id: T::AssetId = asset_id.into();
+
 			ensure!(origin == validator, Error::<T>::NeedOriginSignature);
 
 			let who = <T::ValidatorSet as ValidatorSet<T::AccountId>>::ValidatorIdOf::convert(
@@ -145,27 +154,26 @@ pub mod pallet {
 			ensure!(ValidatorRewards::<T>::contains_key(who.clone()), Error::<T>::NothingToClaim);
 			let mut rewards: Vec<ValidatorReward> =
 				ValidatorRewards::<T>::get(who.clone()).unwrap_or_default();
-			ensure!(rewards.len() != 0, Error::<T>::AlreadyClaimed);
+			ensure!(rewards.len() != 0, Error::<T>::NothingToClaim);
 
-			for reward in rewards.iter_mut() {
+			if let Some(reward) = rewards.iter_mut().find(|ar| ar.asset_id == id) {
 				let config = <configuration::Pallet<T>>::config();
 				let xcm = {
 					use parity_scale_codec::Encode as _;
 					use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
-					// TODO: Need to change asset pallets
-					let mut encoded: Vec<u8> = [10].into(); // Statemint asset pallet number
-					let mut call_encode: Vec<u8> = pallet_balances::Call::<T>::set_balance {
-						who: controller.clone(),
-						new_free: T::Balance::from(1000000000 as u32),
-						new_reserved: T::Balance::from(10000000 as u32),
+					let mut encoded: Vec<u8> = [0x32].into(); // asset pallet number
+					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::transfer_keep_alive {
+						id: asset_id,
+						target: controller.clone(),
+						amount: T::Balance::from(reward.amount as u32),
 					}
 					.encode();
 
 					encoded.append(&mut call_encode);
 
 					VersionedXcm::from(Xcm(vec![Transact {
-						origin_kind: OriginKind::Superuser,
+						origin_kind: OriginKind::SovereignAccount,
 						require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
 						call: encoded.into(),
 					}]))
@@ -180,11 +188,6 @@ pub mod pallet {
 					);
 				};
 				reward.amount = 0;
-			}
-			rewards.retain(|r| r.amount != 0);
-			ValidatorRewards::<T>::remove(who.clone());
-			if rewards.len() != 0 {
-				ValidatorRewards::<T>::insert(who.clone(), rewards);
 			}
 
 			Self::deposit_event(Event::Rewarded { stash: who.into() });
