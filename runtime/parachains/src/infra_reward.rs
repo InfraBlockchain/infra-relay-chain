@@ -144,7 +144,7 @@ pub mod pallet {
 			.ok_or(Error::<T>::NoAssociatedValidatorId)?;
 			ensure!(ValidatorRewards::<T>::contains_key(who.clone()), Error::<T>::NothingToClaim);
 			let mut rewards: Vec<ValidatorReward> =
-				ValidatorRewards::<T>::get(who.clone()).unwrap();
+				ValidatorRewards::<T>::get(who.clone()).unwrap_or_default();
 			ensure!(rewards.len() != 0, Error::<T>::AlreadyClaimed);
 
 			for reward in rewards.iter_mut() {
@@ -215,7 +215,7 @@ impl<T: Config> Pallet<T> {
 	}
 	fn distribute_reward(session_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
-		let aggregated_rewards = TotalSessionRewards::<T>::get(session_index).unwrap();
+		let aggregated_rewards = TotalSessionRewards::<T>::get(session_index).unwrap_or_default();
 
 		for validator in current_validators.iter() {
 			if ValidatorRewards::<T>::contains_key(validator) {
