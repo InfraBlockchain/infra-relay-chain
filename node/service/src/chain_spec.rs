@@ -118,10 +118,7 @@ pub fn rococo_config() -> Result<RococoChainSpec, String> {
 }
 
 /// The default parachains host configuration.
-#[cfg(any(
-	feature = "rococo-native",
-	feature = "infrablockspace-native"
-))]
+#[cfg(any(feature = "rococo-native", feature = "infrablockspace-native"))]
 fn default_parachains_host_configuration(
 ) -> infrablockspace_runtime_parachains::configuration::HostConfiguration<
 	infrablockspace_primitives::BlockNumber,
@@ -165,10 +162,7 @@ fn default_parachains_host_configuration(
 	}
 }
 
-#[cfg(any(
-	feature = "rococo-native",
-	feature = "infrablockspace-native"
-))]
+#[cfg(any(feature = "rococo-native", feature = "infrablockspace-native"))]
 #[test]
 fn default_parachains_host_configuration_is_consistent() {
 	default_parachains_host_configuration().panic_if_not_consistent();
@@ -245,6 +239,12 @@ fn infrablockspace_staging_testnet_config_genesis(
 				.map(|k: &AccountId| (k.clone(), ENDOWMENT))
 				.chain(initial_authorities.iter().map(|x| (x.0.clone(), STASH)))
 				.collect(),
+		},
+		assets: infrablockspace::AssetsConfig {
+			assets: vec![],
+			metadata: vec![],
+			accounts: vec![],
+			..Default::default()
 		},
 		indices: infrablockspace::IndicesConfig { indices: vec![] },
 		session: infrablockspace::SessionConfig {
@@ -563,6 +563,12 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 				.chain(initial_authorities.iter().map(|x| (x.0.clone(), STASH)))
 				.collect(),
 		},
+		assets: rococo_runtime::AssetsConfig {
+			assets: vec![],
+			metadata: vec![],
+			accounts: vec![],
+			..Default::default()
+		},
 		beefy: Default::default(),
 		indices: rococo_runtime::IndicesConfig { indices: vec![] },
 		session: rococo_runtime::SessionConfig {
@@ -613,7 +619,6 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 			next_free_para_id: infrablockspace_primitives::LOWEST_PUBLIC_ID,
 		},
 		xcm_pallet: Default::default(),
-		nis_counterpart_balances: Default::default(),
 		infra_system_token_manager: Default::default(),
 	}
 }
@@ -781,6 +786,12 @@ pub fn infrablockspace_testnet_genesis(
 		balances: infrablockspace::BalancesConfig {
 			balances: endowed_accounts.iter().map(|k| (k.clone(), ENDOWMENT)).collect(),
 		},
+		assets: infrablockspace::AssetsConfig {
+			assets: vec![],
+			metadata: vec![],
+			accounts: vec![],
+			..Default::default()
+		},
 		session: infrablockspace::SessionConfig {
 			keys: initial_authorities
 				.iter()
@@ -873,6 +884,12 @@ pub fn rococo_testnet_genesis(
 		balances: rococo_runtime::BalancesConfig {
 			balances: endowed_accounts.iter().map(|k| (k.clone(), ENDOWMENT)).collect(),
 		},
+		assets: rococo_runtime::AssetsConfig {
+			assets: vec![],
+			metadata: vec![],
+			accounts: vec![],
+			..Default::default()
+		},
 		session: rococo_runtime::SessionConfig {
 			keys: initial_authorities
 				.iter()
@@ -924,7 +941,6 @@ pub fn rococo_testnet_genesis(
 			next_free_para_id: infrablockspace_primitives::LOWEST_PUBLIC_ID,
 		},
 		xcm_pallet: Default::default(),
-		nis_counterpart_balances: Default::default(),
 		infra_system_token_manager: Default::default(),
 	}
 }
