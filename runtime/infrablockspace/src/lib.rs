@@ -364,7 +364,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = pallet_session::historical::NoteHistoricalRoot<Self, Staking>;
+	type SessionManager = InfraVoting;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -1300,22 +1300,18 @@ impl parachains_inclusion::Config for Runtime {
 }
 
 parameter_types! {
-	pub const MaxValidators: u32 = 3;
-	pub const MaxSeedTrustValidators: u32 = 3;
-	pub const MaxPotValidators: u32 = 0;
-	pub const Sessions: u32 = 1;
+	pub const TotalNumberOfValidators: u32 = 5;
+	pub const MinVotePointsThreshold: u32 = 1;
+	pub const NumberOfSessionsPerEra: u32 = 5;
 }
 
 impl pallet_infra_voting::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type MaxValidators = MaxValidators;
-	type MaxSeedTrustValidators = MaxSeedTrustValidators;
-	type MaxPotValidators = MaxPotValidators;
-	type InfraVoteId = VoteAccountId;
+	type SessionsPerEra = NumberOfSessionsPerEra;
+	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
-	type NextNewSession = ();
+	type NextNewSession = Session;
 	type SessionInterface = ();
-	type SessionsPerEra = Sessions; 
 }
 
 impl pallet_infra_system_token_manager::Config for Runtime {
@@ -1609,7 +1605,7 @@ construct_runtime! {
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
 
 		// Infra Related
-		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>} = 100,
+		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Config<T>, Event<T>} = 100,
 		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 101,
 	}
 }

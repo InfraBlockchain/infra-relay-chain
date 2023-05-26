@@ -307,6 +307,13 @@ fn infrablockspace_staging_testnet_config_genesis(
 		xcm_pallet: Default::default(),
 		nomination_pools: Default::default(),
 		infra_system_token_manager: Default::default(),
+		infra_voting: infrablockspace::InfraVotingConfig {
+			seed_trust_validators: initial_authorities
+				.iter()
+				.map(|x| (x.0.clone()))
+				.collect(),
+			..Default::default()
+		}
 	}
 }
 
@@ -615,6 +622,13 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 		xcm_pallet: Default::default(),
 		nis_counterpart_balances: Default::default(),
 		infra_system_token_manager: Default::default(),
+		infra_voting: rococo_runtime::InfraVotingConfig {
+			seed_trust_validators: initial_authorities
+				.iter()
+				.map(|x| (x.0.clone()))
+				.collect(),
+			..Default::default()
+		}
 	}
 }
 
@@ -841,6 +855,13 @@ pub fn infrablockspace_testnet_genesis(
 		xcm_pallet: Default::default(),
 		nomination_pools: Default::default(),
 		infra_system_token_manager: Default::default(),
+		infra_voting: infrablockspace::InfraVotingConfig {
+			seed_trust_validators: initial_authorities
+				.iter()
+				.map(|x| (x.0.clone()))
+				.collect(),
+			..Default::default()
+		}
 	}
 }
 
@@ -926,6 +947,13 @@ pub fn rococo_testnet_genesis(
 		xcm_pallet: Default::default(),
 		nis_counterpart_balances: Default::default(),
 		infra_system_token_manager: Default::default(),
+		infra_voting: rococo_runtime::InfraVotingConfig {
+			seed_trust_validators: initial_authorities
+				.iter()
+				.map(|x| (x.0.clone()))
+				.collect(),
+			..Default::default()
+		}
 	}
 }
 
