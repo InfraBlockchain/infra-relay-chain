@@ -23,7 +23,9 @@ pub mod chain_spec;
 pub use chain_spec::*;
 use futures::future::Future;
 use infrablockspace_node_primitives::{CollationGenerationConfig, CollatorFn};
-use infrablockspace_node_subsystem::messages::{CollationGenerationMessage, CollatorProtocolMessage};
+use infrablockspace_node_subsystem::messages::{
+	CollationGenerationMessage, CollatorProtocolMessage,
+};
 use infrablockspace_overseer::Handle;
 use infrablockspace_primitives::{Balance, CollatorPair, HeadData, Id as ParaId, ValidationCode};
 use infrablockspace_runtime_common::BlockHashCount;
@@ -37,14 +39,11 @@ use infrablockspace_test_runtime::{
 };
 use sc_chain_spec::ChainSpec;
 use sc_client_api::execution_extensions::ExecutionStrategies;
-use sc_network::{
-	config::NetworkConfiguration,
-	multiaddr, NetworkStateInfo,
-};
+use sc_network::{config::NetworkConfiguration, multiaddr, NetworkStateInfo};
 use sc_service::{
 	config::{
-		DatabaseSource, KeystoreConfig, MultiaddrWithPeerId, WasmExecutionMethod,
-		WasmtimeInstantiationStrategy, TransportConfig
+		DatabaseSource, KeystoreConfig, MultiaddrWithPeerId, TransportConfig, WasmExecutionMethod,
+		WasmtimeInstantiationStrategy,
 	},
 	BasePath, BlocksPruning, Configuration, Role, RpcHandlers, TaskManager,
 };
@@ -79,7 +78,8 @@ impl sc_executor::NativeExecutionDispatch for InfraBlockspaceTestExecutorDispatc
 }
 
 /// The client type being used by the test service.
-pub type Client = FullClient<infrablockspace_test_runtime::RuntimeApi, InfraBlockspaceTestExecutorDispatch>;
+pub type Client =
+	FullClient<infrablockspace_test_runtime::RuntimeApi, InfraBlockspaceTestExecutorDispatch>;
 
 pub use infrablockspace_service::FullBackend;
 
@@ -90,7 +90,11 @@ pub fn new_full(
 	is_collator: IsCollator,
 	worker_program_path: Option<PathBuf>,
 ) -> Result<NewFull<Arc<Client>>, Error> {
-	infrablockspace_service::new_full::<infrablockspace_test_runtime::RuntimeApi, InfraBlockspaceTestExecutorDispatch, _>(
+	infrablockspace_service::new_full::<
+		infrablockspace_test_runtime::RuntimeApi,
+		InfraBlockspaceTestExecutorDispatch,
+		_,
+	>(
 		config,
 		is_collator,
 		None,

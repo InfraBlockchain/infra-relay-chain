@@ -70,8 +70,8 @@ mod run {
 	pub fn run() -> Result<(), PerfCheckError> {
 		let _ = env_logger::builder().filter(None, log::LevelFilter::Info).try_init();
 
-		let wasm_code =
-			infrablockspace_performance_test::WASM_BINARY.ok_or(PerfCheckError::WasmBinaryMissing)?;
+		let wasm_code = infrablockspace_performance_test::WASM_BINARY
+			.ok_or(PerfCheckError::WasmBinaryMissing)?;
 
 		log::info!("Running the benchmark, number of iterations: {}", WARM_UP_RUNS);
 

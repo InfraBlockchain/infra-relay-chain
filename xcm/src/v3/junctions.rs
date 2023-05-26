@@ -663,7 +663,8 @@ mod tests {
 			(Parent, PalletInstance(2)).into()
 		);
 		assert_eq!(
-			X4(Infrablockspace.into(), Parachain(1), PalletInstance(1), [1u8; 32].into()).relative_to(&base),
+			X4(Infrablockspace.into(), Parachain(1), PalletInstance(1), [1u8; 32].into())
+				.relative_to(&base),
 			([1u8; 32],).into()
 		);
 
@@ -677,12 +678,19 @@ mod tests {
 			(Parent, Parent, Parachain(2), PalletInstance(1)).into()
 		);
 		assert_eq!(
-			X4(Infrablockspace.into(), Parachain(1), PalletInstance(2), [1u8; 32].into()).relative_to(&base),
+			X4(Infrablockspace.into(), Parachain(1), PalletInstance(2), [1u8; 32].into())
+				.relative_to(&base),
 			(Parent, PalletInstance(2), [1u8; 32]).into()
 		);
 		assert_eq!(
-			X5(Infrablockspace.into(), Parachain(1), PalletInstance(1), [1u8; 32].into(), 1u128.into())
-				.relative_to(&base),
+			X5(
+				Infrablockspace.into(),
+				Parachain(1),
+				PalletInstance(1),
+				[1u8; 32].into(),
+				1u128.into()
+			)
+			.relative_to(&base),
 			([1u8; 32], 1u128).into()
 		);
 	}

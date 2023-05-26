@@ -786,6 +786,7 @@ impl<T: Config> Pallet<T> {
 
 		if let Some(vote_result) = commitments.vote_result {
 			let para_id = receipt.descriptor.para_id;
+			let session_index = shared::Pallet::<T>::session_index();
 			for vote in vote_result.clone().into_iter() {
 				if let Some(asset_id) = T::SystemTokenManager::convert_to_relay_system_token(
 					para_id.into(),

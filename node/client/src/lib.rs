@@ -44,10 +44,7 @@ pub type FullBackend = sc_service::TFullBackend<Block>;
 pub type FullClient<RuntimeApi, ExecutorDispatch> =
 	sc_service::TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ExecutorDispatch>>;
 
-#[cfg(not(any(
-	feature = "rococo",
-	feature = "infrablockspace",
-)))]
+#[cfg(not(any(feature = "rococo", feature = "infrablockspace",)))]
 compile_error!("at least one runtime feature must be enabled");
 
 /// The native executor instance for Infrablockspace.

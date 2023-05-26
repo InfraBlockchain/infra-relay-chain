@@ -141,7 +141,7 @@ pub mod pallet {
 		pub fn claim(
 			origin: OriginFor<T>,
 			controller: AccountIdLookupOf<T>,
-			controller2: AccountIdLookupOf<T>,
+			sovereign: AccountIdLookupOf<T>,
 			asset_id: T::AssetIdParameter,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
@@ -168,7 +168,7 @@ pub mod pallet {
 					let mut encoded: Vec<u8> = [0x32].into(); // asset pallet number
 					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
 						id: asset_id,
-						source: controller2.clone(),
+						source: sovereign.clone(),
 						dest: controller.clone(),
 						amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
 					}
@@ -236,12 +236,6 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-	fn new_session(_new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
-		None
-	}
-	fn new_session_genesis(_new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
-		None
-	}
 	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight) {
 		let asset_id: u32 = asset_id.into();
 		let amount: u128 = amount.into();
@@ -290,29 +284,6 @@ impl<T: Config> Pallet<T> {
 				ValidatorRewards::<T>::insert(validator, rewards);
 			}
 		}
-	}
-}
-
-/// In this implementation `new_session(session)` must be called before `end_session(session-1)`
-/// i.e. the new session must be planned before the ending of the previous session.
-///
-/// Once the first new_session is planned, all session must start and then end in order, though
-/// some session can lag in between the newest session planned and the latest session started.
-impl<T: Config> pallet_session::SessionManager<T::AccountId> for Pallet<T> {
-	fn new_session(new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
-		info!("🏁 planning new session {}", new_index);
-		Self::new_session(new_index)
-	}
-	fn new_session_genesis(new_index: SessionIndex) -> Option<Vec<T::AccountId>> {
-		info!("🏁 planning new session {} at genesis", new_index);
-		Self::new_session_genesis(new_index)
-	}
-	fn start_session(start_index: SessionIndex) {
-		info!("🏁 starting session {}", start_index);
-	}
-	fn end_session(end_index: SessionIndex) {
-		info!("🏁 ending session {}", end_index);
-		Self::distribute_reward(end_index)
 	}
 }
 
