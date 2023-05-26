@@ -317,7 +317,7 @@ fn backing_second_works() {
 						new_validation_code: None,
 						processed_downward_messages: 0,
 						hrmp_watermark: 0,
-						vote_result: None, 
+						vote_result: None,
 					}, test_state.validation_data.clone()),
 				)).unwrap();
 			}

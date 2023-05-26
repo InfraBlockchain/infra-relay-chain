@@ -18,12 +18,14 @@
 
 use babe_primitives::AuthorityId as BabeId;
 use grandpa::AuthorityId as GrandpaId;
-use pallet_staking::Forcing;
-use infrablockspace_primitives::{AccountId, AssignmentId, ValidatorId, MAX_CODE_SIZE, MAX_POV_SIZE};
+use infrablockspace_primitives::{
+	AccountId, AssignmentId, ValidatorId, MAX_CODE_SIZE, MAX_POV_SIZE,
+};
 use infrablockspace_service::chain_spec::{
 	get_account_id_from_seed, get_from_seed, infrablockspace_chain_spec_properties, Extensions,
 };
 use infrablockspace_test_runtime::BABE_GENESIS_EPOCH_CONFIG;
+use pallet_staking::Forcing;
 use sc_chain_spec::{ChainSpec, ChainType};
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_core::sr25519;
