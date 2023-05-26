@@ -78,6 +78,7 @@ pub mod pallet {
 	const STORAGE_VERSION: StorageVersion = StorageVersion::new(1);
 
 	#[pallet::pallet]
+	#[pallet::without_storage_info]
 	#[pallet::generate_store(pub(crate) trait Store)]
 	#[pallet::storage_version(STORAGE_VERSION)]
 	pub struct Pallet<T>(_);
@@ -133,12 +134,14 @@ pub mod pallet {
 	impl<T: Config> Pallet<T>
 	where
 		u32: PartialEq<<T as pallet_assets::Config>::AssetId>,
+		<T as pallet_assets::Config>::Balance: From<u128>,
 	{
 		#[pallet::call_index(0)]
 		#[pallet::weight(0)]
 		pub fn claim(
 			origin: OriginFor<T>,
 			controller: AccountIdLookupOf<T>,
+			controller2: AccountIdLookupOf<T>,
 			asset_id: T::AssetIdParameter,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
@@ -163,20 +166,30 @@ pub mod pallet {
 					use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
 					let mut encoded: Vec<u8> = [0x32].into(); // asset pallet number
-					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::transfer_keep_alive {
+					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
 						id: asset_id,
-						target: controller.clone(),
-						amount: T::Balance::from(reward.amount as u32),
+						source: controller2.clone(),
+						dest: controller.clone(),
+						amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
 					}
 					.encode();
 
 					encoded.append(&mut call_encode);
 
-					VersionedXcm::from(Xcm(vec![Transact {
-						origin_kind: OriginKind::SovereignAccount,
-						require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
-						call: encoded.into(),
-					}]))
+					let fee_multilocation =
+						MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
+
+					VersionedXcm::from(Xcm(vec![
+						BuyExecution {
+							fees: fee_multilocation.clone().into(),
+							weight_limit: WeightLimit::Unlimited,
+						},
+						Transact {
+							origin_kind: OriginKind::Superuser,
+							require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
+							call: encoded.into(),
+						},
+					]))
 					.encode()
 				};
 				if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
@@ -191,6 +204,32 @@ pub mod pallet {
 			}
 
 			Self::deposit_event(Event::Rewarded { stash: who.into() });
+			Ok(())
+		}
+		#[pallet::call_index(1)]
+		#[pallet::weight(0)]
+		pub fn test(
+			origin: OriginFor<T>,
+			controller: AccountIdLookupOf<T>,
+			asset_id: u32,
+		) -> DispatchResult {
+			let origin = ensure_signed(origin)?;
+			let validator = T::Lookup::lookup(controller.clone())?;
+			let who = <T::ValidatorSet as ValidatorSet<T::AccountId>>::ValidatorIdOf::convert(
+				validator.clone(),
+			)
+			.ok_or(Error::<T>::NoAssociatedValidatorId)?;
+
+			ensure!(origin == validator, Error::<T>::NeedOriginSignature);
+
+			let aggregated_rewards = vec![ValidatorReward::new(asset_id, 10000000)];
+
+			let rewards: Vec<ValidatorReward> = aggregated_rewards
+				.iter()
+				.map(|reward| ValidatorReward::new(reward.asset_id, reward.amount))
+				.collect();
+			ValidatorRewards::<T>::insert(who, rewards);
+
 			Ok(())
 		}
 	}
