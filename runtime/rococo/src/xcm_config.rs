@@ -125,20 +125,11 @@ match_types! {
 pub type Barrier = (
 	// Weight that is paid for may be consumed.
 	TakeWeightCredit,
-	// Expected responses are OK.
-	AllowKnownQueryResponses<XcmPallet>,
-	WithComputedOrigin<
-		(
-			// If the message is one that immediately attemps to pay for execution, then allow it.
-			AllowTopLevelPaidExecutionFrom<Everything>,
-			// Messages coming from system parachains need not pay for execution.
-			AllowExplicitUnpaidExecutionFrom<IsChildSystemParachain<ParaId>>,
-			// Subscriptions for version tracking are OK.
-			AllowSubscriptionsFrom<OnlyParachains>,
-		),
-		UniversalLocation,
-		ConstU32<8>,
-	>,
+	AllowTopLevelPaidExecutionFrom<Everything>,
+	// Messages coming from system parachains need not pay for execution.
+	AllowExplicitUnpaidExecutionFrom<Everything>,
+	// Subscriptions for version tracking are OK.
+	AllowSubscriptionsFrom<Everything>,
 );
 
 /// A call filter for the XCM Transact instruction. This is a temporary measure until we
