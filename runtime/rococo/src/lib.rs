@@ -1377,6 +1377,7 @@ construct_runtime! {
 		// MMR leaf construction must be before session in order to have leaf contents
 		// refer to block<N-1> consistently. see substrate issue #11797 for details.
 		Mmr: pallet_mmr::{Pallet, Storage} = 241,
+		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Config<T>, Event<T>} = 6,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 8,
 		Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned} = 10,
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>} = 11,
@@ -1462,7 +1463,6 @@ construct_runtime! {
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
 
 		// Infra Related
-		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Config<T>, Event<T>} = 100,
 		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 101,
 
 		// Rococo specific pallets (not included in Kusama). Start indices at 240
