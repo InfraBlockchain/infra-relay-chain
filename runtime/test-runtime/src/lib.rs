@@ -510,6 +510,10 @@ impl pallet_infra_voting::Config for Runtime {
 	type SessionInterface = ();
 }
 
+impl pallet_infra_system_token_manager::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
+
 impl parachains_infra_reward::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
