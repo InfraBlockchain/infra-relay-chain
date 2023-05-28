@@ -28,9 +28,9 @@ use infrablockspace_runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent,
-	runtime_api_impl::v2 as runtime_impl, scheduler as parachains_scheduler,
-	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
+	paras_inherent as parachains_paras_inherent, runtime_api_impl::v2 as runtime_impl,
+	scheduler as parachains_scheduler, session_info as parachains_session_info,
+	shared as parachains_shared, ump as parachains_ump,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -60,7 +60,9 @@ use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str,
 	curve::PiecewiseLinear,
-	generic, generic::{VoteAccountId, VoteWeight}, impl_opaque_keys,
+	generic,
+	generic::{VoteAccountId, VoteWeight},
+	impl_opaque_keys,
 	traits::{
 		BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT, OpaqueKeys,
 		SaturatedConversion, StaticLookup, Verify,
@@ -493,22 +495,18 @@ impl parachains_inclusion::Config for Runtime {
 }
 
 parameter_types! {
-	pub const MaxValidators: u32 = 3;
-	pub const MaxSeedTrustValidators: u32 = 3;
-	pub const MaxPotValidators: u32 = 0;
-	pub const Sessions: u32 = 1;
+	pub const TotalNumberOfValidators: u32 = 5;
+	pub const MinVotePointsThreshold: u32 = 1;
+	pub const NumberOfSessionsPerEra: u32 = 5;
 }
 
 impl pallet_infra_voting::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type MaxValidators = MaxValidators;
-	type MaxSeedTrustValidators = MaxSeedTrustValidators;
-	type MaxPotValidators = MaxPotValidators;
-	type InfraVoteId = VoteAccountId;
+	type SessionsPerEra = NumberOfSessionsPerEra;
+	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
-	type NextNewSession = ();
+	type NextNewSession = Session;
 	type SessionInterface = ();
-	type SessionsPerEra = Sessions; 
 }
 
 impl pallet_infra_system_token_manager::Config for Runtime {
