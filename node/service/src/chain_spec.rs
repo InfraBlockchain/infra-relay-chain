@@ -309,6 +309,8 @@ fn infrablockspace_staging_testnet_config_genesis(
 		infra_system_token_manager: Default::default(),
 		infra_voting: infrablockspace::InfraVotingConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
+			total_number_of_validators: 2,
+			number_of_seed_trust_validators: 2,
 			..Default::default()
 		},
 	}
@@ -626,6 +628,8 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 		infra_system_token_manager: Default::default(),
 		infra_voting: rococo_runtime::InfraVotingConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
+			total_number_of_validators: 2,
+			number_of_seed_trust_validators: 2,
 			..Default::default()
 		},
 	}
@@ -862,6 +866,8 @@ pub fn infrablockspace_testnet_genesis(
 		infra_system_token_manager: Default::default(),
 		infra_voting: infrablockspace::InfraVotingConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
+			total_number_of_validators: 2,
+			number_of_seed_trust_validators: 2,
 			..Default::default()
 		},
 	}
@@ -956,6 +962,8 @@ pub fn rococo_testnet_genesis(
 		infra_system_token_manager: Default::default(),
 		infra_voting: rococo_runtime::InfraVotingConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
+			total_number_of_validators: 2,
+			number_of_seed_trust_validators: 2,
 			..Default::default()
 		},
 	}
