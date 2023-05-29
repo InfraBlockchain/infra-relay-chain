@@ -33,6 +33,7 @@ use frame_support::{
 	dispatch::DispatchResult,
 	pallet_prelude::*,
 	traits::{IsType, ValidatorSet},
+	PalletId,
 };
 use frame_system::pallet_prelude::*;
 use log::info;
@@ -40,7 +41,7 @@ use primitives::Id as ParaId;
 use scale_info::TypeInfo;
 use sp_runtime::{
 	generic::{VoteAssetId, VoteWeight},
-	traits::{Convert, StaticLookup},
+	traits::{AccountIdConversion, Convert, StaticLookup},
 };
 use sp_staking::SessionIndex;
 use sp_std::prelude::*;
@@ -141,7 +142,6 @@ pub mod pallet {
 		pub fn claim(
 			origin: OriginFor<T>,
 			controller: AccountIdLookupOf<T>,
-			sovereign: AccountIdLookupOf<T>,
 			asset_id: T::AssetIdParameter,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
@@ -159,6 +159,7 @@ pub mod pallet {
 				ValidatorRewards::<T>::get(who.clone()).unwrap_or_default();
 			ensure!(rewards.len() != 0, Error::<T>::NothingToClaim);
 
+			let sovereign = Self::account_id();
 			if let Some(reward) = rewards.iter_mut().find(|ar| ar.asset_id == id) {
 				let config = <configuration::Pallet<T>>::config();
 				let xcm = {
@@ -168,7 +169,7 @@ pub mod pallet {
 					let mut encoded: Vec<u8> = [0x32].into(); // asset pallet number
 					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
 						id: asset_id,
-						source: sovereign.clone(),
+						source: T::Lookup::unlookup(sovereign.clone()),
 						dest: controller.clone(),
 						amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
 					}
@@ -236,6 +237,11 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
+	pub fn account_id() -> T::AccountId {
+		let pallet_id = PalletId(*b"infrafee");
+		pallet_id.into_account_truncating()
+	}
+
 	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight) {
 		let asset_id: u32 = asset_id.into();
 		let amount: u128 = amount.into();
