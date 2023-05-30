@@ -1,18 +1,18 @@
 // Copyright 2019-2020 Parity Technologies (UK) Ltd.
-// This file is part of infrablockspace.
+// This file is part of Polkadot.
 
-// infrablockspace is free software: you can redistribute it and/or modify
+// Polkadot is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// infrablockspace is distributed in the hope that it will be useful,
+// Polkadot is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with infrablockspace.  If not, see <http://www.gnu.org/licenses/>.
+// along with Polkadot.  If not, see <http://www.gnu.org/licenses/>.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -45,7 +45,9 @@ pub mod time {
 	pub const SLOT_DURATION: Moment = MILLISECS_PER_BLOCK;
 	// DBG TBD EPOCH_DURATION_IN_SLOTS
 	pub const EPOCH_DURATION_IN_SLOTS: BlockNumber = prod_or_fast!(4 * HOURS, 1 * MINUTES);
-	// pub const EPOCH_DURATION_IN_SLOTS: BlockNumber = prod_or_fast!(1 * MINUTES, 1 * MINUTES);
+	frame_support::parameter_types! {
+		pub storage EpochDurationInSlots: BlockNumber = EPOCH_DURATION_IN_SLOTS;
+	}
 
 	// These time units are defined in number of blocks.
 	pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);

@@ -65,7 +65,30 @@ pub struct Extensions {
 /// The `ChainSpec` parameterized for the infrablockspace runtime.
 #[cfg(feature = "infrablockspace-native")]
 pub type InfrablockspaceChainSpec =
-	service::GenericChainSpec<infrablockspace::GenesisConfig, Extensions>;
+	service::GenericChainSpec<IbsGenesisExt, Extensions>;
+
+#[derive(serde::Serialize, serde::Deserialize)]
+#[cfg(feature = "infrablockspace-native")]
+pub struct IbsGenesisExt {
+	/// The runtime genesis config.
+	runtime_genesis_config: infrablockspace::GenesisConfig,
+	/// The session length in blocks.
+	///
+	/// If `None` is supplied, the default value is used.
+	session_length_in_blocks: Option<u32>,
+}
+
+#[cfg(feature = "infrablockspace-native")]
+impl sp_runtime::BuildStorage for IbsGenesisExt {
+	fn assimilate_storage(&self, storage: &mut sp_core::storage::Storage) -> Result<(), String> {
+		sp_state_machine::BasicExternalities::execute_with_storage(storage, || {
+			if let Some(length) = self.session_length_in_blocks.as_ref() {
+				infrablockspace_runtime_constants::time::EpochDurationInSlots::set(length);
+			}
+		});
+		self.runtime_genesis_config.assimilate_storage(storage)
+	}
+}
 
 // Dummy chain spec, in case when we don't have the native runtime.
 pub type DummyChainSpec = service::GenericChainSpec<(), Extensions>;
@@ -266,20 +289,6 @@ fn infrablockspace_staging_testnet_config_genesis(
 				})
 				.collect::<Vec<_>>(),
 		},
-		staking: infrablockspace::StakingConfig {
-			validator_count: 50,
-			minimum_validator_count: 4,
-			stakers: initial_authorities
-				.iter()
-				.map(|x| {
-					(x.0.clone(), x.1.clone(), STASH, infrablockspace::StakerStatus::Validator)
-				})
-				.collect(),
-			invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
-			force_era: Forcing::ForceNone,
-			slash_reward_fraction: Perbill::from_percent(10),
-			..Default::default()
-		},
 		sudo: infrablockspace::SudoConfig { key: Some(root_key) },
 		phragmen_election: Default::default(),
 		democracy: Default::default(),
@@ -305,7 +314,6 @@ fn infrablockspace_staging_testnet_config_genesis(
 		},
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
-		nomination_pools: Default::default(),
 		infra_system_token_manager: Default::default(),
 		infra_voting: infrablockspace::InfraVotingConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
@@ -656,7 +664,11 @@ pub fn infrablockspace_staging_testnet_config() -> Result<InfrablockspaceChainSp
 		"Polkadot Staging Testnet",
 		"infrablockspace_staging_testnet",
 		ChainType::Live,
-		move || infrablockspace_staging_testnet_config_genesis(wasm_binary),
+		move || IbsGenesisExt {
+			runtime_genesis_config: infrablockspace_staging_testnet_config_genesis(wasm_binary),
+			// Use 1 minute session length.
+			session_length_in_blocks: None,
+		},
 		boot_nodes,
 		Some(
 			TelemetryEndpoints::new(vec![(POLKADOT_STAGING_TELEMETRY_URL.to_string(), 0)])
@@ -823,20 +835,6 @@ pub fn infrablockspace_testnet_genesis(
 				})
 				.collect::<Vec<_>>(),
 		},
-		staking: infrablockspace::StakingConfig {
-			minimum_validator_count: 1,
-			validator_count: initial_authorities.len() as u32,
-			stakers: initial_authorities
-				.iter()
-				.map(|x| {
-					(x.0.clone(), x.1.clone(), STASH, infrablockspace::StakerStatus::Validator)
-				})
-				.collect(),
-			invulnerables: initial_authorities.iter().map(|x| x.0.clone()).collect(),
-			force_era: Forcing::NotForcing,
-			slash_reward_fraction: Perbill::from_percent(10),
-			..Default::default()
-		},
 		sudo: infrablockspace::SudoConfig { key: Some(root_key) },
 		phragmen_election: Default::default(),
 		democracy: infrablockspace::DemocracyConfig::default(),
@@ -862,7 +860,6 @@ pub fn infrablockspace_testnet_genesis(
 		},
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
-		nomination_pools: Default::default(),
 		infra_system_token_manager: Default::default(),
 		infra_voting: infrablockspace::InfraVotingConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
@@ -1001,7 +998,11 @@ pub fn infrablockspace_development_config() -> Result<InfrablockspaceChainSpec, 
 		"Development",
 		"dev",
 		ChainType::Development,
-		move || infrablockspace_development_config_genesis(wasm_binary),
+		move || IbsGenesisExt {
+			runtime_genesis_config: infrablockspace_development_config_genesis(wasm_binary),
+			// Use 1 minute session length.
+			session_length_in_blocks: Some(10),
+		},
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),
@@ -1051,13 +1052,17 @@ fn infrablockspace_local_testnet_genesis(wasm_binary: &[u8]) -> infrablockspace:
 #[cfg(feature = "infrablockspace-native")]
 pub fn infrablockspace_local_testnet_config() -> Result<InfrablockspaceChainSpec, String> {
 	let wasm_binary =
-		infrablockspace::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+		infrablockspace::WASM_BINARY.ok_or("IBS development wasm not available")?;
 
 	Ok(InfrablockspaceChainSpec::from_genesis(
-		"Local Testnet",
-		"local_testnet",
+		"IBS Local Testnet",
+		"ibs_local_testnet",
 		ChainType::Local,
-		move || infrablockspace_local_testnet_genesis(wasm_binary),
+		move || IbsGenesisExt {
+			runtime_genesis_config: infrablockspace_local_testnet_genesis(wasm_binary),
+			// Use 1 minute session length.
+			session_length_in_blocks: Some(10),
+		},
 		vec![],
 		None,
 		Some(DEFAULT_PROTOCOL_ID),

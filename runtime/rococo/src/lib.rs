@@ -20,7 +20,6 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
-use pallet_nis::WithMaximumOf;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use primitives::{
 	vstaging::ExecutorParams, AccountId, AccountIndex, Balance, BlockNumber, CandidateEvent,
@@ -60,7 +59,7 @@ use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{
 		AsEnsureOriginWithArg, ConstU128, Contains, EitherOfDiverse, InstanceFilter,
-		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp, StorageMapShim, WithdrawReasons,
+		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp, WithdrawReasons,
 	},
 	weights::ConstantMultiplier,
 	PalletId, RuntimeDebug,
@@ -380,7 +379,6 @@ impl pallet_session::historical::Config for Runtime {
 }
 
 parameter_types! {
-	pub const SessionsPerEra: SessionIndex = 6;
 	pub const BondingDuration: sp_staking::EraIndex = 28;
 }
 
@@ -1060,12 +1058,12 @@ impl parachains_inclusion::Config for Runtime {
 parameter_types! {
 	pub const TotalNumberOfValidators: u32 = 5;
 	pub const MinVotePointsThreshold: u32 = 1;
-	pub const NumberOfSessionsPerEra: u32 = 5;
+	pub const SessionsPerEra: u32 = 5;
 }
 
 impl pallet_infra_voting::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type SessionsPerEra = NumberOfSessionsPerEra;
+	type SessionsPerEra = SessionsPerEra;
 	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = Session;

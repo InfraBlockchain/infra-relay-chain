@@ -4422,13 +4422,11 @@ dependencies = [
  "pallet-authority-discovery",
  "pallet-authorship",
  "pallet-babe",
- "pallet-bags-list",
  "pallet-balances",
  "pallet-bounties",
  "pallet-child-bounties",
  "pallet-collective",
  "pallet-democracy",
- "pallet-election-provider-multi-phase",
  "pallet-election-provider-support-benchmarking",
  "pallet-elections-phragmen",
  "pallet-fast-unstake",
@@ -4436,13 +4434,12 @@ dependencies = [
  "pallet-identity",
  "pallet-im-online",
  "pallet-indices",
+ "pallet-infra-asset-tx-payment",
  "pallet-infra-system-token-manager",
  "pallet-infra-voting",
  "pallet-membership",
  "pallet-multisig",
- "pallet-nomination-pools",
  "pallet-nomination-pools-benchmarking",
- "pallet-nomination-pools-runtime-api",
  "pallet-offences",
  "pallet-offences-benchmarking",
  "pallet-preimage",
@@ -7336,17 +7333,6 @@ dependencies = [
  "sp-runtime",
  "sp-runtime-interface",
  "sp-staking",
- "sp-std",
-]
-
-[[package]]
-name = "pallet-nomination-pools-runtime-api"
-version = "1.0.0-dev"
-source = "git+https://github.com/InfraBlockchain/infra-substrate?branch=master#cb516b879cbfe52dda75c8538afa82c360f64e17"
-dependencies = [
- "pallet-nomination-pools",
- "parity-scale-codec",
- "sp-api",
  "sp-std",
 ]
 
