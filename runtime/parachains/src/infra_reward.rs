@@ -114,7 +114,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// The validator has been rewarded.
-		Rewarded { stash: ValidatorId<T> },
+		Rewarded { stash: ValidatorId<T>, asset_id: T::AssetId, amount: u128 },
 	}
 
 	#[pallet::error]
@@ -201,10 +201,14 @@ pub mod pallet {
 						"sending 'dmp' failed."
 					);
 				};
+				Self::deposit_event(Event::Rewarded {
+					stash: who.into(),
+					asset_id: id,
+					amount: reward.amount,
+				});
 				reward.amount = 0;
 			}
 
-			Self::deposit_event(Event::Rewarded { stash: who.into() });
 			Ok(())
 		}
 		#[pallet::call_index(1)]
