@@ -36,7 +36,6 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
-use log::info;
 use primitives::Id as ParaId;
 use scale_info::TypeInfo;
 use sp_runtime::{
