@@ -31,11 +31,9 @@ sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = 
 sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-mmr-primitives = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-sp-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-session = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-version = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-sp-npos-elections = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 pallet-sudo = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -51,7 +49,6 @@ pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/InfraBl
 pallet-collective = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-democracy = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-elections-phragmen = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-fast-unstake = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-executive = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-grandpa = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-identity = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -65,9 +62,6 @@ pallet-proxy = { git = "https://github.com/InfraBlockchain/infra-substrate", bra
 pallet-scheduler = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-session = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-staking-reward-curve = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
-pallet-staking-runtime-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-system-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 infrablockspace-runtime-constants = { package = "infrablockspace-runtime-constants", path = "./constants", default-features = false }
@@ -76,7 +70,6 @@ pallet-tips = { git = "https://github.com/InfraBlockchain/infra-substrate", bran
 pallet-treasury = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-vesting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-utility = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-frame-election-provider-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
 
 # infra-related
@@ -86,10 +79,8 @@ pallet-infra-system-token-manager = { git = "https://github.com/InfraBlockchain/
 frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 frame-try-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 frame-system-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
-pallet-election-provider-support-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 pallet-offences-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 pallet-session-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
-pallet-nomination-pools-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 hex-literal = { version = "0.3.4", optional = true }
 
 runtime-common = { package = "infrablockspace-runtime-common", path = "../common", default-features = false }
@@ -147,7 +138,6 @@ std = [
 	"pallet-collective/std",
 	"pallet-elections-phragmen/std",
 	"pallet-democracy/std",
-	"pallet-fast-unstake/std",
 	"pallet-grandpa/std",
 	"pallet-identity/std",
 	"pallet-im-online/std",
@@ -159,8 +149,6 @@ std = [
 	"pallet-proxy/std",
 	"pallet-scheduler/std",
 	"pallet-session/std",
-	"pallet-staking/std",
-	"pallet-staking-runtime-api/std",
 	"pallet-timestamp/std",
 	"pallet-treasury/std",
 	"pallet-tips/std",
@@ -170,7 +158,6 @@ std = [
 	"pallet-infra-voting/std",
 	"pallet-infra-system-token-manager/std",
 	"sp-runtime/std",
-	"sp-staking/std",
 	"frame-system/std",
 	"frame-system-rpc-runtime-api/std",
 	"infrablockspace-runtime-constants/std",
@@ -182,9 +169,7 @@ std = [
 	"sp-session/std",
 	"runtime-common/std",
 	"frame-try-runtime/std",
-	"sp-npos-elections/std",
 	"beefy-primitives/std",
-	"frame-election-provider-support/std",
 	"pallet-xcm/std",
 	"xcm/std",
 	"xcm-executor/std",
@@ -202,8 +187,6 @@ runtime-benchmarks = [
 	"pallet-collective/runtime-benchmarks",
 	"pallet-democracy/runtime-benchmarks",
 	"pallet-elections-phragmen/runtime-benchmarks",
-	"pallet-election-provider-support-benchmarking/runtime-benchmarks",
-	"pallet-fast-unstake/runtime-benchmarks",
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-identity/runtime-benchmarks",
 	"pallet-im-online/runtime-benchmarks",
@@ -213,7 +196,6 @@ runtime-benchmarks = [
 	"pallet-preimage/runtime-benchmarks",
 	"pallet-proxy/runtime-benchmarks",
 	"pallet-scheduler/runtime-benchmarks",
-	"pallet-staking/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"pallet-treasury/runtime-benchmarks",
 	"pallet-bounties/runtime-benchmarks",
@@ -227,7 +209,6 @@ runtime-benchmarks = [
 	"frame-system-benchmarking/runtime-benchmarks",
 	"hex-literal",
 	"xcm-builder/runtime-benchmarks",
-	"frame-election-provider-support/runtime-benchmarks",
 	"runtime-parachains/runtime-benchmarks",
 ]
 try-runtime = [
@@ -244,7 +225,6 @@ try-runtime = [
 	"pallet-transaction-payment/try-runtime",
 	"pallet-collective/try-runtime",
 	"pallet-elections-phragmen/try-runtime",
-	"pallet-fast-unstake/try-runtime",
 	"pallet-democracy/try-runtime",
 	"pallet-grandpa/try-runtime",
 	"pallet-identity/try-runtime",
@@ -257,7 +237,6 @@ try-runtime = [
 	"pallet-proxy/try-runtime",
 	"pallet-scheduler/try-runtime",
 	"pallet-session/try-runtime",
-	"pallet-staking/try-runtime",
 	"pallet-timestamp/try-runtime",
 	"pallet-treasury/try-runtime",
 	"pallet-tips/try-runtime",
