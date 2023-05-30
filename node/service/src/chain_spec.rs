@@ -30,13 +30,12 @@ use rococo_runtime_constants::currency::UNITS as ROC;
 
 use infrablockspace_primitives::{AccountId, AccountPublic, AssignmentId, ValidatorId};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_staking::Forcing;
 use sc_chain_spec::{ChainSpecExtension, ChainType};
 use serde::{Deserialize, Serialize};
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::{sr25519, Pair, Public};
-use sp_runtime::{traits::IdentifyAccount, Perbill};
+use sp_runtime::traits::IdentifyAccount;
 use telemetry::TelemetryEndpoints;
 
 #[cfg(feature = "infrablockspace-native")]
@@ -802,7 +801,6 @@ pub fn infrablockspace_testnet_genesis(
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 
 	const ENDOWMENT: u128 = 1_000_000 * UNITS;
-	const STASH: u128 = 100 * UNITS;
 
 	infrablockspace::GenesisConfig {
 		system: infrablockspace::SystemConfig { code: wasm_binary.to_vec() },

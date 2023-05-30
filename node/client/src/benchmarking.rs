@@ -154,8 +154,7 @@ impl BenchmarkCallSigner<infrablockspace_runtime::RuntimeCall, sp_core::sr25519:
 			),
 			frame_system::CheckNonce::<runtime::Runtime>::from(nonce),
 			frame_system::CheckWeight::<runtime::Runtime>::new(),
-			pallet_transaction_payment::ChargeTransactionPayment::<runtime::Runtime>::from(0),
-			infrablockspace_runtime_common::claims::PrevalidateAttests::<runtime::Runtime>::new(),
+			pallet_infra_asset_tx_payment::ChargeAssetTxPayment::<runtime::Runtime>::new(),
 		);
 
 		let payload = runtime::SignedPayload::from_raw(
@@ -167,7 +166,6 @@ impl BenchmarkCallSigner<infrablockspace_runtime::RuntimeCall, sp_core::sr25519:
 				runtime::VERSION.transaction_version,
 				genesis,
 				genesis,
-				(),
 				(),
 				(),
 				(),

@@ -23,8 +23,8 @@
 use pallet_transaction_payment::CurrencyAdapter;
 use runtime_common::{
 	auctions, claims, crowdloan, impl_runtime_weights, impls::DealWithFees, paras_registrar,
-	paras_sudo_wrapper, prod_or_fast, slots, BlockHashCount, BlockLength, CurrencyToVote,
-	SlowAdjustingFeeUpdate,
+	paras_sudo_wrapper, prod_or_fast, slots, BlockHashCount, BlockLength,
+	SlowAdjustingFeeUpdate, pot as relay_pot,
 };
 
 use runtime_parachains::{
@@ -32,19 +32,19 @@ use runtime_parachains::{
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
 	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
 	origin as parachains_origin, paras as parachains_paras,
-	paras_inherent as parachains_paras_inherent, reward_points as parachains_reward_points,
+	paras_inherent as parachains_paras_inherent,
 	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
 	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
 use beefy_primitives::crypto::{AuthorityId as BeefyId, Signature as BeefySignature};
-use frame_election_provider_support::{generate_solution_type, onchain, SequentialPhragmen};
 use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{
 		AsEnsureOriginWithArg, ConstU128, ConstU32, EitherOfDiverse, InstanceFilter,
 		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp, WithdrawReasons,
+		tokens::fungibles::{CreditOf, Balanced},
 	},
 	weights::ConstantMultiplier,
 	PalletId, RuntimeDebug,
@@ -55,28 +55,27 @@ use pallet_grandpa::{fg_primitives, AuthorityId as GrandpaId};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_session::historical as session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
+use pallet_infra_asset_tx_payment::{FungiblesAdapter, HandleCredit};
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use primitives::{
 	AccountId, AccountIndex, Balance, BlockNumber, CandidateEvent, CommittedCandidateReceipt,
 	CoreState, GroupRotationInfo, Hash, Id as ParaId, InboundDownwardMessage, InboundHrmpMessage,
 	Moment, Nonce, OccupiedCoreAssumption, PersistedValidationData, ScrapedOnChainVotes,
 	SessionInfo, Signature, ValidationCode, ValidationCodeHash, ValidatorId, ValidatorIndex,
-	LOWEST_PUBLIC_ID,
 };
 use sp_core::OpaqueMetadata;
 use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str,
-	curve::PiecewiseLinear,
 	generic,
 	generic::{VoteAccountId, VoteWeight},
 	impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
-		OpaqueKeys, SaturatedConversion, Verify,
+		OpaqueKeys, SaturatedConversion, Verify, AccountIdConversion,
 	},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
-	ApplyExtrinsicResult, FixedU128, KeyTypeId, Perbill, Percent, Permill,
+	ApplyExtrinsicResult, KeyTypeId, Perbill, Percent, Permill,
 };
 
 use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
@@ -327,6 +326,33 @@ impl pallet_transaction_payment::Config for Runtime {
 	type WeightToFee = WeightToFee;
 	type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
 	type FeeMultiplierUpdate = SlowAdjustingFeeUpdate<Self>;
+}
+
+parameter_types! {
+	pub const FeeTreasuryId: PalletId = PalletId(*b"i8/trsry");
+}
+
+pub struct CreditToBucket;
+impl HandleCredit<AccountId, Assets> for CreditToBucket {
+	fn handle_credit(credit: CreditOf<AccountId, Assets>) {
+		let dest = FeeTreasuryId::get().into_account_truncating();
+		let _ = <Assets as Balanced<AccountId>>::resolve(&dest, credit);
+	}
+}
+
+impl pallet_infra_asset_tx_payment::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Fungibles = Assets;
+	type OnChargeAssetTransaction = FungiblesAdapter<
+		pallet_assets::BalanceToAssetBalance<Balances, Runtime, ConvertInto>,
+		CreditToBucket,
+	>;
+	type VoteInfoHandler = Pot;
+	type PalletId = FeeTreasuryId;
+}
+
+impl relay_pot::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
 }
 
 parameter_types! {
@@ -753,7 +779,6 @@ where
 			// The `System::block_number` is initialized with `n+1`,
 			// so the actual block number is `n`.
 			.saturating_sub(1);
-		let tip = 0;
 		let extra: SignedExtra = (
 			frame_system::CheckNonZeroSender::<Runtime>::new(),
 			frame_system::CheckSpecVersion::<Runtime>::new(),
@@ -765,8 +790,7 @@ where
 			)),
 			frame_system::CheckNonce::<Runtime>::from(nonce),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_transaction_payment::ChargeTransactionPayment::<Runtime>::from(tip),
-			claims::PrevalidateAttests::<Runtime>::new(),
+			pallet_infra_asset_tx_payment::ChargeAssetTxPayment::<Runtime>::new(),
 		);
 		let raw_payload = SignedPayload::new(call, extra)
 			.map_err(|e| {
@@ -1255,8 +1279,8 @@ construct_runtime! {
 		Indices: pallet_indices::{Pallet, Call, Storage, Config<T>, Event<T>} = 4,
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 5,
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 6,
-		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 32,
-		
+		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 31,
+		InfraAssetTxPayament: pallet_infra_asset_tx_payment::{Pallet, Event<T>} = 32,
 		// Consensus support.
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.
@@ -1323,6 +1347,9 @@ construct_runtime! {
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 
+		// Pot for Relay Chain
+		Pot: relay_pot::{Pallet, Storage, Event<T>} = 80,
+
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
 		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
 
@@ -1350,8 +1377,7 @@ pub type SignedExtra = (
 	frame_system::CheckMortality<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
-	claims::PrevalidateAttests<Runtime>,
+	pallet_infra_asset_tx_payment::ChargeAssetTxPayment<Runtime>,
 );
 
 /// All migrations that will run on the next runtime upgrade.
@@ -1935,8 +1961,7 @@ mod test_fees {
 			frame_system::CheckMortality::<Runtime>::from(generic::Era::immortal()),
 			frame_system::CheckNonce::<Runtime>::from(1),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_transaction_payment::ChargeTransactionPayment::<Runtime>::from(0),
-			claims::PrevalidateAttests::<Runtime>::new(),
+			pallet_infra_asset_tx_payment::ChargeAssetTxPayment::<Runtime>::new(),
 		);
 		let uxt = UncheckedExtrinsic {
 			function: call,

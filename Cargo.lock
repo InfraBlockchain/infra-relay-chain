@@ -3597,6 +3597,7 @@ dependencies = [
  "infrablockspace-primitives",
  "infrablockspace-runtime",
  "infrablockspace-runtime-common",
+ "pallet-infra-asset-tx-payment",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "rococo-runtime",

@@ -11,6 +11,7 @@ frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate
 frame-benchmarking-cli = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 pallet-transaction-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
+pallet-infra-asset-tx-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 frame-system-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 

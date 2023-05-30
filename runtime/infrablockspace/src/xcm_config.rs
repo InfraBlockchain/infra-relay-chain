@@ -29,11 +29,11 @@ use runtime_common::{paras_registrar, xcm_sender, ToAuthor};
 use sp_core::ConstU32;
 use xcm::latest::prelude::*;
 use xcm_builder::{
-	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom, AllowKnownQueryResponses,
+	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom,
 	AllowSubscriptionsFrom, AllowTopLevelPaidExecutionFrom, BackingToPlurality,
 	ChildParachainAsNative, ChildParachainConvertsVia, CurrencyAdapter as XcmCurrencyAdapter,
 	FixedWeightBounds, IsConcrete, MintLocation, SignedAccountId32AsNative, SignedToAccountId32,
-	SovereignSignedViaLocation, TakeWeightCredit, UsingComponents, WithComputedOrigin,
+	SovereignSignedViaLocation, TakeWeightCredit, UsingComponents,
 };
 use xcm_executor::traits::WithOriginFilter;
 
