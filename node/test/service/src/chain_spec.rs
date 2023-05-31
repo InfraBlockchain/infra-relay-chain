@@ -117,6 +117,12 @@ fn infrablockspace_testnet_genesis(
 	const STASH: u128 = 100 * DOTS;
 
 	runtime::GenesisConfig {
+		assets: runtime::AssetsConfig {
+			assets: vec![],
+			metadata: vec![],
+			accounts: vec![],
+			..Default::default()
+		},
 		system: runtime::SystemConfig {
 			code: runtime::WASM_BINARY.expect("Wasm binary must be built for testing").to_vec(),
 			..Default::default()
