@@ -23,8 +23,8 @@
 use pallet_transaction_payment::CurrencyAdapter;
 use runtime_common::{
 	auctions, claims, crowdloan, impl_runtime_weights, impls::DealWithFees, paras_registrar,
-	paras_sudo_wrapper, prod_or_fast, slots, BlockHashCount, BlockLength,
-	SlowAdjustingFeeUpdate, pot as relay_pot,
+	paras_sudo_wrapper, pot as relay_pot, prod_or_fast, slots, BlockHashCount, BlockLength,
+	SlowAdjustingFeeUpdate,
 };
 
 use runtime_parachains::{
@@ -42,20 +42,20 @@ use beefy_primitives::crypto::{AuthorityId as BeefyId, Signature as BeefySignatu
 use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{
+		tokens::fungibles::{Balanced, CreditOf},
 		AsEnsureOriginWithArg, ConstU128, ConstU32, EitherOfDiverse, InstanceFilter,
 		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp, WithdrawReasons,
-		tokens::fungibles::{CreditOf, Balanced},
 	},
 	weights::ConstantMultiplier,
 	PalletId, RuntimeDebug,
 };
 use frame_system::EnsureRoot;
-use pallet_infra_voting::SessionIndex;
 use pallet_grandpa::{fg_primitives, AuthorityId as GrandpaId};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
+use pallet_infra_asset_tx_payment::{FungiblesAdapter, HandleCredit};
+use pallet_infra_voting::SessionIndex;
 use pallet_session::historical as session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
-use pallet_infra_asset_tx_payment::{FungiblesAdapter, HandleCredit};
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use primitives::{
 	AccountId, AccountIndex, Balance, BlockNumber, CandidateEvent, CommittedCandidateReceipt,
@@ -66,13 +66,12 @@ use primitives::{
 use sp_core::OpaqueMetadata;
 use sp_mmr_primitives as mmr;
 use sp_runtime::{
-	create_runtime_str,
-	generic,
+	create_runtime_str, generic,
 	generic::{VoteAccountId, VoteWeight},
 	impl_opaque_keys,
 	traits::{
-		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
-		OpaqueKeys, SaturatedConversion, Verify, AccountIdConversion,
+		AccountIdConversion, AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto,
+		Extrinsic as ExtrinsicT, OpaqueKeys, SaturatedConversion, Verify,
 	},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult, KeyTypeId, Perbill, Percent, Permill,
@@ -413,7 +412,6 @@ impl pallet_session::historical::Config for Runtime {
 	type FullIdentification = ();
 	type FullIdentificationOf = FullIdentificationOf;
 }
-
 
 parameter_types! {
 	// Minimum 4 CENTS/byte
@@ -1075,7 +1073,7 @@ parameter_types! {
 	pub const TotalNumberOfValidators: u32 = 5;
 	pub const MinVotePointsThreshold: u32 = 1;
 	pub const SessionsPerEra: u32 = 5;
-	// Should be removed.	
+	// Should be removed.
 	pub const BondingDuration: u32 = 28;
 }
 
@@ -1267,7 +1265,7 @@ construct_runtime! {
 		System: frame_system::{Pallet, Call, Storage, Config, Event<T>} = 0,
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 1,
 		Preimage: pallet_preimage::{Pallet, Call, Storage, Event<T>} = 100,
-		
+
 		// IBS Support
 		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 20,
 		InfraReward: parachains_infra_reward::{Pallet, Call, Storage, Event<T>} = 21,
