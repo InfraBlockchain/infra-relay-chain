@@ -173,6 +173,28 @@ parameter_types! {
 	pub storage ExpectedBlockTime: Moment = MILLISECS_PER_BLOCK;
 }
 
+type AssetId = u32;
+impl pallet_assets::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Balance = Balance;
+	type AssetId = AssetId;
+	type AssetIdParameter = parity_scale_codec::Compact<AssetId>;
+	type Currency = Balances;
+	type CreateOrigin = AsEnsureOriginWithArg<frame_system::EnsureSigned<AccountId>>;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type AssetDeposit = ConstU128<2>;
+	type AssetAccountDeposit = ConstU128<2>;
+	type MetadataDepositBase = ConstU128<0>;
+	type MetadataDepositPerByte = ConstU128<0>;
+	type ApprovalDeposit = ConstU128<0>;
+	type StringLimit = ConstU32<20>;
+	type Freezer = ();
+	type Extra = ();
+	type CallbackHandle = ();
+	type WeightInfo = ();
+	type RemoveItemsLimit = ConstU32<1000>;
+}
+
 impl pallet_babe::Config for Runtime {
 	type EpochDuration = EpochDuration;
 	type ExpectedBlockTime = ExpectedBlockTime;
@@ -720,6 +742,7 @@ construct_runtime! {
 		ParasDisputes: parachains_disputes::{Pallet, Storage, Event<T>},
 
 		// Infra Related
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>},
 		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>},
 		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>},
 

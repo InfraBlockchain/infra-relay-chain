@@ -33,6 +33,7 @@ frame-election-provider-support = { git = "https://github.com/InfraBlockchain/in
 tx-pool-api = { package = "sp-transaction-pool", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 block-builder-api = { package = "sp-block-builder", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
+pallet-assets = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-authorship = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-babe = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -84,6 +85,7 @@ only-staking = []
 runtime-metrics = ["infrablockspace-runtime-parachains/runtime-metrics", "sp-io/with-tracing"]
 
 std = [
+	"pallet-assets/std",
 	"authority-discovery-primitives/std",
 	"pallet-authority-discovery/std",
 	"bitvec/std",
