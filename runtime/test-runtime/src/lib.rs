@@ -516,9 +516,10 @@ impl parachains_shared::Config for Runtime {}
 impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
-	type RewardValidators = RewardValidatorsWithEraPoints<Runtime>;
+	type RewardValidators = RewardValidators;
 	type VotingManager = InfraVoting;
 	type SystemTokenManager = InfraSystemTokenManager;
+	type RewardAggregateHandler = InfraReward;
 }
 
 parameter_types! {
