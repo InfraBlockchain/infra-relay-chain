@@ -39,8 +39,12 @@ use beefy_primitives::crypto::{AuthorityId as BeefyId, Signature as BeefySignatu
 use frame_election_provider_support::{onchain, SequentialPhragmen};
 use frame_support::{
 	construct_runtime, parameter_types,
-	traits::{Everything, KeyOwnerProofSystem, WithdrawReasons},
+	traits::{
+		AsEnsureOriginWithArg, ConstU128, ConstU32, Everything, KeyOwnerProofSystem,
+		WithdrawReasons,
+	},
 };
+use frame_system::EnsureRoot;
 use infrablockspace_runtime_parachains::reward_points::RewardValidatorsWithEraPoints;
 use pallet_grandpa::{fg_primitives, AuthorityId as GrandpaId};
 use pallet_session::historical as session_historical;
@@ -305,7 +309,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = InfraReward;
+	type SessionManager = InfraVoting;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = ();
