@@ -513,6 +513,12 @@ impl parachains_configuration::Config for Runtime {
 
 impl parachains_shared::Config for Runtime {}
 
+pub struct RewardValidators;
+impl infrablockspace_runtime_parachains::inclusion::RewardValidators for RewardValidators {
+	fn reward_backing(_: impl IntoIterator<Item = ValidatorIndex>) {}
+	fn reward_bitfields(_: impl IntoIterator<Item = ValidatorIndex>) {}
+}
+
 impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
