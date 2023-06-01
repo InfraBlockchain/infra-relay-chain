@@ -4510,6 +4510,8 @@ dependencies = [
  "pallet-balances",
  "pallet-election-provider-multi-phase",
  "pallet-fast-unstake",
+ "pallet-infra-system-token-manager",
+ "pallet-infra-voting",
  "pallet-session",
  "pallet-staking",
  "pallet-staking-reward-fn",

@@ -352,6 +352,8 @@ impl pallet_infra_asset_tx_payment::Config for Runtime {
 
 impl relay_pot::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type VotingHandler = InfraVoting;
+	type SystemTokenManager = InfraSystemTokenManager;
 }
 
 parameter_types! {
