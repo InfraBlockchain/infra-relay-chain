@@ -86,7 +86,7 @@ pub use infrablockspace_client::RococoExecutorDispatch;
 #[cfg(feature = "infrablockspace-native")]
 pub use infrablockspace_client::InfrablockspaceExecutorDispatch;
 
-pub use chain_spec::{InfrablockspaceChainSpec, RococoChainSpec};
+pub use chain_spec::{InfraBlockspaceChainSpec, RococoChainSpec};
 pub use consensus_common::{block_validation::Chain, Proposal, SelectChain};
 use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
 #[cfg(feature = "full-node")]

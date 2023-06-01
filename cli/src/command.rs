@@ -111,7 +111,7 @@ impl SubstrateCli for Cli {
 				let path = std::path::PathBuf::from(path);
 
 				let chain_spec =
-					Box::new(service::InfrablockspaceChainSpec::from_json_file(path.clone())?)
+					Box::new(service::InfraBlockspaceChainSpec::from_json_file(path.clone())?)
 						as Box<dyn service::ChainSpec>;
 
 				// When `force_*` is given or the file name starts with the name of one of the known chains,

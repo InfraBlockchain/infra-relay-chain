@@ -1068,12 +1068,10 @@ impl parachains_inclusion::Config for Runtime {
 	type RewardValidators = RewardValidators;
 	type VotingManager = InfraVoting;
 	type SystemTokenManager = InfraSystemTokenManager;
-	type RewardAggregateHandler = InfraReward;
+	type RewardInterface = InfraReward;
 }
 
 parameter_types! {
-	pub const TotalNumberOfValidators: u32 = 5;
-	pub const MinVotePointsThreshold: u32 = 1;
 	pub const SessionsPerEra: u32 = 5;
 	// Should be removed.
 	pub const BondingDuration: u32 = 28;
@@ -1086,6 +1084,7 @@ impl pallet_infra_voting::Config for Runtime {
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = Session;
 	type SessionInterface = ();
+	type RewardInterface = InfraReward;
 }
 
 impl pallet_infra_system_token_manager::Config for Runtime {

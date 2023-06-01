@@ -63,12 +63,12 @@ pub struct Extensions {
 
 /// The `ChainSpec` parameterized for the infrablockspace runtime.
 #[cfg(feature = "infrablockspace-native")]
-pub type InfrablockspaceChainSpec =
-	service::GenericChainSpec<IbsGenesisExt, Extensions>;
+pub type InfraBlockspaceChainSpec =
+	service::GenericChainSpec<InfraBlockspaceGenesisExt, Extensions>;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 #[cfg(feature = "infrablockspace-native")]
-pub struct IbsGenesisExt {
+pub struct InfraBlockspaceGenesisExt {
 	/// The runtime genesis config.
 	runtime_genesis_config: infrablockspace::GenesisConfig,
 	/// The session length in blocks.
@@ -78,7 +78,7 @@ pub struct IbsGenesisExt {
 }
 
 #[cfg(feature = "infrablockspace-native")]
-impl sp_runtime::BuildStorage for IbsGenesisExt {
+impl sp_runtime::BuildStorage for InfraBlockspaceGenesisExt {
 	fn assimilate_storage(&self, storage: &mut sp_core::storage::Storage) -> Result<(), String> {
 		sp_state_machine::BasicExternalities::execute_with_storage(storage, || {
 			if let Some(length) = self.session_length_in_blocks.as_ref() {
@@ -94,7 +94,7 @@ pub type DummyChainSpec = service::GenericChainSpec<(), Extensions>;
 
 // Dummy chain spec, but that is fine when we don't have the native runtime.
 #[cfg(not(feature = "infrablockspace-native"))]
-pub type InfrablockspaceChainSpec = DummyChainSpec;
+pub type InfraBlockspaceChainSpec = DummyChainSpec;
 
 /// The `ChainSpec` parameterized for the rococo runtime.
 #[cfg(feature = "rococo-native")]
@@ -129,8 +129,8 @@ impl sp_runtime::BuildStorage for RococoGenesisExt {
 	}
 }
 
-pub fn infrablockspace_config() -> Result<InfrablockspaceChainSpec, String> {
-	InfrablockspaceChainSpec::from_json_bytes(
+pub fn infrablockspace_config() -> Result<InfraBlockspaceChainSpec, String> {
+	InfraBlockspaceChainSpec::from_json_bytes(
 		&include_bytes!("../chain-specs/infrablockspace.json")[..],
 	)
 }
@@ -642,7 +642,7 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 	}
 }
 
-/// Returns the properties for the [`InfrablockspaceChainSpec`].
+/// Returns the properties for the [`InfraBlockspaceChainSpec`].
 pub fn infrablockspace_chain_spec_properties() -> serde_json::map::Map<String, serde_json::Value> {
 	serde_json::json!({
 		"tokenDecimals": 10,
@@ -654,16 +654,16 @@ pub fn infrablockspace_chain_spec_properties() -> serde_json::map::Map<String, s
 
 /// Polkadot staging testnet config.
 #[cfg(feature = "infrablockspace-native")]
-pub fn infrablockspace_staging_testnet_config() -> Result<InfrablockspaceChainSpec, String> {
+pub fn infrablockspace_staging_testnet_config() -> Result<InfraBlockspaceChainSpec, String> {
 	let wasm_binary =
 		infrablockspace::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
 	let boot_nodes = vec![];
 
-	Ok(InfrablockspaceChainSpec::from_genesis(
+	Ok(InfraBlockspaceChainSpec::from_genesis(
 		"Polkadot Staging Testnet",
 		"infrablockspace_staging_testnet",
 		ChainType::Live,
-		move || IbsGenesisExt {
+		move || InfraBlockspaceGenesisExt {
 			runtime_genesis_config: infrablockspace_staging_testnet_config_genesis(wasm_binary),
 			// Use 1 minute session length.
 			session_length_in_blocks: None,
@@ -988,15 +988,15 @@ fn rococo_development_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::Gene
 
 /// Polkadot development config (single validator Alice)
 #[cfg(feature = "infrablockspace-native")]
-pub fn infrablockspace_development_config() -> Result<InfrablockspaceChainSpec, String> {
+pub fn infrablockspace_development_config() -> Result<InfraBlockspaceChainSpec, String> {
 	let wasm_binary =
-		infrablockspace::WASM_BINARY.ok_or("Polkadot development wasm not available")?;
+		infrablockspace::WASM_BINARY.ok_or("InfraBlockspace development wasm not available")?;
 
-	Ok(InfrablockspaceChainSpec::from_genesis(
+	Ok(InfraBlockspaceChainSpec::from_genesis(
 		"Development",
 		"dev",
 		ChainType::Development,
-		move || IbsGenesisExt {
+		move || InfraBlockspaceGenesisExt {
 			runtime_genesis_config: infrablockspace_development_config_genesis(wasm_binary),
 			// Use 1 minute session length.
 			session_length_in_blocks: Some(10),
@@ -1048,18 +1048,18 @@ fn infrablockspace_local_testnet_genesis(wasm_binary: &[u8]) -> infrablockspace:
 
 /// Polkadot local testnet config (multivalidator Alice + Bob)
 #[cfg(feature = "infrablockspace-native")]
-pub fn infrablockspace_local_testnet_config() -> Result<InfrablockspaceChainSpec, String> {
+pub fn infrablockspace_local_testnet_config() -> Result<InfraBlockspaceChainSpec, String> {
 	let wasm_binary =
-		infrablockspace::WASM_BINARY.ok_or("IBS development wasm not available")?;
+		infrablockspace::WASM_BINARY.ok_or("InfraBlockspace development wasm not available")?;
 
-	Ok(InfrablockspaceChainSpec::from_genesis(
-		"IBS Local Testnet",
-		"ibs_local_testnet",
+	Ok(InfraBlockspaceChainSpec::from_genesis(
+		"InfraBlockspace Local Testnet",
+		"infrablockspace_local_testnet",
 		ChainType::Local,
-		move || IbsGenesisExt {
+		move || InfraBlockspaceGenesisExt {
 			runtime_genesis_config: infrablockspace_local_testnet_genesis(wasm_binary),
 			// Use 1 minute session length.
-			session_length_in_blocks: Some(10),
+			session_length_in_blocks: Some(100),
 		},
 		vec![],
 		None,

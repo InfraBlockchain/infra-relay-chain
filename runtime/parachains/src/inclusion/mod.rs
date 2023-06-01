@@ -21,13 +21,13 @@
 //! to included.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, infra_reward::RewardAggregateHandler, paras,
+	configuration, disputes, dmp, hrmp, paras,
 	paras_inherent::DisputedBitfield, scheduler::CoreAssignment, shared, ump,
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
 use pallet_infra_system_token_manager::SystemTokenInterface;
-use pallet_infra_voting::VotingHandler;
+use pallet_infra_voting::{VotingHandler, RewardInterface};
 use parity_scale_codec::{Decode, Encode};
 use primitives::{
 	AvailabilityBitfield, BackedCandidate, CandidateCommitments, CandidateDescriptor,
@@ -207,7 +207,7 @@ pub mod pallet {
 		type RewardValidators: RewardValidators;
 		type VotingManager: VotingHandler<Self>;
 		type SystemTokenManager: SystemTokenInterface;
-		type RewardAggregateHandler: RewardAggregateHandler;
+		type RewardInterface: RewardInterface;
 	}
 
 	#[pallet::event]
@@ -796,7 +796,7 @@ impl<T: Config> Pallet<T> {
 					let weight = vote.vote_weight;
 					let adjusted_weight = T::SystemTokenManager::adjusted_weight(asset_id, weight);
 					T::VotingManager::update_vote_status(who, adjusted_weight);
-					T::RewardAggregateHandler::aggregate_reward(session_index, asset_id, weight);
+					T::RewardInterface::aggregate_reward(session_index, asset_id, weight);
 				};
 			}
 		};

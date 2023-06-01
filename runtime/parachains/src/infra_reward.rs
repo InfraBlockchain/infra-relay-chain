@@ -42,9 +42,8 @@ use sp_runtime::{
 	generic::{VoteAssetId, VoteWeight},
 	traits::{AccountIdConversion, Convert, StaticLookup},
 };
-use sp_staking::SessionIndex;
 use sp_std::prelude::*;
-
+use pallet_infra_voting::{RewardInterface, SessionIndex};
 pub use pallet::*;
 
 type AccountIdLookupOf<T> = <<T as frame_system::Config>::Lookup as StaticLookup>::Source;
@@ -296,12 +295,12 @@ impl<T: Config> Pallet<T> {
 	}
 }
 
-pub trait RewardAggregateHandler {
-	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight);
-}
-
-impl<T: Config> RewardAggregateHandler for Pallet<T> {
+impl<T: Config> RewardInterface for Pallet<T> {
 	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight) {
 		Self::aggregate_reward(session_index, asset_id, amount);
+	}
+
+	fn distribute_reward(session_index: SessionIndex) {
+		Self::distribute_reward(session_index);
 	}
 }
