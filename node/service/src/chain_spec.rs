@@ -1059,7 +1059,7 @@ pub fn infrablockspace_local_testnet_config() -> Result<InfraBlockspaceChainSpec
 		move || InfraBlockspaceGenesisExt {
 			runtime_genesis_config: infrablockspace_local_testnet_genesis(wasm_binary),
 			// Use 1 minute session length.
-			session_length_in_blocks: Some(100),
+			session_length_in_blocks: Some(5),
 		},
 		vec![],
 		None,

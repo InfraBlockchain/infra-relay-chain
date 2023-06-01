@@ -1072,7 +1072,7 @@ impl parachains_inclusion::Config for Runtime {
 }
 
 parameter_types! {
-	pub const SessionsPerEra: u32 = 5;
+	pub const SessionsPerEra: u32 = 3;
 	// Should be removed.
 	pub const BondingDuration: u32 = 28;
 }
