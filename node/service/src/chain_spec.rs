@@ -820,7 +820,7 @@ pub fn infrablockspace_testnet_genesis(
 				.map(|x| {
 					(
 						x.0.clone(),
-						x.0.clone(),
+						x.1.clone(),
 						infrablockspace_session_keys(
 							x.2.clone(),
 							x.3.clone(),
@@ -860,7 +860,7 @@ pub fn infrablockspace_testnet_genesis(
 		xcm_pallet: Default::default(),
 		infra_system_token_manager: Default::default(),
 		infra_voting: infrablockspace::InfraVotingConfig {
-			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
+			seed_trust_validators: initial_authorities.iter().map(|x| (x.1.clone())).collect(),
 			total_number_of_validators: 2,
 			number_of_seed_trust_validators: 2,
 			..Default::default()
@@ -1040,6 +1040,8 @@ fn infrablockspace_local_testnet_genesis(wasm_binary: &[u8]) -> infrablockspace:
 		vec![
 			get_authority_keys_from_seed_no_beefy("Alice"),
 			get_authority_keys_from_seed_no_beefy("Bob"),
+			get_authority_keys_from_seed_no_beefy("Charlie"),
+			get_authority_keys_from_seed_no_beefy("Dave"),
 		],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
 		None,
