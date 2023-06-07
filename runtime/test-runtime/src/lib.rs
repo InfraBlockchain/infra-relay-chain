@@ -27,11 +27,10 @@ use sp_std::{collections::btree_map::BTreeMap, prelude::*};
 use infrablockspace_runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
-	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
-	origin as parachains_origin, paras as parachains_paras,
+	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent, runtime_api_impl::v2 as runtime_impl,
 	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump,
+	shared as parachains_shared, ump as parachains_ump, validator_reward_manager,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -309,7 +308,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = InfraVoting;
+	type SessionManager = VotingManager;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = ();
@@ -523,9 +522,9 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
-	type VotingManager = InfraVoting;
-	type SystemTokenManager = InfraSystemTokenManager;
-	type RewardInterface = InfraReward;
+	type VotingManager = VotingManager;
+	type SystemTokenManager = SystemTokenManager;
+	type RewardInterface = ValidatorRewardManager;
 }
 
 parameter_types! {
@@ -534,21 +533,23 @@ parameter_types! {
 	pub const NumberOfSessionsPerEra: u32 = 5;
 }
 
-impl pallet_infra_voting::Config for Runtime {
+impl pallet_voting_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type SessionsPerEra = NumberOfSessionsPerEra;
 	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = Session;
 	type SessionInterface = ();
-	type RewardInterface = InfraReward;
+	type RewardInterface = ValidatorRewardManager;
 }
 
-impl pallet_infra_system_token_manager::Config for Runtime {
+impl pallet_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type StringLimit = ConstU32<50>;
+	type MaxWrappedSystemToken = ConstU32<10>;
 }
 
-impl parachains_infra_reward::Config for Runtime {
+impl validator_reward_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
 }
@@ -749,14 +750,14 @@ construct_runtime! {
 		Hrmp: parachains_hrmp::{Pallet, Call, Storage, Event<T>},
 		Ump: parachains_ump::{Pallet, Call, Storage, Event},
 		Dmp: parachains_dmp::{Pallet, Call, Storage},
-		InfraReward: parachains_infra_reward::{Pallet, Call, Storage, Event<T>},
+		ValidatorRewardManager: validator_reward_manager::{Pallet, Call, Storage, Event<T>},
 		Xcm: pallet_xcm::{Pallet, Call, Event<T>, Origin},
 		ParasDisputes: parachains_disputes::{Pallet, Storage, Event<T>},
 
 		// Infra Related
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>},
-		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Event<T>},
-		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>},
+		VotingManager: pallet_voting_manager::{Pallet, Call, Storage, Event<T>},
+		SystemTokenManager: pallet_system_token_manager::{Pallet, Call, Storage, Event<T>},
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>},
 

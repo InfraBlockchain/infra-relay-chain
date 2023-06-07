@@ -56,8 +56,8 @@ pallet-sudo = { git = "https://github.com/InfraBlockchain/infra-substrate", bran
 pallet-vesting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 # infra-related
-pallet-infra-voting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-infra-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-voting-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 runtime-common = { package = "infrablockspace-runtime-common", path = "../common", default-features = false }
 primitives = { package = "infrablockspace-primitives", path = "../../primitives", default-features = false }
@@ -119,8 +119,8 @@ std = [
 	"sp-staking/std",
 	"pallet-session/std",
 	"pallet-staking/std",
-	"pallet-infra-voting/std",
-	"pallet-infra-system-token-manager/std",
+	"pallet-voting-manager/std",
+	"pallet-system-token-manager/std",
 	"frame-system/std",
 	"frame-system-rpc-runtime-api/std",
 	"test-runtime-constants/std",

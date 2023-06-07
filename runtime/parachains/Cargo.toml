@@ -35,14 +35,14 @@ pallet-session = { git = "https://github.com/InfraBlockchain/infra-substrate", b
 pallet-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-timestamp = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-vesting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-infra-asset-tx-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-fee-payment-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 # infra-related
-pallet-infra-voting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-infra-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-voting-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 xcm = { package = "xcm", path = "../../xcm", default-features = false }
 xcm-executor = { package = "xcm-executor", path = "../../xcm/xcm-executor", default-features = false }
@@ -94,8 +94,8 @@ std = [
 	"pallet-staking/std",
 	"pallet-timestamp/std",
 	"pallet-vesting/std",
-	"pallet-infra-voting/std",
-	"pallet-infra-system-token-manager/std",
+	"pallet-voting-manager/std",
+	"pallet-system-token-manager/std",
 	"frame-system/std",
 	"xcm/std",
 	"xcm-executor/std",

@@ -36,15 +36,15 @@ use frame_support::{
 	PalletId,
 };
 use frame_system::pallet_prelude::*;
+pub use pallet::*;
+use pallet_voting_manager::{RewardInterface, SessionIndex};
 use primitives::Id as ParaId;
 use scale_info::TypeInfo;
 use sp_runtime::{
-	generic::{VoteAssetId, VoteWeight},
+	generic::{SystemTokenId, VoteWeight},
 	traits::{AccountIdConversion, Convert, StaticLookup},
 };
 use sp_std::prelude::*;
-use pallet_infra_voting::{RewardInterface, SessionIndex};
-pub use pallet::*;
 
 type AccountIdLookupOf<T> = <<T as frame_system::Config>::Lookup as StaticLookup>::Source;
 
@@ -55,14 +55,12 @@ pub type ValidatorId<T> = <<T as Config>::ValidatorSet as ValidatorSet<
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, sp_core::RuntimeDebug, TypeInfo)]
 pub struct ValidatorReward {
-	#[codec(compact)]
-	pub asset_id: u32,
-	#[codec(compact)]
+	pub asset_id: SystemTokenId,
 	pub amount: u128,
 }
 
 impl ValidatorReward {
-	pub fn new(asset_id: u32, amount: u128) -> Self {
+	pub fn new(asset_id: SystemTokenId, amount: u128) -> Self {
 		Self { asset_id, amount }
 	}
 }
@@ -112,7 +110,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// The validator has been rewarded.
-		Rewarded { stash: ValidatorId<T>, asset_id: T::AssetId, amount: u128 },
+		ValidatorRewarded { stash: ValidatorId<T>, asset_id: SystemTokenId, amount: u128 },
 	}
 
 	#[pallet::error]
@@ -134,17 +132,17 @@ pub mod pallet {
 	where
 		u32: PartialEq<<T as pallet_assets::Config>::AssetId>,
 		<T as pallet_assets::Config>::Balance: From<u128>,
+		<T as pallet_assets::Config>::AssetIdParameter: From<u32>,
 	{
 		#[pallet::call_index(0)]
 		#[pallet::weight(0)]
 		pub fn claim(
 			origin: OriginFor<T>,
 			controller: AccountIdLookupOf<T>,
-			asset_id: T::AssetIdParameter,
+			asset_id: SystemTokenId,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
 			let validator = T::Lookup::lookup(controller.clone())?;
-			let id: T::AssetId = asset_id.into();
 
 			ensure!(origin == validator, Error::<T>::NeedOriginSignature);
 
@@ -158,15 +156,15 @@ pub mod pallet {
 			ensure!(rewards.len() != 0, Error::<T>::NothingToClaim);
 
 			let sovereign = Self::account_id();
-			if let Some(reward) = rewards.iter_mut().find(|ar| ar.asset_id == id) {
+			if let Some(reward) = rewards.iter_mut().find(|ar| ar.asset_id == asset_id) {
 				let config = <configuration::Pallet<T>>::config();
 				let xcm = {
 					use parity_scale_codec::Encode as _;
 					use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
-					let mut encoded: Vec<u8> = [0x32].into(); // asset pallet number
+					let mut encoded: Vec<u8> = [asset_id.clone().pallet_id as u8].into(); // asset pallet number
 					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
-						id: asset_id,
+						id: asset_id.clone().asset_id.into(),
 						source: T::Lookup::unlookup(sovereign.clone()),
 						dest: controller.clone(),
 						amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
@@ -192,16 +190,19 @@ pub mod pallet {
 					.encode()
 				};
 				if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
-					<dmp::Pallet<T>>::queue_downward_message(&config, ParaId::from(1000_u32), xcm)
-				{
+					<dmp::Pallet<T>>::queue_downward_message(
+						&config,
+						ParaId::from(asset_id.clone().para_id),
+						xcm,
+					) {
 					log::error!(
 						target: "runtime::infra_reward",
 						"sending 'dmp' failed."
 					);
 				};
-				Self::deposit_event(Event::Rewarded {
+				Self::deposit_event(Event::ValidatorRewarded {
 					stash: who.into(),
-					asset_id: id,
+					asset_id,
 					amount: reward.amount,
 				});
 				reward.amount = 0;
@@ -209,12 +210,13 @@ pub mod pallet {
 
 			Ok(())
 		}
+
 		#[pallet::call_index(1)]
 		#[pallet::weight(0)]
 		pub fn test(
 			origin: OriginFor<T>,
 			controller: AccountIdLookupOf<T>,
-			asset_id: u32,
+			asset_id: SystemTokenId,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
 			let validator = T::Lookup::lookup(controller.clone())?;
@@ -229,7 +231,7 @@ pub mod pallet {
 
 			let rewards: Vec<ValidatorReward> = aggregated_rewards
 				.iter()
-				.map(|reward| ValidatorReward::new(reward.asset_id, reward.amount))
+				.map(|reward| ValidatorReward::new(reward.clone().asset_id, reward.clone().amount))
 				.collect();
 			ValidatorRewards::<T>::insert(who, rewards);
 
@@ -244,16 +246,19 @@ impl<T: Config> Pallet<T> {
 		pallet_id.into_account_truncating()
 	}
 
-	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight) {
-		let asset_id: u32 = asset_id.into();
+	fn aggregate_reward(
+		session_index: SessionIndex,
+		system_token_id: SystemTokenId,
+		amount: VoteWeight,
+	) {
 		let amount: u128 = amount.into();
 
 		if let Some(rewards) = TotalSessionRewards::<T>::get(session_index) {
-			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == asset_id) {
+			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == system_token_id) {
 				reward.amount += amount;
 			}
 		} else {
-			let rewards = vec![ValidatorReward::new(asset_id, amount)];
+			let rewards = vec![ValidatorReward::new(system_token_id, amount)];
 			TotalSessionRewards::<T>::insert(session_index, rewards);
 		}
 	}
@@ -284,8 +289,8 @@ impl<T: Config> Pallet<T> {
 					.iter()
 					.map(|reward| {
 						ValidatorReward::new(
-							reward.asset_id,
-							reward.amount / current_validators.len() as u128,
+							reward.clone().asset_id,
+							reward.clone().amount / current_validators.len() as u128,
 						)
 					})
 					.collect();
@@ -296,8 +301,12 @@ impl<T: Config> Pallet<T> {
 }
 
 impl<T: Config> RewardInterface for Pallet<T> {
-	fn aggregate_reward(session_index: SessionIndex, asset_id: VoteAssetId, amount: VoteWeight) {
-		Self::aggregate_reward(session_index, asset_id, amount);
+	fn aggregate_reward(
+		session_index: SessionIndex,
+		system_token_id: SystemTokenId,
+		amount: VoteWeight,
+	) {
+		Self::aggregate_reward(session_index, system_token_id, amount);
 	}
 
 	fn distribute_reward(session_index: SessionIndex) {

@@ -21,13 +21,13 @@
 //! to included.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, paras,
-	paras_inherent::DisputedBitfield, scheduler::CoreAssignment, shared, ump,
+	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield,
+	scheduler::CoreAssignment, shared, ump,
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
-use pallet_infra_system_token_manager::SystemTokenInterface;
-use pallet_infra_voting::{VotingHandler, RewardInterface};
+use pallet_system_token_manager::SystemTokenInterface;
+use pallet_voting_manager::{RewardInterface, VotingInterface};
 use parity_scale_codec::{Decode, Encode};
 use primitives::{
 	AvailabilityBitfield, BackedCandidate, CandidateCommitments, CandidateDescriptor,
@@ -183,8 +183,6 @@ pub fn minimum_backing_votes(n_validators: usize) -> usize {
 
 #[frame_support::pallet]
 pub mod pallet {
-	use pallet_infra_voting::VotingHandler;
-
 	use super::*;
 
 	#[pallet::pallet]
@@ -205,7 +203,7 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		type DisputesHandler: disputes::DisputesHandler<Self::BlockNumber>;
 		type RewardValidators: RewardValidators;
-		type VotingManager: VotingHandler<Self>;
+		type VotingManager: VotingInterface<Self>;
 		type SystemTokenManager: SystemTokenInterface;
 		type RewardInterface: RewardInterface;
 	}
@@ -785,18 +783,17 @@ impl<T: Config> Pallet<T> {
 		);
 
 		if let Some(vote_result) = commitments.vote_result {
-			let para_id = receipt.descriptor.para_id;
 			let session_index = shared::Pallet::<T>::session_index();
 			for vote in vote_result.clone().into_iter() {
-				if let Some(asset_id) = T::SystemTokenManager::convert_to_relay_system_token(
-					para_id.into(),
-					vote.asset_id,
-				) {
+				if let Some(asset_id) =
+					T::SystemTokenManager::convert_to_original_system_token(vote.system_token_id)
+				{
 					let who = vote.account_id;
 					let weight = vote.vote_weight;
-					let adjusted_weight = T::SystemTokenManager::adjusted_weight(asset_id, weight);
+					let adjusted_weight =
+						T::SystemTokenManager::adjusted_weight(asset_id.clone(), weight);
 					T::VotingManager::update_vote_status(who, adjusted_weight);
-					T::RewardInterface::aggregate_reward(session_index, asset_id, weight);
+					T::RewardInterface::aggregate_reward(session_index, asset_id.clone(), weight);
 				};
 			}
 		};
