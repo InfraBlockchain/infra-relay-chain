@@ -818,7 +818,7 @@ pub fn infrablockspace_testnet_genesis(
 				.map(|x| {
 					(
 						x.0.clone(),
-						x.1.clone(),
+						x.0.clone(),
 						infrablockspace_session_keys(
 							x.2.clone(),
 							x.3.clone(),
@@ -857,7 +857,7 @@ pub fn infrablockspace_testnet_genesis(
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
 		voting_manager: infrablockspace::VotingManagerConfig {
-			seed_trust_validators: initial_authorities.iter().map(|x| (x.1.clone())).collect(),
+			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
 			total_number_of_validators: 2,
 			number_of_seed_trust_validators: 2,
 			..Default::default()

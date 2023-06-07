@@ -45,7 +45,8 @@ use runtime_parachains::{
 		v2 as parachains_runtime_api_impl, vstaging as parachains_runtime_api_impl_staging,
 	},
 	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump, validator_reward_manager,
+	shared as parachains_shared, system_token_manager, ump as parachains_ump,
+	validator_reward_manager,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -1070,7 +1071,7 @@ impl pallet_voting_manager::Config for Runtime {
 	type RewardInterface = ValidatorRewardManager;
 }
 
-impl pallet_system_token_manager::Config for Runtime {
+impl system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type StringLimit = ConstU32<50>;
 	type MaxWrappedSystemToken = ConstU32<10>;
@@ -1463,7 +1464,7 @@ construct_runtime! {
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
 
 		// Infra Related
-		SystemTokenManager: pallet_system_token_manager::{Pallet, Call, Storage, Event<T>} = 101,
+		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>} = 101,
 
 		// Rococo specific pallets (not included in Kusama). Start indices at 240
 		//
