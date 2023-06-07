@@ -186,7 +186,6 @@ fn infrablockspace_testnet_genesis(
 				..Default::default()
 			},
 		},
-		system_token_manager: Default::default(),
 	}
 }
 
