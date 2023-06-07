@@ -53,7 +53,7 @@ pallet-grandpa = { git = "https://github.com/InfraBlockchain/infra-substrate", b
 pallet-identity = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-im-online = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-indices = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-infra-asset-tx-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-fee-payment-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-membership = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-mmr = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-multisig = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -79,8 +79,8 @@ pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
 pallet-xcm-benchmarks = { path = "../../xcm/pallet-xcm-benchmarks", default-features = false, optional = true }
 
 # infra-related
-pallet-infra-voting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-infra-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-voting-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 frame-try-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
@@ -146,7 +146,7 @@ std = [
 	"pallet-identity/std",
 	"pallet-im-online/std",
 	"pallet-indices/std",
-	"pallet-infra-asset-tx-payment/std",
+	"pallet-fee-payment-manager/std",
 	"pallet-membership/std",
 	"pallet-mmr/std",
 	"pallet-multisig/std",
@@ -166,8 +166,8 @@ std = [
 	"pallet-vesting/std",
 	"pallet-babe/std",
 	"pallet-xcm/std",
-	"pallet-infra-voting/std",
-	"pallet-infra-system-token-manager/std",
+	"pallet-voting-manager/std",
+	"pallet-system-token-manager/std",
 	"infrablockspace-parachain/std",
 	"sp-mmr-primitives/std",
 	"sp-runtime/std",

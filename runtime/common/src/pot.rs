@@ -1,9 +1,9 @@
-use frame_support::traits::pot::VoteInfoHandler;
+use frame_support::traits::pot::VotingHandler;
 pub use pallet::*;
-use sp_runtime::generic::{VoteAccountId, VoteAssetId, VoteWeight};
+use pallet_system_token_manager::SystemTokenInterface;
+use pallet_voting_manager::VotingInterface;
+use sp_runtime::generic::{SystemTokenId, VoteAccountId, VoteWeight};
 use sp_std::prelude::*;
-use pallet_infra_voting::VotingHandler;
-use pallet_infra_system_token_manager::SystemTokenInterface;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -20,29 +20,25 @@ pub mod pallet {
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		/// Updating vote type
-		type VotingHandler: VotingHandler<Self>;
-		/// Managing System Token 
+		type VotingHandler: VotingInterface<Self>;
+		/// Managing System Token
 		type SystemTokenManager: SystemTokenInterface;
 	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-		Voted { candidate: VoteAccountId, asset_id: VoteAssetId, weight: VoteWeight }
+		Voted { candidate: VoteAccountId, asset_id: SystemTokenId, weight: VoteWeight },
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
-		NotSystemToken
+		NotSystemToken,
 	}
 }
 
-impl<T: Config> VoteInfoHandler for Pallet<T> {
-	type VoteAccountId = VoteAccountId;
-	type VoteAssetId = VoteAssetId;
-	type VoteWeight = VoteWeight;
-
-	fn update_pot_vote(who: VoteAccountId, asset_id: VoteAssetId, vote_weight: VoteWeight) {
+impl<T: Config> VotingHandler for Pallet<T> {
+	fn update_pot_vote(who: VoteAccountId, asset_id: SystemTokenId, vote_weight: VoteWeight) {
 		Self::do_update_pot_vote(asset_id, who, vote_weight);
 	}
 }
@@ -50,17 +46,18 @@ impl<T: Config> VoteInfoHandler for Pallet<T> {
 impl<T: Config> Pallet<T> {
 	/// Update vote weight for given (asset_id, candidate)
 	fn do_update_pot_vote(
-		vote_asset_id: VoteAssetId,
+		vote_asset_id: SystemTokenId,
 		vote_account_id: VoteAccountId,
 		vote_weight: VoteWeight,
 	) {
 		// ToDo: Should check whether this is system token or not
-		let adjusted_weight = T::SystemTokenManager::adjusted_weight(vote_asset_id, vote_weight);
+		let adjusted_weight =
+			T::SystemTokenManager::adjusted_weight(vote_asset_id.clone(), vote_weight);
 		T::VotingHandler::update_vote_status(vote_account_id.clone(), adjusted_weight);
 		Self::deposit_event(Event::<T>::Voted {
 			candidate: vote_account_id,
-			asset_id: vote_asset_id,
-			weight: adjusted_weight
+			asset_id: vote_asset_id.clone(),
+			weight: adjusted_weight,
 		})
 	}
 }

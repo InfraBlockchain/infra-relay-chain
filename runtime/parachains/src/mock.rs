@@ -17,10 +17,10 @@
 //! Mocks for all the traits.
 
 use crate::{
-	configuration, disputes, dmp, hrmp, inclusion, infra_reward, initializer, origin, paras,
-	paras_inherent, scheduler, session_info, shared,
+	configuration, disputes, dmp, hrmp, inclusion, initializer, origin, paras, paras_inherent,
+	scheduler, session_info, shared,
 	ump::{self, MessageId, UmpSink},
-	ParaId,
+	validator_reward_manager, ParaId,
 };
 
 use frame_support::{
@@ -69,9 +69,9 @@ frame_support::construct_runtime!(
 		SessionInfo: session_info,
 		Disputes: disputes,
 		Babe: pallet_babe,
-		InfraReward: infra_reward,
-		InfraVoting: pallet_infra_voting,
-		InfraSystemTokenManager: pallet_infra_system_token_manager,
+		ValidatorRewardManager: validator_reward_manager,
+		VotingManager: pallet_voting_manager,
+		SystemTokenManager: pallet_system_token_manager,
 
 	}
 );
@@ -226,7 +226,7 @@ impl crate::paras::Config for Test {
 	type NextSessionRotation = TestNextSessionRotation;
 }
 
-impl crate::infra_reward::Config for Test {
+impl crate::validator_reward_manager::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = MockValidatorSet;
 }
@@ -312,9 +312,9 @@ impl crate::inclusion::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = Disputes;
 	type RewardValidators = TestRewardValidators;
-	type VotingManager = InfraVoting;
-	type SystemTokenManager = InfraSystemTokenManager;
-	type RewardAggregateHandler = InfraReward;
+	type VotingManager = VotingManager;
+	type SystemTokenManager = SystemTokenManager;
+	type RewardAggregateHandler = ValidatorRewardManager;
 }
 
 parameter_types! {
@@ -324,7 +324,7 @@ parameter_types! {
 	pub const SessionsPerEra: u32 = 1;
 }
 
-impl pallet_infra_voting::Config for Test {
+impl pallet_voting_manager::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type MaxValidators = MaxValidators;
 	type MaxSeedTrustValidators = MaxSeedTrustValidators;
@@ -336,8 +336,10 @@ impl pallet_infra_voting::Config for Test {
 	type SessionsPerEra = SessionsPerEra;
 }
 
-impl pallet_infra_system_token_manager::Config for Test {
+impl pallet_system_token_manager::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
+	type StringLimit = ConstU32<50>;
+	type MaxWrappedSystemToken = ConstU32<10>;
 }
 
 impl crate::paras_inherent::Config for Test {

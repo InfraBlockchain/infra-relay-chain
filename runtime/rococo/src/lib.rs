@@ -39,14 +39,13 @@ use runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	disputes::slashing as parachains_slashing,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
-	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
-	origin as parachains_origin, paras as parachains_paras,
+	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent,
 	runtime_api_impl::{
 		v2 as parachains_runtime_api_impl, vstaging as parachains_runtime_api_impl_staging,
 	},
 	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump,
+	shared as parachains_shared, ump as parachains_ump, validator_reward_manager,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -360,7 +359,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = ValidatorIdOf;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = InfraVoting;
+	type SessionManager = VotingManager;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -1050,9 +1049,9 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
-	type VotingManager = InfraVoting;
-	type SystemTokenManager = InfraSystemTokenManager;
-	type RewardInterface = InfraReward;
+	type VotingManager = VotingManager;
+	type SystemTokenManager = SystemTokenManager;
+	type RewardInterface = ValidatorRewardManager;
 }
 
 parameter_types! {
@@ -1061,21 +1060,23 @@ parameter_types! {
 	pub const SessionsPerEra: u32 = 5;
 }
 
-impl pallet_infra_voting::Config for Runtime {
+impl pallet_voting_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type SessionsPerEra = SessionsPerEra;
 	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = Session;
 	type SessionInterface = ();
-	type RewardInterface = InfraReward;
+	type RewardInterface = ValidatorRewardManager;
 }
 
-impl pallet_infra_system_token_manager::Config for Runtime {
+impl pallet_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type StringLimit = ConstU32<50>;
+	type MaxWrappedSystemToken = ConstU32<10>;
 }
 
-impl parachains_infra_reward::Config for Runtime {
+impl validator_reward_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
 }
@@ -1376,7 +1377,7 @@ construct_runtime! {
 		// MMR leaf construction must be before session in order to have leaf contents
 		// refer to block<N-1> consistently. see substrate issue #11797 for details.
 		Mmr: pallet_mmr::{Pallet, Storage} = 241,
-		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Config<T>, Event<T>} = 6,
+		VotingManager: pallet_voting_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 6,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 8,
 		Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned} = 10,
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>} = 11,
@@ -1456,13 +1457,13 @@ construct_runtime! {
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 74,
 
 		// Pot Related
-		InfraReward: parachains_infra_reward::{Pallet, Call, Storage, Event<T>} = 81,
+		ValidatorRewardManager: validator_reward_manager::{Pallet, Call, Storage, Event<T>} = 81,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
 
 		// Infra Related
-		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 101,
+		SystemTokenManager: pallet_system_token_manager::{Pallet, Call, Storage, Event<T>} = 101,
 
 		// Rococo specific pallets (not included in Kusama). Start indices at 240
 		//

@@ -28,7 +28,6 @@ pub mod disputes;
 pub mod dmp;
 pub mod hrmp;
 pub mod inclusion;
-pub mod infra_reward;
 pub mod initializer;
 pub mod metrics;
 pub mod origin;
@@ -39,6 +38,7 @@ pub mod scheduler;
 pub mod session_info;
 pub mod shared;
 pub mod ump;
+pub mod validator_reward_manager;
 
 pub mod runtime_api_impl;
 

@@ -30,11 +30,11 @@ use runtime_common::{
 use runtime_parachains::{
 	configuration as parachains_configuration, disputes as parachains_disputes,
 	dmp as parachains_dmp, hrmp as parachains_hrmp, inclusion as parachains_inclusion,
-	infra_reward as parachains_infra_reward, initializer as parachains_initializer,
-	origin as parachains_origin, paras as parachains_paras,
+	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent,
 	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
 	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
+	validator_reward_manager,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -50,12 +50,12 @@ use frame_support::{
 	PalletId, RuntimeDebug,
 };
 use frame_system::EnsureRoot;
+use pallet_fee_payment_manager::{FungiblesAdapter, HandleCredit};
 use pallet_grandpa::{fg_primitives, AuthorityId as GrandpaId};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
-use pallet_infra_asset_tx_payment::{FungiblesAdapter, HandleCredit};
-use pallet_infra_voting::SessionIndex;
 use pallet_session::historical as session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
+use pallet_voting_manager::SessionIndex;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use primitives::{
 	AccountId, AccountIndex, Balance, BlockNumber, CandidateEvent, CommittedCandidateReceipt,
@@ -339,21 +339,21 @@ impl HandleCredit<AccountId, Assets> for CreditToBucket {
 	}
 }
 
-impl pallet_infra_asset_tx_payment::Config for Runtime {
+impl pallet_fee_payment_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Fungibles = Assets;
 	type OnChargeAssetTransaction = FungiblesAdapter<
 		pallet_assets::BalanceToAssetBalance<Balances, Runtime, ConvertInto>,
 		CreditToBucket,
 	>;
-	type VoteInfoHandler = Pot;
+	type VotingHandler = Pot;
 	type PalletId = FeeTreasuryId;
 }
 
 impl relay_pot::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type VotingHandler = InfraVoting;
-	type SystemTokenManager = InfraSystemTokenManager;
+	type VotingHandler = VotingManager;
+	type SystemTokenManager = SystemTokenManager;
 }
 
 parameter_types! {
@@ -396,7 +396,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = ValidatorIdOf;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = InfraVoting;
+	type SessionManager = VotingManager;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -790,7 +790,7 @@ where
 			)),
 			frame_system::CheckNonce::<Runtime>::from(nonce),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_infra_asset_tx_payment::ChargeAssetTxPayment::<Runtime>::new(),
+			pallet_fee_payment_manager::FeePaymentMetadata::<Runtime>::new(),
 		);
 		let raw_payload = SignedPayload::new(call, extra)
 			.map_err(|e| {
@@ -1066,9 +1066,9 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
-	type VotingManager = InfraVoting;
-	type SystemTokenManager = InfraSystemTokenManager;
-	type RewardInterface = InfraReward;
+	type VotingManager = VotingManager;
+	type SystemTokenManager = SystemTokenManager;
+	type RewardInterface = ValidatorRewardManager;
 }
 
 parameter_types! {
@@ -1077,21 +1077,23 @@ parameter_types! {
 	pub const BondingDuration: u32 = 28;
 }
 
-impl pallet_infra_voting::Config for Runtime {
+impl pallet_voting_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type SessionsPerEra = SessionsPerEra;
 	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = Session;
 	type SessionInterface = ();
-	type RewardInterface = InfraReward;
+	type RewardInterface = ValidatorRewardManager;
 }
 
-impl pallet_infra_system_token_manager::Config for Runtime {
+impl pallet_system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type StringLimit = ConstU32<50>;
+	type MaxWrappedSystemToken = ConstU32<10>;
 }
 
-impl parachains_infra_reward::Config for Runtime {
+impl validator_reward_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ValidatorSet = Historical;
 }
@@ -1268,8 +1270,8 @@ construct_runtime! {
 		Preimage: pallet_preimage::{Pallet, Call, Storage, Event<T>} = 100,
 
 		// IBS Support
-		InfraSystemTokenManager: pallet_infra_system_token_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 20,
-		InfraReward: parachains_infra_reward::{Pallet, Call, Storage, Event<T>} = 21,
+		SystemTokenManager: pallet_system_token_manager::{Pallet, Call, Storage, Event<T>} = 20,
+		ValidatorRewardManager: validator_reward_manager::{Pallet, Call, Storage, Event<T>} = 21,
 
 		// Babe must be before session.
 		Babe: pallet_babe::{Pallet, Call, Storage, Config, ValidateUnsigned} = 2,
@@ -1279,7 +1281,7 @@ construct_runtime! {
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 5,
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 6,
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 31,
-		InfraAssetTxPayament: pallet_infra_asset_tx_payment::{Pallet, Event<T>} = 32,
+		FeePaymentManager: pallet_fee_payment_manager::{Pallet, Event<T>} = 32,
 		// Consensus support.
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.
@@ -1287,7 +1289,7 @@ construct_runtime! {
 		Offences: pallet_offences::{Pallet, Storage, Event} = 8,
 		Historical: session_historical::{Pallet} = 33,
 		// This should be above Session Pallet
-		InfraVoting: pallet_infra_voting::{Pallet, Call, Storage, Config<T>, Event<T>} = 22,
+		VotingManager: pallet_voting_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 22,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 10,
 		Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned} = 11,
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>} = 12,
@@ -1376,7 +1378,7 @@ pub type SignedExtra = (
 	frame_system::CheckMortality<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	pallet_infra_asset_tx_payment::ChargeAssetTxPayment<Runtime>,
+	pallet_fee_payment_manager::FeePaymentMetadata<Runtime>,
 );
 
 /// All migrations that will run on the next runtime upgrade.
@@ -1960,7 +1962,7 @@ mod test_fees {
 			frame_system::CheckMortality::<Runtime>::from(generic::Era::immortal()),
 			frame_system::CheckNonce::<Runtime>::from(1),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_infra_asset_tx_payment::ChargeAssetTxPayment::<Runtime>::new(),
+			pallet_fee_payment_manager::FeePaymentMetadata::<Runtime>::new(),
 		);
 		let uxt = UncheckedExtrinsic {
 			function: call,
