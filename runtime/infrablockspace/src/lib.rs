@@ -33,8 +33,8 @@ use runtime_parachains::{
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent,
 	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
-	session_info as parachains_session_info, shared as parachains_shared, ump as parachains_ump,
-	validator_reward_manager,
+	session_info as parachains_session_info, shared as parachains_shared, system_token_manager,
+	ump as parachains_ump, validator_reward_manager,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -1087,7 +1087,7 @@ impl pallet_voting_manager::Config for Runtime {
 	type RewardInterface = ValidatorRewardManager;
 }
 
-impl pallet_system_token_manager::Config for Runtime {
+impl system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type StringLimit = ConstU32<50>;
 	type MaxWrappedSystemToken = ConstU32<10>;
@@ -1270,7 +1270,7 @@ construct_runtime! {
 		Preimage: pallet_preimage::{Pallet, Call, Storage, Event<T>} = 100,
 
 		// IBS Support
-		SystemTokenManager: pallet_system_token_manager::{Pallet, Call, Storage, Event<T>} = 20,
+		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>} = 20,
 		ValidatorRewardManager: validator_reward_manager::{Pallet, Call, Storage, Event<T>} = 21,
 
 		// Babe must be before session.

@@ -1,7 +1,7 @@
 use frame_support::traits::pot::VotingHandler;
 pub use pallet::*;
-use pallet_system_token_manager::SystemTokenInterface;
 use pallet_voting_manager::VotingInterface;
+use runtime_parachains::system_token_manager::SystemTokenInterface;
 use sp_runtime::generic::{SystemTokenId, VoteAccountId, VoteWeight};
 use sp_std::prelude::*;
 

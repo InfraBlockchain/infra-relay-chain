@@ -22,11 +22,10 @@
 
 use crate::{
 	configuration, disputes, dmp, hrmp, paras, paras_inherent::DisputedBitfield,
-	scheduler::CoreAssignment, shared, ump,
+	scheduler::CoreAssignment, shared, system_token_manager::SystemTokenInterface, ump,
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
-use pallet_system_token_manager::SystemTokenInterface;
 use pallet_voting_manager::{RewardInterface, VotingInterface};
 use parity_scale_codec::{Decode, Encode};
 use primitives::{

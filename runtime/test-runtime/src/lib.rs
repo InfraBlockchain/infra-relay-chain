@@ -30,7 +30,8 @@ use infrablockspace_runtime_parachains::{
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent, runtime_api_impl::v2 as runtime_impl,
 	scheduler as parachains_scheduler, session_info as parachains_session_info,
-	shared as parachains_shared, ump as parachains_ump, validator_reward_manager,
+	shared as parachains_shared, system_token_manager, ump as parachains_ump,
+	validator_reward_manager,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -543,7 +544,7 @@ impl pallet_voting_manager::Config for Runtime {
 	type RewardInterface = ValidatorRewardManager;
 }
 
-impl pallet_system_token_manager::Config for Runtime {
+impl system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type StringLimit = ConstU32<50>;
 	type MaxWrappedSystemToken = ConstU32<10>;
@@ -757,7 +758,7 @@ construct_runtime! {
 		// Infra Related
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>},
 		VotingManager: pallet_voting_manager::{Pallet, Call, Storage, Event<T>},
-		SystemTokenManager: pallet_system_token_manager::{Pallet, Call, Storage, Event<T>},
+		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>},
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>},
 
