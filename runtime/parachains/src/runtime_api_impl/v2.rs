@@ -337,6 +337,8 @@ where
 				CandidateEvent::CandidateIncluded(c, h, core, group),
 			RawEvent::<T>::CandidateTimedOut(c, h, core) =>
 				CandidateEvent::CandidateTimedOut(c, h, core),
+			RawEvent::<T>::VoteCollected(id, votes) => 
+				CandidateEvent::VoteCollected(id, votes),
 			RawEvent::<T>::__Ignore(_, _) => unreachable!("__Ignore cannot be used"),
 		})
 		.collect()
