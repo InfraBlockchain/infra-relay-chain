@@ -35,7 +35,7 @@ use primitives::{
 	ValidatorIndex, ValidityAttestation,
 };
 use scale_info::TypeInfo;
-use sp_runtime::{traits::One, DispatchError};
+use sp_runtime::{traits::One, DispatchError, generic::PotVotesResult};
 use sp_std::{collections::btree_set::BTreeSet, prelude::*};
 
 pub use pallet::*;
@@ -216,6 +216,8 @@ pub mod pallet {
 		CandidateIncluded(CandidateReceipt<T::Hash>, HeadData, CoreIndex, GroupIndex),
 		/// A candidate timed out. `[candidate, head_data]`
 		CandidateTimedOut(CandidateReceipt<T::Hash>, HeadData, CoreIndex),
+		/// Pot Vote has been collected
+		VoteCollected(ParaId, PotVotesResult),
 	}
 
 	#[pallet::error]
@@ -784,17 +786,21 @@ impl<T: Config> Pallet<T> {
 		if let Some(vote_result) = commitments.vote_result {
 			let session_index = shared::Pallet::<T>::session_index();
 			for vote in vote_result.clone().into_iter() {
-				if let Some(asset_id) =
+				if let Some(system_token_id) =
 					T::SystemTokenManager::convert_to_original_system_token(vote.system_token_id)
 				{
 					let who = vote.account_id;
 					let weight = vote.vote_weight;
 					let adjusted_weight =
-						T::SystemTokenManager::adjusted_weight(asset_id.clone(), weight);
+						T::SystemTokenManager::adjusted_weight(system_token_id.clone(), weight);
 					T::VotingManager::update_vote_status(who, adjusted_weight);
-					T::RewardInterface::aggregate_reward(session_index, asset_id.clone(), weight);
+					T::RewardInterface::aggregate_reward(session_index, system_token_id.clone(), weight);
 				};
 			}
+			Self::deposit_event(Event::<T>::VoteCollected(
+				receipt.descriptor.para_id,
+				vote_result
+			));
 		};
 
 		Self::deposit_event(Event::<T>::CandidateIncluded(
