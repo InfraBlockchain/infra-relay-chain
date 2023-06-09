@@ -210,33 +210,6 @@ pub mod pallet {
 
 			Ok(())
 		}
-
-		#[pallet::call_index(1)]
-		#[pallet::weight(0)]
-		pub fn test(
-			origin: OriginFor<T>,
-			controller: AccountIdLookupOf<T>,
-			asset_id: SystemTokenId,
-		) -> DispatchResult {
-			let origin = ensure_signed(origin)?;
-			let validator = T::Lookup::lookup(controller.clone())?;
-			let who = <T::ValidatorSet as ValidatorSet<T::AccountId>>::ValidatorIdOf::convert(
-				validator.clone(),
-			)
-			.ok_or(Error::<T>::NoAssociatedValidatorId)?;
-
-			ensure!(origin == validator, Error::<T>::NeedOriginSignature);
-
-			let aggregated_rewards = vec![ValidatorReward::new(asset_id, 10000000)];
-
-			let rewards: Vec<ValidatorReward> = aggregated_rewards
-				.iter()
-				.map(|reward| ValidatorReward::new(reward.clone().asset_id, reward.clone().amount))
-				.collect();
-			ValidatorRewards::<T>::insert(who, rewards);
-
-			Ok(())
-		}
 	}
 }
 
