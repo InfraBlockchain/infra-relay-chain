@@ -73,6 +73,9 @@ pub struct AssetMetadata {
 	pub symbol: BoundedVec<u8, StringLimit>,
 	/// The number of decimals this asset uses to represent one unit.
 	pub decimals: u8,
+	/// The minimum balance of this new asset that any single account must
+	/// have. If an account's balance is reduced below this, then it collapses to zero.
+	pub min_balance: u128,
 }
 
 /// System tokens API.
@@ -138,6 +141,11 @@ pub mod pallet {
 		SystemTokenConverted {
 			wrapped_system_token: WrappedSystemTokenId,
 			system_token_id: SystemTokenId,
+		},
+		// Convert a wrapped system token id to an original system token id.
+		SetSystemTokenExchangeRate {
+			system_token_id: SystemTokenId,
+			exchange_rate: ExchangeRate,
 		},
 	}
 
@@ -277,7 +285,9 @@ pub mod pallet {
 				let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_create {
 					id: wrapped_system_token.clone().asset_id.into(),
 					owner: T::Lookup::unlookup(owner.clone()),
-					min_balance: <T as pallet_assets::Config>::Balance::from(0),
+					min_balance: <T as pallet_assets::Config>::Balance::from(
+						asset_metadata.min_balance,
+					),
 					is_sufficient: true,
 				}
 				.encode();
@@ -360,6 +370,83 @@ pub mod pallet {
 		}
 
 		#[pallet::call_index(2)]
+		#[pallet::weight(1_000)]
+		/// Deregister wrapped system token to other parachain.
+		pub fn deregister_wrapped_system_token(
+			origin: OriginFor<T>,
+			wrapped_system_token: SystemTokenId,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+
+			ensure!(
+				SystemTokenOnParachain::<T>::contains_key(&wrapped_system_token),
+				Error::<T>::WrappedSystemTokenNotRegistered
+			);
+
+			let system_token_id = SystemTokenOnParachain::<T>::get(&wrapped_system_token).unwrap();
+
+			Self::set_system_token_status(wrapped_system_token.clone(), false);
+
+			SystemTokenOnParachain::<T>::remove(&wrapped_system_token);
+			if SystemTokenOnParachainByParaId::<T>::contains_key(
+				wrapped_system_token.clone().para_id,
+			) {
+				let _ = SystemTokenOnParachainByParaId::<T>::try_mutate_exists(
+					wrapped_system_token.clone().para_id,
+					|maybe_system_tokens| -> Result<(), DispatchError> {
+						let system_tokens =
+							maybe_system_tokens.as_mut().ok_or(Error::<T>::Unknown)?;
+						system_tokens.retain(|&x| x != wrapped_system_token.clone());
+						Ok(())
+					},
+				);
+			}
+
+			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered {
+				wrapped_system_token,
+				system_token_id,
+			});
+
+			Ok(())
+		}
+
+		#[pallet::call_index(3)]
+		#[pallet::weight(1_000)]
+		/// Deregister the system token.
+		pub fn set_system_token_exchange_rate(
+			origin: OriginFor<T>,
+			system_token_id: SystemTokenId,
+			new_exchange_rate: ExchangeRate,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+
+			ensure!(
+				SystemTokenList::<T>::contains_key(&system_token_id),
+				Error::<T>::SystemTokenNotRegistered
+			);
+
+			let (system_token_metadata, asset_metadata, exchange_rate) = {
+				match SystemTokenList::<T>::get(&system_token_id) {
+					Some((system_token_metadata, asset_metadata, exchange_rate)) =>
+						(system_token_metadata, asset_metadata, exchange_rate),
+					None => Default::default(),
+				}
+			};
+
+			SystemTokenList::<T>::insert(
+				&system_token_id,
+				(&system_token_metadata, &asset_metadata, &new_exchange_rate),
+			);
+
+			Self::deposit_event(Event::<T>::SetSystemTokenExchangeRate {
+				system_token_id,
+				exchange_rate: new_exchange_rate,
+			});
+
+			Ok(())
+		}
+
+		#[pallet::call_index(4)]
 		#[pallet::weight(1_000)]
 		/// Deregister the system token.
 		pub fn deregister_system_token(
