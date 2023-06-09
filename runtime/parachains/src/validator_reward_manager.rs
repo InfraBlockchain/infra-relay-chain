@@ -138,11 +138,11 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn claim(
 			origin: OriginFor<T>,
-			controller: AccountIdLookupOf<T>,
+			validator: AccountIdLookupOf<T>,
 			asset_id: SystemTokenId,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
-			let validator = T::Lookup::lookup(controller.clone())?;
+			let validator = T::Lookup::lookup(validator.clone())?;
 
 			ensure!(origin == validator, Error::<T>::NeedOriginSignature);
 
@@ -166,7 +166,7 @@ pub mod pallet {
 					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
 						id: asset_id.clone().asset_id.into(),
 						source: T::Lookup::unlookup(sovereign.clone()),
-						dest: controller.clone(),
+						dest: T::Lookup::unlookup(validator.clone()),
 						amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
 					}
 					.encode();
