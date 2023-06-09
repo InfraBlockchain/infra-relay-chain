@@ -48,8 +48,8 @@ use sp_std::prelude::*;
 pub type ParaAssetId = VoteAssetId;
 pub type RelayAssetId = VoteAssetId;
 pub type ParaId = u32;
-pub type PalletIndex = u32;
-pub type ExchangeRate = u32;
+pub type PalletIndex = u8;
+pub type ExchangeRate = u64;
 
 /// Data structure for Wrapped system tokens
 pub type WrappedSystemTokenId = SystemTokenId;
@@ -70,11 +70,11 @@ pub struct SystemTokenMetadata {
 	/// The exchange symbol for this system token.
 	pub symbol: BoundedVec<u8, StringLimit>,
 	/// The exchange rate
-	pub exchange_rate: u32,
+	pub exchange_rate: u64,
 }
 
 impl SystemTokenMetadata {
-	pub fn get_exchange_rate(&self) -> u32 {
+	pub fn get_exchange_rate(&self) -> u64 {
 		self.exchange_rate
 	}
 }
@@ -123,10 +123,20 @@ pub mod pallet {
 			system_token_id: SystemTokenId,
 			system_token_metadata: SystemTokenMetadata,
 		},
-		// Remove the system token.
-		SystemTokenRemoved {
+		// Deregister the system token.
+		SystemTokenDeregistered {
 			system_token_id: SystemTokenId,
 			system_token_metadata: SystemTokenMetadata,
+		},
+		// Register a wrapped system token id to an original system token id.
+		WrappedSystemTokenRegistered {
+			wrapped_system_token: WrappedSystemTokenId,
+			system_token_id: SystemTokenId,
+		},
+		// Deregister a wrapped system token id to an original system token id.
+		WrappedSystemTokenDeregistered {
+			wrapped_system_token: WrappedSystemTokenId,
+			system_token_id: SystemTokenId,
 		},
 		// Convert a wrapped system token id to an original system token id.
 		SystemTokenConverted {
@@ -142,6 +152,7 @@ pub mod pallet {
 		/// Failed to remove the system token as it is not registered.
 		SystemTokenNotRegistered,
 		WrappedSystemTokenAlreadyRegistered,
+		WrappedSystemTokenNotRegistered,
 		WrongSystemTokenMetadata,
 		Unknown,
 	}
@@ -317,7 +328,7 @@ pub mod pallet {
 				);
 			}
 
-			Self::deposit_event(Event::<T>::SystemTokenConverted {
+			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered {
 				system_token_id,
 				wrapped_system_token: wrapped_system_token.clone(),
 			});
@@ -327,8 +338,8 @@ pub mod pallet {
 
 		#[pallet::call_index(2)]
 		#[pallet::weight(1_000)]
-		/// Remove the system token.
-		pub fn remove_system_token(
+		/// Deregister the system token.
+		pub fn deregister_system_token(
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
 		) -> DispatchResult {
@@ -366,7 +377,7 @@ pub mod pallet {
 
 			SystemTokenList::<T>::remove(&system_token_id);
 
-			Self::deposit_event(Event::<T>::SystemTokenRemoved {
+			Self::deposit_event(Event::<T>::SystemTokenDeregistered {
 				system_token_id,
 				system_token_metadata,
 			});
