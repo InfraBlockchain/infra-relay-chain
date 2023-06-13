@@ -21,7 +21,7 @@ use frame_support::{
 	traits::{Currency, ReservableCurrency},
 };
 use primitives::{HeadData, Id as ParaId, ValidationCode};
-use sp_runtime::generic::{VoteAssetId, VoteWeight};
+use sp_runtime::types::{VoteAssetId, VoteWeight};
 use sp_std::vec::*;
 
 pub type ParachainAssetId = VoteAssetId;

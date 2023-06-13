@@ -72,14 +72,13 @@ use pallet_transaction_payment::{CurrencyAdapter, FeeDetails, RuntimeDispatchInf
 use sp_core::{OpaqueMetadata, H256};
 use sp_mmr_primitives as mmr;
 use sp_runtime::{
-	create_runtime_str, generic,
-	generic::{VoteAccountId, VoteWeight},
-	impl_opaque_keys,
+	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConstU32, ConvertInto,
 		Extrinsic as ExtrinsicT, Keccak256, OpaqueKeys, SaturatedConversion, Verify,
 	},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
+	types::{VoteAccountId, VoteWeight},
 	ApplyExtrinsicResult, KeyTypeId, Perbill, Percent, Permill,
 };
 use sp_staking::SessionIndex;
@@ -360,7 +359,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = ValidatorIdOf;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = VotingManager;
+	type SessionManager = ValidatorElection;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -1050,7 +1049,7 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
-	type VotingManager = VotingManager;
+	type VotingManager = ValidatorElection;
 	type SystemTokenManager = SystemTokenManager;
 	type RewardInterface = ValidatorRewardManager;
 }
@@ -1061,7 +1060,7 @@ parameter_types! {
 	pub const SessionsPerEra: u32 = 5;
 }
 
-impl pallet_voting_manager::Config for Runtime {
+impl pallet_validator_election::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type SessionsPerEra = SessionsPerEra;
 	type InfraVoteAccountId = VoteAccountId;
@@ -1378,7 +1377,7 @@ construct_runtime! {
 		// MMR leaf construction must be before session in order to have leaf contents
 		// refer to block<N-1> consistently. see substrate issue #11797 for details.
 		Mmr: pallet_mmr::{Pallet, Storage} = 241,
-		VotingManager: pallet_voting_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 6,
+		ValidatorElection: pallet_validator_election::{Pallet, Call, Storage, Config<T>, Event<T>} = 6,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 8,
 		Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned} = 10,
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>} = 11,

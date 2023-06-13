@@ -40,7 +40,7 @@ pallet-treasury = { git = "https://github.com/InfraBlockchain/infra-substrate", 
 pallet-election-provider-multi-phase = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-election-provider-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
-pallet-voting-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-validator-election = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
@@ -90,7 +90,7 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-vesting/std",
 	"pallet-transaction-payment/std",
-	"pallet-voting-manager/std",
+	"pallet-validator-election/std",
 	"pallet-system-token-manager/std",
 	"pallet-treasury/std",
 	"pallet-election-provider-multi-phase/std",

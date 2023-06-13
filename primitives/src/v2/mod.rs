@@ -30,8 +30,8 @@ use application_crypto::KeyTypeId;
 use inherents::InherentIdentifier;
 use primitives::RuntimeDebug;
 use runtime_primitives::{
-	generic::PotVotesResult,
 	traits::{AppVerify, Header as HeaderT},
+	types::PotVotesResult,
 };
 use sp_arithmetic::traits::{BaseArithmetic, Saturating};
 
@@ -1002,7 +1002,7 @@ pub enum CandidateEvent<H = Hash> {
 	/// This includes the core index the candidate was occupying.
 	#[codec(index = 2)]
 	CandidateTimedOut(CandidateReceipt<H>, HeadData, CoreIndex),
-	/// Collecting vote for each parachain 
+	/// Collecting vote for each parachain
 	#[codec(index = 3)]
 	VoteCollected(Id, PotVotesResult),
 }

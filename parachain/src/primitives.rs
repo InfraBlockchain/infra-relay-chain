@@ -24,7 +24,7 @@ use frame_support::weights::Weight;
 use parity_scale_codec::{CompactAs, Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_core::{RuntimeDebug, TypeId};
-use sp_runtime::{generic::PotVotesResult, traits::Hash as _};
+use sp_runtime::{traits::Hash as _, types::PotVotesResult};
 
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};

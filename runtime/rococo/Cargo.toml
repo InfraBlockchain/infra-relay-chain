@@ -79,7 +79,7 @@ pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
 pallet-xcm-benchmarks = { path = "../../xcm/pallet-xcm-benchmarks", default-features = false, optional = true }
 
 # infra-related
-pallet-voting-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-validator-election = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
@@ -166,7 +166,7 @@ std = [
 	"pallet-vesting/std",
 	"pallet-babe/std",
 	"pallet-xcm/std",
-	"pallet-voting-manager/std",
+	"pallet-validator-election/std",
 	"pallet-system-token-manager/std",
 	"infrablockspace-parachain/std",
 	"sp-mmr-primitives/std",
