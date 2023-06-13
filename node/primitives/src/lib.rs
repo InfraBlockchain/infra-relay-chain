@@ -37,7 +37,7 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 pub use sp_consensus_babe::{
 	AllowedSlots as BabeAllowedSlots, BabeEpochConfiguration, Epoch as BabeEpoch,
 };
-use sp_runtime::generic::PotVotesResult;
+use sp_runtime::types::PotVotesResult;
 
 pub use infrablockspace_parachain::primitives::{BlockData, HorizontalMessages, UpwardMessages};
 

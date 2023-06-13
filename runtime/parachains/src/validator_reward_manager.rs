@@ -37,12 +37,12 @@ use frame_support::{
 };
 use frame_system::pallet_prelude::*;
 pub use pallet::*;
-use pallet_voting_manager::{RewardInterface, SessionIndex};
+use pallet_validator_election::{RewardInterface, SessionIndex};
 use primitives::Id as ParaId;
 use scale_info::TypeInfo;
 use sp_runtime::{
-	generic::{SystemTokenId, VoteWeight},
 	traits::{AccountIdConversion, Convert, StaticLookup},
+	types::{SystemTokenId, VoteWeight},
 };
 use sp_std::prelude::*;
 

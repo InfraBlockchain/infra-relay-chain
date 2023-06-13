@@ -313,7 +313,7 @@ fn infrablockspace_staging_testnet_config_genesis(
 		},
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
-		voting_manager: infrablockspace::VotingManagerConfig {
+		validator_election: infrablockspace::ValidatorElectionConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
 			total_number_of_validators: 2,
 			number_of_seed_trust_validators: 2,
@@ -631,7 +631,7 @@ fn rococo_staging_testnet_config_genesis(wasm_binary: &[u8]) -> rococo_runtime::
 			next_free_para_id: infrablockspace_primitives::LOWEST_PUBLIC_ID,
 		},
 		xcm_pallet: Default::default(),
-		voting_manager: rococo_runtime::VotingManagerConfig {
+		validator_election: rococo_runtime::ValidatorElectionConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
 			total_number_of_validators: 2,
 			number_of_seed_trust_validators: 2,
@@ -856,7 +856,7 @@ pub fn infrablockspace_testnet_genesis(
 		},
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
-		voting_manager: infrablockspace::VotingManagerConfig {
+		validator_election: infrablockspace::ValidatorElectionConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
 			total_number_of_validators: 2,
 			number_of_seed_trust_validators: 2,
@@ -951,7 +951,7 @@ pub fn rococo_testnet_genesis(
 			next_free_para_id: infrablockspace_primitives::LOWEST_PUBLIC_ID,
 		},
 		xcm_pallet: Default::default(),
-		voting_manager: rococo_runtime::VotingManagerConfig {
+		validator_election: rococo_runtime::ValidatorElectionConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
 			total_number_of_validators: 2,
 			number_of_seed_trust_validators: 2,

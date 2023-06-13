@@ -26,7 +26,7 @@ use crate::{
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
-use pallet_voting_manager::{RewardInterface, VotingInterface};
+use pallet_validator_election::{RewardInterface, VotingInterface};
 use parity_scale_codec::{Decode, Encode};
 use primitives::{
 	AvailabilityBitfield, BackedCandidate, CandidateCommitments, CandidateDescriptor,
@@ -35,7 +35,7 @@ use primitives::{
 	ValidatorIndex, ValidityAttestation,
 };
 use scale_info::TypeInfo;
-use sp_runtime::{traits::One, DispatchError, generic::PotVotesResult};
+use sp_runtime::{traits::One, types::PotVotesResult, DispatchError};
 use sp_std::{collections::btree_set::BTreeSet, prelude::*};
 
 pub use pallet::*;
@@ -794,13 +794,14 @@ impl<T: Config> Pallet<T> {
 					let adjusted_weight =
 						T::SystemTokenManager::adjusted_weight(system_token_id.clone(), weight);
 					T::VotingManager::update_vote_status(who, adjusted_weight);
-					T::RewardInterface::aggregate_reward(session_index, system_token_id.clone(), weight);
+					T::RewardInterface::aggregate_reward(
+						session_index,
+						system_token_id.clone(),
+						weight,
+					);
 				};
 			}
-			Self::deposit_event(Event::<T>::VoteCollected(
-				receipt.descriptor.para_id,
-				vote_result
-			));
+			Self::deposit_event(Event::<T>::VoteCollected(receipt.descriptor.para_id, vote_result));
 		};
 
 		Self::deposit_event(Event::<T>::CandidateIncluded(

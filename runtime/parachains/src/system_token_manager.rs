@@ -39,8 +39,8 @@ pub use pallet::*;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::{
-	generic::{SystemTokenId, VoteAssetId, VoteWeight},
 	traits::{AccountIdConversion, ConstU32, StaticLookup},
+	types::{SystemTokenId, VoteAssetId, VoteWeight},
 	BoundedVec, RuntimeDebug,
 };
 use sp_std::prelude::*;

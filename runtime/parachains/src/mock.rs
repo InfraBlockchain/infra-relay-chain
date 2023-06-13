@@ -70,7 +70,7 @@ frame_support::construct_runtime!(
 		Disputes: disputes,
 		Babe: pallet_babe,
 		ValidatorRewardManager: validator_reward_manager,
-		VotingManager: pallet_voting_manager,
+		ValidatorElection: pallet_validator_election,
 		SystemTokenManager: pallet_system_token_manager,
 
 	}
@@ -324,7 +324,7 @@ parameter_types! {
 	pub const SessionsPerEra: u32 = 1;
 }
 
-impl pallet_voting_manager::Config for Test {
+impl pallet_validator_election::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type MaxValidators = MaxValidators;
 	type MaxSeedTrustValidators = MaxSeedTrustValidators;

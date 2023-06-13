@@ -41,7 +41,7 @@ frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", br
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 # infra-related
-pallet-voting-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-validator-election = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 xcm = { package = "xcm", path = "../../xcm", default-features = false }
@@ -94,7 +94,7 @@ std = [
 	"pallet-staking/std",
 	"pallet-timestamp/std",
 	"pallet-vesting/std",
-	"pallet-voting-manager/std",
+	"pallet-validator-election/std",
 	"pallet-system-token-manager/std",
 	"frame-system/std",
 	"xcm/std",

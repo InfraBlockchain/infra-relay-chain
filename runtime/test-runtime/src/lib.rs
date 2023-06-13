@@ -534,7 +534,7 @@ parameter_types! {
 	pub const NumberOfSessionsPerEra: u32 = 5;
 }
 
-impl pallet_voting_manager::Config for Runtime {
+impl pallet_validator_election::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type SessionsPerEra = NumberOfSessionsPerEra;
 	type InfraVoteAccountId = VoteAccountId;
@@ -757,7 +757,7 @@ construct_runtime! {
 
 		// Infra Related
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>},
-		VotingManager: pallet_voting_manager::{Pallet, Call, Storage, Event<T>},
+		ValidatorElection: pallet_validator_election::{Pallet, Call, Storage, Event<T>},
 		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>},
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>},

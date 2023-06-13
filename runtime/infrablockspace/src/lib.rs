@@ -50,12 +50,12 @@ use frame_support::{
 	PalletId, RuntimeDebug,
 };
 use frame_system::EnsureRoot;
-use pallet_fee_payment_manager::{FungiblesAdapter, HandleCredit};
+use pallet_fee_payment_manager::{HandleCredit, TransactionFeeCharger};
 use pallet_grandpa::{fg_primitives, AuthorityId as GrandpaId};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_session::historical as session_historical;
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
-use pallet_voting_manager::SessionIndex;
+use pallet_validator_election::SessionIndex;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use primitives::{
 	AccountId, AccountIndex, Balance, BlockNumber, CandidateEvent, CommittedCandidateReceipt,
@@ -66,14 +66,13 @@ use primitives::{
 use sp_core::OpaqueMetadata;
 use sp_mmr_primitives as mmr;
 use sp_runtime::{
-	create_runtime_str, generic,
-	generic::{VoteAccountId, VoteWeight},
-	impl_opaque_keys,
+	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
 		AccountIdConversion, AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto,
 		Extrinsic as ExtrinsicT, OpaqueKeys, SaturatedConversion, Verify,
 	},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
+	types::{VoteAccountId, VoteWeight},
 	ApplyExtrinsicResult, KeyTypeId, Perbill, Percent, Permill,
 };
 
@@ -341,8 +340,8 @@ impl HandleCredit<AccountId, Assets> for CreditToBucket {
 
 impl pallet_fee_payment_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type Fungibles = Assets;
-	type OnChargeAssetTransaction = FungiblesAdapter<
+	type Assets = Assets;
+	type OnChargeSystemToken = TransactionFeeCharger<
 		pallet_assets::BalanceToAssetBalance<Balances, Runtime, ConvertInto>,
 		CreditToBucket,
 	>;
@@ -352,7 +351,7 @@ impl pallet_fee_payment_manager::Config for Runtime {
 
 impl relay_pot::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type VotingHandler = VotingManager;
+	type VotingHandler = ValidatorElection;
 	type SystemTokenManager = SystemTokenManager;
 }
 
@@ -396,7 +395,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = ValidatorIdOf;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = VotingManager;
+	type SessionManager = ValidatorElection;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = weights::pallet_session::WeightInfo<Runtime>;
@@ -1066,7 +1065,7 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
-	type VotingManager = VotingManager;
+	type VotingManager = ValidatorElection;
 	type SystemTokenManager = SystemTokenManager;
 	type RewardInterface = ValidatorRewardManager;
 }
@@ -1077,7 +1076,7 @@ parameter_types! {
 	pub const BondingDuration: u32 = 28;
 }
 
-impl pallet_voting_manager::Config for Runtime {
+impl pallet_validator_election::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type SessionsPerEra = SessionsPerEra;
 	type InfraVoteAccountId = VoteAccountId;
@@ -1289,7 +1288,7 @@ construct_runtime! {
 		Offences: pallet_offences::{Pallet, Storage, Event} = 8,
 		Historical: session_historical::{Pallet} = 33,
 		// This should be above Session Pallet
-		VotingManager: pallet_voting_manager::{Pallet, Call, Storage, Config<T>, Event<T>} = 22,
+		ValidatorElection: pallet_validator_election::{Pallet, Call, Storage, Config<T>, Event<T>} = 22,
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 10,
 		Grandpa: pallet_grandpa::{Pallet, Call, Storage, Config, Event, ValidateUnsigned} = 11,
 		ImOnline: pallet_im_online::{Pallet, Call, Storage, Event<T>, ValidateUnsigned, Config<T>} = 12,
