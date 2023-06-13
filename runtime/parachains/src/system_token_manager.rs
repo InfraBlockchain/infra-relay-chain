@@ -48,7 +48,7 @@ use sp_std::prelude::*;
 pub type ParaAssetId = VoteAssetId;
 pub type RelayAssetId = VoteAssetId;
 pub type ParaId = u32;
-pub type PalletIndex = u8;
+pub type PalletIndex = u32;
 pub type ExchangeRate = u64;
 
 /// Data structure for Wrapped system tokens
@@ -122,31 +122,28 @@ pub mod pallet {
 			system_token_id: SystemTokenId,
 			system_token_metadata: SystemTokenMetadata,
 		},
-		// Deregister the system token.
+		/// Deregister the system token.
 		SystemTokenDeregistered {
 			system_token_id: SystemTokenId,
 			system_token_metadata: SystemTokenMetadata,
 		},
-		// Register a wrapped system token id to an original system token id.
+		/// Register a wrapped system token id to an original system token id.
 		WrappedSystemTokenRegistered {
 			wrapped_system_token: WrappedSystemTokenId,
 			system_token_id: SystemTokenId,
 		},
-		// Deregister a wrapped system token id to an original system token id.
+		/// Deregister a wrapped system token id to an original system token id.
 		WrappedSystemTokenDeregistered {
 			wrapped_system_token: WrappedSystemTokenId,
 			system_token_id: SystemTokenId,
 		},
-		// Convert a wrapped system token id to an original system token id.
+		/// Convert a wrapped system token id to an original system token id.
 		SystemTokenConverted {
 			wrapped_system_token: WrappedSystemTokenId,
 			system_token_id: SystemTokenId,
 		},
-		// Convert a wrapped system token id to an original system token id.
-		SetSystemTokenExchangeRate {
-			system_token_id: SystemTokenId,
-			exchange_rate: ExchangeRate,
-		},
+		/// Convert a wrapped system token id to an original system token id.
+		SetSystemTokenExchangeRate { system_token_id: SystemTokenId, exchange_rate: ExchangeRate },
 	}
 
 	#[pallet::error]
@@ -172,9 +169,15 @@ pub mod pallet {
 		_,
 		Twox64Concat,
 		SystemTokenId,
-		(SystemTokenMetadata, AssetMetadata, ExchangeRate),
+		(SystemTokenMetadata, AssetMetadata),
 		OptionQuery,
 	>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn system_token_exchange_rates)]
+	/// List for original system token and metadata.
+	pub(super) type SystemTokenExchangeRates<T: Config> =
+		StorageMap<_, Twox64Concat, SystemTokenId, ExchangeRate, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_on_parachain)]
@@ -232,8 +235,9 @@ pub mod pallet {
 
 			SystemTokenList::<T>::insert(
 				&system_token_id,
-				(&system_token_metadata, &asset_metadata, &exchange_rate),
+				(&system_token_metadata, &asset_metadata),
 			);
+			SystemTokenExchangeRates::<T>::insert(&system_token_id, &exchange_rate);
 
 			Self::set_system_token_status(system_token_id.clone(), true);
 
@@ -264,81 +268,10 @@ pub mod pallet {
 				Error::<T>::WrappedSystemTokenAlreadyRegistered
 			);
 
-			let (system_token_metadata, asset_metadata, exchange_rate) = {
-				match SystemTokenList::<T>::get(&system_token_id) {
-					Some((system_token_metadata, asset_metadata, exchange_rate)) =>
-						(system_token_metadata, asset_metadata, exchange_rate),
-					None => Default::default(),
-				}
-			};
-
-			let config = <configuration::Pallet<T>>::config();
-			let xcm = {
-				use parity_scale_codec::Encode as _;
-				use xcm::opaque::{latest::prelude::*, VersionedXcm};
-
-				let root = PalletId(*b"infra/rt");
-				let owner: T::AccountId = root.into_account_truncating();
-
-				let mut create_call_encode: Vec<u8> =
-					[wrapped_system_token.clone().pallet_id as u8].into(); // asset pallet number
-				let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_create {
-					id: wrapped_system_token.clone().asset_id.into(),
-					owner: T::Lookup::unlookup(owner.clone()),
-					min_balance: <T as pallet_assets::Config>::Balance::from(
-						asset_metadata.min_balance,
-					),
-					is_sufficient: true,
-				}
-				.encode();
-
-				create_call_encode.append(&mut call_encode);
-
-				let mut set_metadata_encoded: Vec<u8> =
-					[wrapped_system_token.clone().pallet_id as u8].into(); // asset pallet number
-				let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_set_metadata {
-					id: wrapped_system_token.clone().asset_id.into(),
-					name: asset_metadata.clone().name.to_vec(),
-					symbol: asset_metadata.clone().symbol.to_vec(),
-					decimals: asset_metadata.clone().decimals,
-					is_frozen: false,
-				}
-				.encode();
-
-				set_metadata_encoded.append(&mut call_encode);
-
-				let fee_multilocation =
-					MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
-
-				VersionedXcm::from(Xcm(vec![
-					BuyExecution {
-						fees: fee_multilocation.clone().into(),
-						weight_limit: WeightLimit::Unlimited,
-					},
-					Transact {
-						origin_kind: OriginKind::Superuser,
-						require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
-						call: create_call_encode.into(),
-					},
-					Transact {
-						origin_kind: OriginKind::Superuser,
-						require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
-						call: set_metadata_encoded.into(),
-					},
-				]))
-				.encode()
-			};
-			if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
-				<dmp::Pallet<T>>::queue_downward_message(
-					&config,
-					ParaId::from(wrapped_system_token.clone().para_id).into(),
-					xcm,
-				) {
-				log::error!(
-					target: "runtime::system_token_manager",
-					"sending 'dmp' failed."
-				);
-			};
+			Self::create_wrapped_system_token(
+				system_token_id.clone(),
+				wrapped_system_token.clone(),
+			);
 
 			SystemTokenOnParachain::<T>::insert(&wrapped_system_token, &system_token_id);
 
@@ -396,7 +329,7 @@ pub mod pallet {
 					|maybe_system_tokens| -> Result<(), DispatchError> {
 						let system_tokens =
 							maybe_system_tokens.as_mut().ok_or(Error::<T>::Unknown)?;
-						system_tokens.retain(|&x| x != wrapped_system_token.clone());
+						system_tokens.retain(|x| *x != wrapped_system_token.clone());
 						Ok(())
 					},
 				);
@@ -421,22 +354,11 @@ pub mod pallet {
 			ensure_root(origin)?;
 
 			ensure!(
-				SystemTokenList::<T>::contains_key(&system_token_id),
+				SystemTokenExchangeRates::<T>::contains_key(&system_token_id),
 				Error::<T>::SystemTokenNotRegistered
 			);
 
-			let (system_token_metadata, asset_metadata, exchange_rate) = {
-				match SystemTokenList::<T>::get(&system_token_id) {
-					Some((system_token_metadata, asset_metadata, exchange_rate)) =>
-						(system_token_metadata, asset_metadata, exchange_rate),
-					None => Default::default(),
-				}
-			};
-
-			SystemTokenList::<T>::insert(
-				&system_token_id,
-				(&system_token_metadata, &asset_metadata, &new_exchange_rate),
-			);
+			SystemTokenExchangeRates::<T>::insert(&system_token_id, &new_exchange_rate);
 
 			Self::deposit_event(Event::<T>::SetSystemTokenExchangeRate {
 				system_token_id,
@@ -462,8 +384,7 @@ pub mod pallet {
 
 			let system_token_metadata = {
 				match SystemTokenList::<T>::get(&system_token_id) {
-					Some((system_token_metadata, asset_metadata, exchange_rate)) =>
-						system_token_metadata,
+					Some((system_token_metadata, _asset_metadata)) => system_token_metadata,
 					None => Default::default(),
 				}
 			};
@@ -483,6 +404,7 @@ pub mod pallet {
 			Self::set_system_token_status(system_token_id.clone(), false);
 
 			SystemTokenList::<T>::remove(&system_token_id);
+			SystemTokenExchangeRates::<T>::remove(&system_token_id);
 
 			Self::deposit_event(Event::<T>::SystemTokenDeregistered {
 				system_token_id,
@@ -505,9 +427,6 @@ pub mod pallet {
 				use parity_scale_codec::Encode as _;
 				use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
-				let root = PalletId(*b"infra/rt");
-				let owner: T::AccountId = root.into_account_truncating();
-
 				let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
 				let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::set_sufficient {
 					id: system_token_id.clone().asset_id.into(),
@@ -527,7 +446,7 @@ pub mod pallet {
 					},
 					Transact {
 						origin_kind: OriginKind::Superuser,
-						require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
+						require_weight_at_most: Weight::from_parts(1_000_000_000, 1_100_000),
 						call: encoded.into(),
 					},
 				]))
@@ -537,6 +456,73 @@ pub mod pallet {
 				<dmp::Pallet<T>>::queue_downward_message(
 					&config,
 					ParaId::from(system_token_id.clone().para_id).into(),
+					xcm,
+				) {
+				log::error!(
+					target: "runtime::system_token_manager",
+					"sending 'dmp' failed."
+				);
+			};
+		}
+		fn create_wrapped_system_token(
+			system_token_id: SystemTokenId,
+			wrapped_system_token: SystemTokenId,
+		) {
+			let (_system_token_metadata, asset_metadata) = {
+				match SystemTokenList::<T>::get(&system_token_id) {
+					Some((system_token_metadata, asset_metadata)) =>
+						(system_token_metadata, asset_metadata),
+					None => Default::default(),
+				}
+			};
+
+			let config = <configuration::Pallet<T>>::config();
+			let xcm = {
+				use parity_scale_codec::Encode as _;
+				use xcm::opaque::{latest::prelude::*, VersionedXcm};
+
+				let root = PalletId(*b"infra/rt");
+				let owner: T::AccountId = root.into_account_truncating();
+
+				let mut create_call_encode: Vec<u8> =
+					[wrapped_system_token.clone().pallet_id as u8].into(); // asset pallet number
+				let mut call_encode: Vec<u8> =
+					pallet_assets::Call::<T>::force_create_with_metadata {
+						id: wrapped_system_token.clone().asset_id.into(),
+						owner: T::Lookup::unlookup(owner.clone()),
+						min_balance: <T as pallet_assets::Config>::Balance::from(
+							asset_metadata.min_balance,
+						),
+						is_sufficient: true,
+						name: asset_metadata.clone().name.to_vec(),
+						symbol: asset_metadata.clone().symbol.to_vec(),
+						decimals: asset_metadata.clone().decimals,
+						is_frozen: false,
+					}
+					.encode();
+
+				create_call_encode.append(&mut call_encode);
+
+				let fee_multilocation =
+					MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
+
+				VersionedXcm::from(Xcm(vec![
+					BuyExecution {
+						fees: fee_multilocation.clone().into(),
+						weight_limit: WeightLimit::Unlimited,
+					},
+					Transact {
+						origin_kind: OriginKind::Superuser,
+						require_weight_at_most: Weight::from_parts(1_000_000_000, 1_100_000),
+						call: create_call_encode.into(),
+					},
+				]))
+				.encode()
+			};
+			if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
+				<dmp::Pallet<T>>::queue_downward_message(
+					&config,
+					ParaId::from(wrapped_system_token.clone().para_id).into(),
 					xcm,
 				) {
 				log::error!(
@@ -568,8 +554,8 @@ impl<T: Config> SystemTokenInterface for Pallet<T> {
 		None
 	}
 	fn adjusted_weight(system_token: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight {
-		match <SystemTokenList<T>>::get(system_token) {
-			Some((system_token_metadata, asset_metadata, exchange_rate)) => {
+		match <SystemTokenExchangeRates<T>>::get(system_token) {
+			Some(exchange_rate) => {
 				let exchange_rate: u128 = exchange_rate.into();
 				return vote_weight.saturating_mul(exchange_rate)
 			},
