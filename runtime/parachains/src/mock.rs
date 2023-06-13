@@ -37,9 +37,9 @@ use primitives::{
 use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
-	generic::{VoteAccountId, VoteAssetId, VoteWeight},
 	traits::{BlakeTwo256, IdentityLookup},
 	transaction_validity::TransactionPriority,
+	types::{VoteAccountId, VoteAssetId, VoteWeight},
 	KeyTypeId, Permill,
 };
 use std::{cell::RefCell, collections::HashMap};

@@ -65,14 +65,13 @@ use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str,
 	curve::PiecewiseLinear,
-	generic,
-	generic::{VoteAccountId, VoteWeight},
-	impl_opaque_keys,
+	generic, impl_opaque_keys,
 	traits::{
 		BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT, OpaqueKeys,
 		SaturatedConversion, StaticLookup, Verify,
 	},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
+	types::{VoteAccountId, VoteWeight},
 	ApplyExtrinsicResult, KeyTypeId, Perbill,
 };
 use sp_staking::SessionIndex;
@@ -309,7 +308,7 @@ impl pallet_session::Config for Runtime {
 	type ValidatorIdOf = pallet_staking::StashOf<Self>;
 	type ShouldEndSession = Babe;
 	type NextSessionRotation = Babe;
-	type SessionManager = VotingManager;
+	type SessionManager = ValidatorElection;
 	type SessionHandler = <SessionKeys as OpaqueKeys>::KeyTypeIdProviders;
 	type Keys = SessionKeys;
 	type WeightInfo = ();
@@ -523,7 +522,7 @@ impl parachains_inclusion::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = ParasDisputes;
 	type RewardValidators = RewardValidators;
-	type VotingManager = VotingManager;
+	type VotingManager = ValidatorElection;
 	type SystemTokenManager = SystemTokenManager;
 	type RewardInterface = ValidatorRewardManager;
 }
