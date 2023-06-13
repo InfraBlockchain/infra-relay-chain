@@ -50,10 +50,10 @@ use frame_support::{
 	PalletId, RuntimeDebug,
 };
 use frame_system::EnsureRoot;
-use pallet_fee_payment_manager::{HandleCredit, TransactionFeeCharger};
 use pallet_grandpa::{fg_primitives, AuthorityId as GrandpaId};
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use pallet_session::historical as session_historical;
+use pallet_system_token_payment::{HandleCredit, TransactionFeeCharger};
 use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
 use pallet_validator_election::SessionIndex;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
@@ -338,7 +338,7 @@ impl HandleCredit<AccountId, Assets> for CreditToBucket {
 	}
 }
 
-impl pallet_fee_payment_manager::Config for Runtime {
+impl pallet_system_token_payment::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Assets = Assets;
 	type OnChargeSystemToken = TransactionFeeCharger<
@@ -789,7 +789,7 @@ where
 			)),
 			frame_system::CheckNonce::<Runtime>::from(nonce),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_fee_payment_manager::FeePaymentMetadata::<Runtime>::new(),
+			pallet_system_token_payment::FeePaymentMetadata::<Runtime>::new(),
 		);
 		let raw_payload = SignedPayload::new(call, extra)
 			.map_err(|e| {
@@ -1280,7 +1280,7 @@ construct_runtime! {
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 5,
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 6,
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 31,
-		FeePaymentManager: pallet_fee_payment_manager::{Pallet, Event<T>} = 32,
+		SystemTokenPayment: pallet_system_token_payment::{Pallet, Event<T>} = 32,
 		// Consensus support.
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.
@@ -1377,7 +1377,7 @@ pub type SignedExtra = (
 	frame_system::CheckMortality<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	pallet_fee_payment_manager::FeePaymentMetadata<Runtime>,
+	pallet_system_token_payment::FeePaymentMetadata<Runtime>,
 );
 
 /// All migrations that will run on the next runtime upgrade.
@@ -1961,7 +1961,7 @@ mod test_fees {
 			frame_system::CheckMortality::<Runtime>::from(generic::Era::immortal()),
 			frame_system::CheckNonce::<Runtime>::from(1),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_fee_payment_manager::FeePaymentMetadata::<Runtime>::new(),
+			pallet_system_token_payment::FeePaymentMetadata::<Runtime>::new(),
 		);
 		let uxt = UncheckedExtrinsic {
 			function: call,

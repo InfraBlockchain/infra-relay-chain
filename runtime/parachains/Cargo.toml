@@ -35,7 +35,7 @@ pallet-session = { git = "https://github.com/InfraBlockchain/infra-substrate", b
 pallet-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-timestamp = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-vesting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-fee-payment-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-system-token-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
