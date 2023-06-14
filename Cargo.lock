@@ -4742,7 +4742,7 @@ dependencies = [
 name = "infrablockspace-statement-distribution"
 version = "0.9.37"
 dependencies = [
- "arrayvec 0.5.2",
+ "arrayvec 0.7.3",
  "assert_matches",
  "fatality",
  "futures",
