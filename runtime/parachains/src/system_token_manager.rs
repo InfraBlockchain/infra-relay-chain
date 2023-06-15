@@ -199,13 +199,15 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn allowed_system_token)]
 	/// Wrapped System token list used in parachains.
+	/// Key: (PalletIndex, ParaAssetId) of Wrapped System token. ParaId is omitted.
+	/// Value: (SystemTokenId)
 	pub(super) type AllowedSystemToken<T: Config> = StorageDoubleMap<
 		_,
 		Twox64Concat,
 		PalletIndex,
 		Twox64Concat,
 		ParaAssetId,
-		WrappedSystemTokenId,
+		SystemTokenId,
 		OptionQuery,
 	>;
 
