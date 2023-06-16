@@ -807,9 +807,18 @@ pub fn infrablockspace_testnet_genesis(
 			balances: endowed_accounts.iter().map(|k| (k.clone(), ENDOWMENT)).collect(),
 		},
 		assets: infrablockspace::AssetsConfig {
-			assets: vec![],
-			metadata: vec![],
-			accounts: vec![],
+			assets: vec![(
+				99,                                                 // asset_id
+				get_account_id_from_seed::<sr25519::Public>("Bob"), // owner
+				true,                                               // is_sufficient
+				1000,                                               // min_balance
+			)],
+			metadata: vec![(99, "iTEST".into(), "iTEST".into(), 12)],
+			accounts: vec![(
+				99,
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
+				1_000_000_000_000, // endow only 1 iTest for test
+			)],
 			..Default::default()
 		},
 		session: infrablockspace::SessionConfig {
