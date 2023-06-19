@@ -74,7 +74,6 @@ pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
 
 # infra-related
 pallet-validator-election = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
-pallet-system-token-manager = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
 frame-try-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false, optional = true }
@@ -156,7 +155,6 @@ std = [
 	"pallet-vesting/std",
 	"pallet-utility/std",
 	"pallet-validator-election/std",
-	"pallet-system-token-manager/std",
 	"sp-runtime/std",
 	"frame-system/std",
 	"frame-system-rpc-runtime-api/std",

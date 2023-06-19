@@ -154,7 +154,7 @@ impl BenchmarkCallSigner<infrablockspace_runtime::RuntimeCall, sp_core::sr25519:
 			),
 			frame_system::CheckNonce::<runtime::Runtime>::from(nonce),
 			frame_system::CheckWeight::<runtime::Runtime>::new(),
-			pallet_system_token_payment::FeePaymentMetadata::<runtime::Runtime>::new(),
+			pallet_system_token_payment::ChargeSystemToken::<runtime::Runtime>::new(),
 		);
 
 		let payload = runtime::SignedPayload::from_raw(
