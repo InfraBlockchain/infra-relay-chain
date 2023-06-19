@@ -99,7 +99,10 @@ pub trait SystemTokenInterface {
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use crate::{configuration, dmp, paras};
+	use crate::{
+		configuration, dmp,
+		paras::{self, Parachains},
+	};
 	use frame_system::pallet_prelude::*;
 
 	#[pallet::config]
@@ -158,6 +161,7 @@ pub mod pallet {
 		SystemTokenAlreadyRegistered,
 		/// Failed to remove the system token as it is not registered.
 		SystemTokenNotRegistered,
+		SameSystemTokenAlreadyRegistered,
 		WrappedSystemTokenAlreadyRegistered,
 		WrappedSystemTokenNotRegistered,
 		WrongSystemTokenMetadata,
@@ -203,6 +207,17 @@ pub mod pallet {
 	>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn para_ids_by_system_token)]
+	/// List of parachain ids using system token
+	pub(super) type ParaIdsBySystemToken<T: Config> = StorageMap<
+		_,
+		Twox64Concat,
+		SystemTokenId,
+		BoundedVec<ParaId, T::MaxWrappedSystemToken>,
+		OptionQuery,
+	>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn allowed_system_token)]
 	/// Wrapped System token list used in parachains.
 	/// Key: (PalletIndex, ParaAssetId) of Wrapped System token. ParaId is omitted.
@@ -243,13 +258,22 @@ pub mod pallet {
 
 			let property = SystemTokenProperty { weight };
 
+			Self::set_system_token_status(system_token_id.clone(), true);
+
 			SystemTokenList::<T>::insert(
 				&system_token_id,
 				(&system_token_metadata, &asset_metadata),
 			);
 			SystemTokenProperties::<T>::insert(&system_token_id, &property);
-
-			Self::set_system_token_status(system_token_id.clone(), true);
+			SystemTokenOnParachain::<T>::insert(&system_token_id, &system_token_id);
+			Self::insert_system_token_on_parachain_by_para_id(
+				system_token_id.clone().para_id,
+				system_token_id.clone(),
+			);
+			Self::insert_para_ids_by_system_token(
+				system_token_id.clone(),
+				system_token_id.clone().para_id,
+			);
 
 			Self::deposit_event(Event::<T>::SystemTokenRegistered {
 				system_token_id: system_token_id.clone(),
@@ -277,6 +301,12 @@ pub mod pallet {
 				!SystemTokenOnParachain::<T>::contains_key(&wrapped_system_token),
 				Error::<T>::WrappedSystemTokenAlreadyRegistered
 			);
+			ensure!(
+				!ParaIdsBySystemToken::<T>::get(&system_token_id)
+					.unwrap()
+					.contains(&wrapped_system_token.clone().para_id),
+				Error::<T>::SameSystemTokenAlreadyRegistered
+			);
 
 			Self::create_wrapped_system_token(
 				system_token_id.clone(),
@@ -284,26 +314,14 @@ pub mod pallet {
 			);
 
 			SystemTokenOnParachain::<T>::insert(&wrapped_system_token, &system_token_id);
-
-			if SystemTokenOnParachainByParaId::<T>::contains_key(
+			Self::insert_system_token_on_parachain_by_para_id(
 				wrapped_system_token.clone().para_id,
-			) {
-				let _ = SystemTokenOnParachainByParaId::<T>::try_mutate_exists(
-					wrapped_system_token.clone().para_id,
-					|maybe_system_tokens| -> Result<(), DispatchError> {
-						let system_tokens =
-							maybe_system_tokens.as_mut().ok_or(Error::<T>::Unknown)?;
-						system_tokens.to_vec().push(wrapped_system_token.clone());
-						Ok(())
-					},
-				);
-			} else {
-				SystemTokenOnParachainByParaId::<T>::insert(
-					&wrapped_system_token.para_id,
-					BoundedVec::try_from(vec![wrapped_system_token.clone()]).unwrap(),
-				);
-			}
-
+				wrapped_system_token.clone(),
+			);
+			Self::insert_para_ids_by_system_token(
+				system_token_id.clone(),
+				wrapped_system_token.clone().para_id,
+			);
 			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered {
 				system_token_id,
 				wrapped_system_token: wrapped_system_token.clone(),
@@ -340,6 +358,17 @@ pub mod pallet {
 						let system_tokens =
 							maybe_system_tokens.as_mut().ok_or(Error::<T>::Unknown)?;
 						system_tokens.retain(|x| *x != wrapped_system_token.clone());
+						Ok(())
+					},
+				);
+			}
+
+			if ParaIdsBySystemToken::<T>::contains_key(system_token_id.clone()) {
+				let _ = ParaIdsBySystemToken::<T>::try_mutate_exists(
+					system_token_id.clone(),
+					|maybe_para_ids| -> Result<(), DispatchError> {
+						let para_ids = maybe_para_ids.as_mut().ok_or(Error::<T>::Unknown)?;
+						para_ids.retain(|x| *x != wrapped_system_token.clone().para_id.into());
 						Ok(())
 					},
 				);
@@ -415,6 +444,27 @@ pub mod pallet {
 
 			SystemTokenList::<T>::remove(&system_token_id);
 			SystemTokenProperties::<T>::remove(&system_token_id);
+			SystemTokenOnParachain::<T>::remove(&system_token_id);
+
+			if SystemTokenOnParachainByParaId::<T>::contains_key(system_token_id.clone().para_id) &&
+				SystemTokenOnParachainByParaId::<T>::get(system_token_id.clone().para_id)
+					.unwrap()
+					.len() > 1
+			{
+				let _ = SystemTokenOnParachainByParaId::<T>::try_mutate_exists(
+					system_token_id.clone().para_id,
+					|maybe_system_tokens| -> Result<(), DispatchError> {
+						let system_tokens =
+							maybe_system_tokens.as_mut().ok_or(Error::<T>::Unknown)?;
+						system_tokens.retain(|x| *x != system_token_id.clone());
+						Ok(())
+					},
+				);
+			} else {
+				SystemTokenOnParachainByParaId::<T>::remove(&system_token_id.clone().para_id);
+			}
+
+			ParaIdsBySystemToken::<T>::remove(&system_token_id);
 
 			Self::deposit_event(Event::<T>::SystemTokenDeregistered {
 				system_token_id,
@@ -540,6 +590,48 @@ pub mod pallet {
 					"sending 'dmp' failed."
 				);
 			};
+		}
+		fn insert_system_token_on_parachain_by_para_id(
+			para_id: ParaId,
+			system_token_id: SystemTokenId,
+		) {
+			if SystemTokenOnParachainByParaId::<T>::contains_key(para_id.clone()) {
+				let _ = SystemTokenOnParachainByParaId::<T>::try_mutate_exists(
+					para_id.clone(),
+					|maybe_system_tokens| -> Result<(), DispatchError> {
+						let system_tokens =
+							maybe_system_tokens.as_mut().ok_or(Error::<T>::Unknown)?;
+						system_tokens.try_push(system_token_id.clone()).unwrap_or(());
+						Ok(())
+					},
+				);
+			} else {
+				SystemTokenOnParachainByParaId::<T>::insert(
+					&para_id,
+					BoundedVec::try_from(vec![system_token_id.clone()]).unwrap(),
+				);
+			}
+		}
+		fn insert_para_ids_by_system_token(system_token_id: SystemTokenId, para_id: ParaId) {
+			if ParaIdsBySystemToken::<T>::contains_key(system_token_id.clone()) {
+				log::info!("insert para_id by system_token_id.");
+				let _ = ParaIdsBySystemToken::<T>::try_mutate_exists(
+					system_token_id.clone(),
+					|maybe_para_ids| -> Result<(), DispatchError> {
+						let para_ids = maybe_para_ids.as_mut().ok_or(Error::<T>::Unknown)?;
+						log::info!("para_ids: {:?}", para_ids.clone());
+						para_ids.try_push(para_id.clone()).unwrap_or(());
+						log::info!("para_ids: {:?}", para_ids.clone());
+						Ok(())
+					},
+				);
+			} else {
+				log::info!("new");
+				ParaIdsBySystemToken::<T>::insert(
+					&system_token_id,
+					BoundedVec::try_from(vec![para_id.clone()]).unwrap(),
+				);
+			}
 		}
 	}
 }
