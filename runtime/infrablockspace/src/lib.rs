@@ -789,7 +789,7 @@ where
 			)),
 			frame_system::CheckNonce::<Runtime>::from(nonce),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_system_token_payment::FeePaymentMetadata::<Runtime>::new(),
+			pallet_system_token_payment::ChargeSystemToken::<Runtime>::new(),
 		);
 		let raw_payload = SignedPayload::new(call, extra)
 			.map_err(|e| {
@@ -1378,7 +1378,7 @@ pub type SignedExtra = (
 	frame_system::CheckMortality<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	pallet_system_token_payment::FeePaymentMetadata<Runtime>,
+	pallet_system_token_payment::ChargeSystemToken<Runtime>,
 );
 
 /// All migrations that will run on the next runtime upgrade.
@@ -1962,7 +1962,7 @@ mod test_fees {
 			frame_system::CheckMortality::<Runtime>::from(generic::Era::immortal()),
 			frame_system::CheckNonce::<Runtime>::from(1),
 			frame_system::CheckWeight::<Runtime>::new(),
-			pallet_system_token_payment::FeePaymentMetadata::<Runtime>::new(),
+			pallet_system_token_payment::ChargeSystemToken::<Runtime>::new(),
 		);
 		let uxt = UncheckedExtrinsic {
 			function: call,
