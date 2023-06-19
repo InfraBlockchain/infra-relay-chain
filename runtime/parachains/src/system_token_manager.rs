@@ -49,12 +49,12 @@ pub type ParaAssetId = VoteAssetId;
 pub type RelayAssetId = VoteAssetId;
 pub type ParaId = u32;
 pub type PalletIndex = u32;
-pub type ExchangeRate = u64;
+pub type SystemTokenWeight = u64;
 
 /// Data structure for Wrapped system tokens
 pub type WrappedSystemTokenId = SystemTokenId;
 
-type StringLimit = ConstU32<32>;
+type StringLimit = ConstU32<128>;
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 pub struct SystemTokenMetadata {
 	/// The user friendly name of issuer in real world
@@ -76,6 +76,12 @@ pub struct AssetMetadata {
 	/// The minimum balance of this new asset that any single account must
 	/// have. If an account's balance is reduced below this, then it collapses to zero.
 	pub min_balance: u128,
+}
+
+#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
+pub struct SystemTokenProperty {
+	/// weight of this system token
+	pub weight: SystemTokenWeight,
 }
 
 /// System tokens API.
@@ -143,7 +149,7 @@ pub mod pallet {
 			system_token_id: SystemTokenId,
 		},
 		/// Convert a wrapped system token id to an original system token id.
-		SetSystemTokenExchangeRate { system_token_id: SystemTokenId, exchange_rate: ExchangeRate },
+		SetSystemTokenProperty { system_token_id: SystemTokenId, property: SystemTokenProperty },
 	}
 
 	#[pallet::error]
@@ -176,8 +182,8 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_exchange_rates)]
 	/// List for original system token and metadata.
-	pub(super) type SystemTokenExchangeRates<T: Config> =
-		StorageMap<_, Twox64Concat, SystemTokenId, ExchangeRate, OptionQuery>;
+	pub(super) type SystemTokenProperties<T: Config> =
+		StorageMap<_, Twox64Concat, SystemTokenId, SystemTokenProperty, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_on_parachain)]
@@ -226,7 +232,7 @@ pub mod pallet {
 			system_token_id: SystemTokenId,
 			system_token_metadata: SystemTokenMetadata,
 			asset_metadata: AssetMetadata,
-			exchange_rate: ExchangeRate,
+			weight: SystemTokenWeight,
 		) -> DispatchResult {
 			ensure_root(origin)?;
 
@@ -235,11 +241,13 @@ pub mod pallet {
 				Error::<T>::SystemTokenAlreadyRegistered
 			);
 
+			let property = SystemTokenProperty { weight };
+
 			SystemTokenList::<T>::insert(
 				&system_token_id,
 				(&system_token_metadata, &asset_metadata),
 			);
-			SystemTokenExchangeRates::<T>::insert(&system_token_id, &exchange_rate);
+			SystemTokenProperties::<T>::insert(&system_token_id, &property);
 
 			Self::set_system_token_status(system_token_id.clone(), true);
 
@@ -348,24 +356,24 @@ pub mod pallet {
 		#[pallet::call_index(3)]
 		#[pallet::weight(1_000)]
 		/// Deregister the system token.
-		pub fn set_system_token_exchange_rate(
+		pub fn set_system_token_weight(
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
-			new_exchange_rate: ExchangeRate,
+			new_weight: SystemTokenWeight,
 		) -> DispatchResult {
 			ensure_root(origin)?;
 
 			ensure!(
-				SystemTokenExchangeRates::<T>::contains_key(&system_token_id),
+				SystemTokenProperties::<T>::contains_key(&system_token_id),
 				Error::<T>::SystemTokenNotRegistered
 			);
 
-			SystemTokenExchangeRates::<T>::insert(&system_token_id, &new_exchange_rate);
+			let mut property = SystemTokenProperties::<T>::get(&system_token_id).unwrap();
+			property.weight = new_weight;
 
-			Self::deposit_event(Event::<T>::SetSystemTokenExchangeRate {
-				system_token_id,
-				exchange_rate: new_exchange_rate,
-			});
+			SystemTokenProperties::<T>::insert(&system_token_id, &property);
+
+			Self::deposit_event(Event::<T>::SetSystemTokenProperty { system_token_id, property });
 
 			Ok(())
 		}
@@ -406,7 +414,7 @@ pub mod pallet {
 			Self::set_system_token_status(system_token_id.clone(), false);
 
 			SystemTokenList::<T>::remove(&system_token_id);
-			SystemTokenExchangeRates::<T>::remove(&system_token_id);
+			SystemTokenProperties::<T>::remove(&system_token_id);
 
 			Self::deposit_event(Event::<T>::SystemTokenDeregistered {
 				system_token_id,
@@ -556,10 +564,10 @@ impl<T: Config> SystemTokenInterface for Pallet<T> {
 		None
 	}
 	fn adjusted_weight(system_token: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight {
-		match <SystemTokenExchangeRates<T>>::get(system_token) {
-			Some(exchange_rate) => {
-				let exchange_rate: u128 = exchange_rate.into();
-				return vote_weight.saturating_mul(exchange_rate)
+		match <SystemTokenProperties<T>>::get(system_token) {
+			Some(property) => {
+				let weight: u128 = property.weight.into();
+				return vote_weight.saturating_mul(weight)
 			},
 			None => return vote_weight,
 		}
