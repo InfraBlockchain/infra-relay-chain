@@ -280,11 +280,8 @@ pub mod pallet {
 			);
 
 			let system_tokens =
-				match SystemTokenOnParachainByParaId::<T>::get(&system_token_id.clone().para_id) {
-					Some(system_tokens) => system_tokens,
-					None => Default::default(),
-				};
-
+				SystemTokenOnParachainByParaId::<T>::get(&system_token_id.clone().para_id)
+					.map_or(Default::default(), |system_token| system_token);
 			ensure!(
 				system_tokens.len() < T::MaxWrappedSystemToken::get() as usize,
 				Error::<T>::TooManySystemTokensOnParachain
@@ -336,13 +333,8 @@ pub mod pallet {
 				Error::<T>::WrappedSystemTokenAlreadyRegistered
 			);
 
-			let para_ids = {
-				match ParaIdsBySystemToken::<T>::get(&system_token_id) {
-					Some(para_ids) => para_ids,
-					None => Default::default(),
-				}
-			};
-
+			let para_ids = ParaIdsBySystemToken::<T>::get(&system_token_id)
+				.map_or(Default::default(), |para_id| para_id);
 			ensure!(
 				!para_ids.contains(&wrapped_system_token.clone().para_id),
 				Error::<T>::SameSystemTokenAlreadyRegistered
