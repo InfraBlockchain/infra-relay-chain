@@ -340,6 +340,7 @@ impl pallet_system_token_manager::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type StringLimit = ConstU32<50>;
 	type MaxWrappedSystemToken = ConstU32<10>;
+	type MaxSystemTokenOnParachain = ConstU32<10>;
 }
 
 impl crate::paras_inherent::Config for Test {

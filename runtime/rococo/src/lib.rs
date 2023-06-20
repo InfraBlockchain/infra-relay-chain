@@ -1075,6 +1075,7 @@ impl system_token_manager::Config for Runtime {
 	type UnixTime = Timestamp;
 	type StringLimit = ConstU32<50>;
 	type MaxWrappedSystemToken = ConstU32<10>;
+	type MaxSystemTokenOnParachain = ConstU32<10>;
 }
 
 impl validator_reward_manager::Config for Runtime {

@@ -132,6 +132,9 @@ pub mod pallet {
 		/// Max number which can be used as system tokens on parachain.
 		#[pallet::constant]
 		type MaxWrappedSystemToken: Get<u32>;
+		/// Max number which can be used as system tokens on parachain.
+		#[pallet::constant]
+		type MaxSystemTokenOnParachain: Get<u32>;
 	}
 
 	#[pallet::event]
@@ -176,6 +179,8 @@ pub mod pallet {
 		WrappedSystemTokenAlreadyRegistered,
 		WrappedSystemTokenNotRegistered,
 		WrongSystemTokenMetadata,
+		TooManySystemTokensOnParachain,
+		TooManyWrappedSystemTokens,
 		Unknown,
 	}
 
@@ -230,7 +235,7 @@ pub mod pallet {
 		_,
 		Twox64Concat,
 		SystemTokenId,
-		BoundedVec<ParaId, T::MaxWrappedSystemToken>,
+		BoundedVec<ParaId, T::MaxSystemTokenOnParachain>,
 		OptionQuery,
 	>;
 
@@ -272,6 +277,17 @@ pub mod pallet {
 			ensure!(
 				!SystemTokenList::<T>::contains_key(&system_token_id),
 				Error::<T>::SystemTokenAlreadyRegistered
+			);
+
+			let system_tokens =
+				match SystemTokenOnParachainByParaId::<T>::get(&system_token_id.clone().para_id) {
+					Some(system_tokens) => system_tokens,
+					None => Default::default(),
+				};
+
+			ensure!(
+				system_tokens.len() < T::MaxWrappedSystemToken::get() as usize,
+				Error::<T>::TooManySystemTokensOnParachain
 			);
 
 			Self::set_system_token_status(system_token_id.clone(), true);
@@ -319,11 +335,32 @@ pub mod pallet {
 				!SystemTokenOnParachain::<T>::contains_key(&wrapped_system_token),
 				Error::<T>::WrappedSystemTokenAlreadyRegistered
 			);
+
+			let para_ids = {
+				match ParaIdsBySystemToken::<T>::get(&system_token_id) {
+					Some(para_ids) => para_ids,
+					None => Default::default(),
+				}
+			};
+
 			ensure!(
-				!ParaIdsBySystemToken::<T>::get(&system_token_id)
-					.unwrap()
-					.contains(&wrapped_system_token.clone().para_id),
+				!para_ids.contains(&wrapped_system_token.clone().para_id),
 				Error::<T>::SameSystemTokenAlreadyRegistered
+			);
+			ensure!(
+				para_ids.len() < T::MaxSystemTokenOnParachain::get() as usize,
+				Error::<T>::TooManySystemTokensOnParachain
+			);
+
+			let system_tokens =
+				match SystemTokenOnParachainByParaId::<T>::get(&system_token_id.clone().para_id) {
+					Some(system_tokens) => system_tokens,
+					None => Default::default(),
+				};
+
+			ensure!(
+				system_tokens.len() < T::MaxWrappedSystemToken::get() as usize,
+				Error::<T>::TooManyWrappedSystemTokens
 			);
 
 			Self::create_wrapped_system_token(
