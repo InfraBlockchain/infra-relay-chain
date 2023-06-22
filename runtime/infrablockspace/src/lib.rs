@@ -440,12 +440,12 @@ impl pallet_identity::Config for Runtime {
 }
 
 parameter_types! {
-	pub LaunchPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1, "DOT_LAUNCH_PERIOD");
-	pub VotingPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1 * MINUTES, "DOT_VOTING_PERIOD");
-	pub FastTrackVotingPeriod: BlockNumber = prod_or_fast!(3 * HOURS, 1 * MINUTES, "DOT_FAST_TRACK_VOTING_PERIOD");
+	pub LaunchPeriod: BlockNumber = prod_or_fast!(3 * MINUTES, 1, "DOT_LAUNCH_PERIOD");
+	pub VotingPeriod: BlockNumber = prod_or_fast!(3 * MINUTES, 1 * MINUTES, "DOT_VOTING_PERIOD");
+	pub FastTrackVotingPeriod: BlockNumber = prod_or_fast!(3 * MINUTES, 1 * MINUTES, "DOT_FAST_TRACK_VOTING_PERIOD");
 	pub const MinimumDeposit: Balance = 100 * DOLLARS;
-	pub EnactmentPeriod: BlockNumber = prod_or_fast!(28 * DAYS, 1, "DOT_ENACTMENT_PERIOD");
-	pub CooloffPeriod: BlockNumber = prod_or_fast!(7 * DAYS, 1, "DOT_COOLOFF_PERIOD");
+	pub EnactmentPeriod: BlockNumber = prod_or_fast!(10 * MINUTES, 1, "DOT_ENACTMENT_PERIOD");
+	pub CooloffPeriod: BlockNumber = prod_or_fast!(10 * MINUTES, 1, "DOT_COOLOFF_PERIOD");
 	pub const InstantAllowed: bool = true;
 	pub const MaxVotes: u32 = 100;
 	pub const MaxProposals: u32 = 100;
@@ -528,8 +528,6 @@ impl pallet_collective::Config<ValidatorCollective> for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeOrigin = RuntimeOrigin;
 	type IsValidatorCollective = IsValidatorCollective;
-	type SessionInterface = Self;
-	type SessionAlert = Babe;
 	type Proposal = RuntimeCall;
 	type MotionDuration = CouncilMotionDuration;
 	type MaxProposals = CouncilMaxProposals;
@@ -589,8 +587,6 @@ impl pallet_collective::Config<TechnicalCollective> for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeOrigin = RuntimeOrigin;
 	type IsValidatorCollective = NotValidatorCollective;
-	type SessionInterface = Self;
-	type SessionAlert = Babe;
 	type Proposal = RuntimeCall;
 	type MotionDuration = TechnicalMotionDuration;
 	type MaxProposals = TechnicalMaxProposals;
@@ -1088,7 +1084,8 @@ impl pallet_validator_election::Config for Runtime {
 	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = Session;
-	type SessionInterface = ();
+	type SessionInterface = Self;
+	type CollectiveInterface = Council;
 	type RewardInterface = ValidatorRewardManager;
 }
 

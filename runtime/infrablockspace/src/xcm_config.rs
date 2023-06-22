@@ -17,8 +17,8 @@
 //! XCM configuration for infrablockspace.
 
 use super::{
-	parachains_origin, AccountId, AllPalletsWithSystem, Balances, ValidatorCollective, ParaId,
-	Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, WeightToFee, XcmPallet,
+	parachains_origin, AccountId, AllPalletsWithSystem, Balances, ParaId, Runtime, RuntimeCall,
+	RuntimeEvent, RuntimeOrigin, ValidatorCollective, WeightToFee, XcmPallet,
 };
 use frame_support::{
 	match_types, parameter_types,
