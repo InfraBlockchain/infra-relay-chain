@@ -539,7 +539,8 @@ impl pallet_validator_election::Config for Runtime {
 	type InfraVoteAccountId = VoteAccountId;
 	type InfraVotePoints = VoteWeight;
 	type NextNewSession = Session;
-	type SessionInterface = ();
+	type SessionInterface = Self;
+	type CollectiveInterface = Council;
 	type RewardInterface = ValidatorRewardManager;
 }
 

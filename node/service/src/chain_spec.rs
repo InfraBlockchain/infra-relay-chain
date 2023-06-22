@@ -846,10 +846,7 @@ pub fn infrablockspace_testnet_genesis(
 		sudo: infrablockspace::SudoConfig { key: Some(root_key) },
 		phragmen_election: Default::default(),
 		democracy: infrablockspace::DemocracyConfig::default(),
-		council: infrablockspace::CouncilConfig {
-			members: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
-			phantom: Default::default(),
-		},
+		council: infrablockspace::CouncilConfig { members: vec![], phantom: Default::default() },
 		technical_committee: infrablockspace::TechnicalCommitteeConfig {
 			members: vec![],
 			phantom: Default::default(),
