@@ -17,7 +17,7 @@
 //! XCM configuration for infrablockspace.
 
 use super::{
-	parachains_origin, AccountId, AllPalletsWithSystem, Balances, CouncilCollective, ParaId,
+	parachains_origin, AccountId, AllPalletsWithSystem, Balances, ValidatorCollective, ParaId,
 	Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, WeightToFee, XcmPallet,
 };
 use frame_support::{
@@ -182,13 +182,11 @@ impl Contains<RuntimeCall> for SafeCallFilter {
 			) |
 			RuntimeCall::Council(
 				pallet_collective::Call::vote { .. } |
-				pallet_collective::Call::close_old_weight { .. } |
 				pallet_collective::Call::disapprove_proposal { .. } |
 				pallet_collective::Call::close { .. },
 			) |
 			RuntimeCall::TechnicalCommittee(
 				pallet_collective::Call::vote { .. } |
-				pallet_collective::Call::close_old_weight { .. } |
 				pallet_collective::Call::disapprove_proposal { .. } |
 				pallet_collective::Call::close { .. },
 			) |
@@ -290,7 +288,7 @@ impl xcm_executor::Config for XcmConfig {
 }
 
 parameter_types! {
-	pub const CouncilBodyId: BodyId = BodyId::Executive;
+	pub const ValidatorCouncilBodyId: BodyId = BodyId::Executive;
 }
 
 #[cfg(feature = "runtime-benchmarks")]
@@ -301,8 +299,8 @@ parameter_types! {
 /// Type to convert a council origin to a Plurality `MultiLocation` value.
 pub type CouncilToPlurality = BackingToPlurality<
 	RuntimeOrigin,
-	pallet_collective::Origin<Runtime, CouncilCollective>,
-	CouncilBodyId,
+	pallet_collective::Origin<Runtime, ValidatorCollective>,
+	ValidatorCouncilBodyId,
 >;
 
 /// Type to convert an `Origin` type value into a `MultiLocation` value which represents an interior location

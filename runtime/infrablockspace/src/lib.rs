@@ -135,7 +135,7 @@ pub fn native_version() -> NativeVersion {
 
 type MoreThanHalfCouncil = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionMoreThan<AccountId, CouncilCollective, 1, 2>,
+	pallet_collective::EnsureProportionMoreThan<AccountId, ValidatorCollective, 1, 2>,
 >;
 
 parameter_types! {
@@ -186,7 +186,7 @@ parameter_types! {
 
 type ScheduleOrigin = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 1, 2>,
 >;
 
 /// Used the compare the privilege of an origin inside the scheduler.
@@ -462,18 +462,18 @@ impl pallet_democracy::Config for Runtime {
 	type SubmitOrigin = frame_system::EnsureSigned<AccountId>;
 	/// A straight majority of the council can decide what their next motion is.
 	type ExternalOrigin = EitherOfDiverse<
-		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 1, 2>,
 		frame_system::EnsureRoot<AccountId>,
 	>;
 	/// A 60% super-majority can have the next scheduled referendum be a straight majority-carries vote.
 	type ExternalMajorityOrigin = EitherOfDiverse<
-		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 3, 5>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 3, 5>,
 		frame_system::EnsureRoot<AccountId>,
 	>;
 	/// A unanimous council can have the next scheduled referendum be a straight default-carries
 	/// (NTB) vote.
 	type ExternalDefaultOrigin = EitherOfDiverse<
-		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 1>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 1, 1>,
 		frame_system::EnsureRoot<AccountId>,
 	>;
 	/// Two thirds of the technical committee can have an `ExternalMajority/ExternalDefault` vote
@@ -490,7 +490,7 @@ impl pallet_democracy::Config for Runtime {
 	type FastTrackVotingPeriod = FastTrackVotingPeriod;
 	// To cancel a proposal which has been passed, 2/3 of the council must agree to it.
 	type CancellationOrigin = EitherOfDiverse<
-		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 2, 3>,
+		pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 2, 3>,
 		EnsureRoot<AccountId>,
 	>;
 	// To cancel a proposal before it has been passed, the technical committee must be unanimous or
@@ -519,18 +519,22 @@ parameter_types! {
 	pub CouncilMotionDuration: BlockNumber = prod_or_fast!(7 * DAYS, 2 * MINUTES, "DOT_MOTION_DURATION");
 	pub const CouncilMaxProposals: u32 = 100;
 	pub const CouncilMaxMembers: u32 = 100;
+	pub const NotValidatorCollective: bool = false;
+	pub const IsValidatorCollective: bool = true;
 }
 
-pub type CouncilCollective = pallet_collective::Instance1;
-impl pallet_collective::Config<CouncilCollective> for Runtime {
-	type RuntimeOrigin = RuntimeOrigin;
-	type Proposal = RuntimeCall;
+pub type ValidatorCollective = pallet_collective::Instance1;
+impl pallet_collective::Config<ValidatorCollective> for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
+	type IsValidatorCollective = IsValidatorCollective;
+	type SessionInterface = Self;
+	type SessionAlert = Babe;
+	type Proposal = RuntimeCall;
 	type MotionDuration = CouncilMotionDuration;
 	type MaxProposals = CouncilMaxProposals;
 	type MaxMembers = CouncilMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
-	type SetMembersOrigin = EnsureRoot<AccountId>;
 	type WeightInfo = weights::pallet_collective_council::WeightInfo<Runtime>;
 }
 
@@ -582,14 +586,16 @@ parameter_types! {
 
 pub type TechnicalCollective = pallet_collective::Instance2;
 impl pallet_collective::Config<TechnicalCollective> for Runtime {
-	type RuntimeOrigin = RuntimeOrigin;
-	type Proposal = RuntimeCall;
 	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
+	type IsValidatorCollective = NotValidatorCollective;
+	type SessionInterface = Self;
+	type SessionAlert = Babe;
+	type Proposal = RuntimeCall;
 	type MotionDuration = TechnicalMotionDuration;
 	type MaxProposals = TechnicalMaxProposals;
 	type MaxMembers = TechnicalMaxMembers;
 	type DefaultVote = pallet_collective::PrimeDefaultVote;
-	type SetMembersOrigin = EnsureRoot<AccountId>;
 	type WeightInfo = weights::pallet_collective_technical_committee::WeightInfo<Runtime>;
 }
 
@@ -628,7 +634,7 @@ parameter_types! {
 
 type ApproveOrigin = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 3, 5>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 3, 5>,
 >;
 
 impl pallet_treasury::Config for Runtime {
@@ -831,7 +837,7 @@ impl claims::Config for Runtime {
 	type Prefix = Prefix;
 	/// At least 3/4 of the council must agree to a claim move before it can happen.
 	type MoveClaimOrigin =
-		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 3, 4>;
+		pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 3, 4>;
 	type WeightInfo = weights::runtime_common_claims::WeightInfo<Runtime>;
 }
 
@@ -1223,7 +1229,7 @@ parameter_types! {
 
 type AuctionInitiate = EitherOfDiverse<
 	EnsureRoot<AccountId>,
-	pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 2, 3>,
+	pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 2, 3>,
 >;
 
 impl auctions::Config for Runtime {
