@@ -1088,7 +1088,7 @@ impl pallet_validator_election::Config for Runtime {
 impl system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type UnixTime = Timestamp;
-	type StringLimit = ConstU32<50>;
+	type StringLimit = ConstU32<128>;
 	type MaxWrappedSystemToken = ConstU32<10>;
 	type MaxSystemTokenOnParachain = ConstU32<10>;
 }

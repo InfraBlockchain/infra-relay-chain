@@ -29,8 +29,6 @@
 //! * `set_name` - Set the associated name of an account; a small deposit is reserved if not already
 //!   taken.
 //! *
-
-#![cfg_attr(not(feature = "std"), no_std)]
 use frame_support::{
 	pallet_prelude::{OptionQuery, *},
 	traits::UnixTime,
@@ -40,7 +38,7 @@ pub use pallet::*;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::{
-	traits::{AccountIdConversion, ConstU32, StaticLookup},
+	traits::{AccountIdConversion, StaticLookup},
 	types::{SystemTokenId, VoteAssetId, VoteWeight},
 	BoundedVec, RuntimeDebug,
 };
@@ -54,29 +52,30 @@ pub type SystemTokenWeight = u64;
 
 /// Data structure for Wrapped system tokens
 pub type WrappedSystemTokenId = SystemTokenId;
+pub type StringLimitOf<T> = <T as Config>::StringLimit;
 
-type StringLimit = ConstU32<128>;
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
-pub struct SystemTokenMetadata {
+
+pub struct SystemTokenMetadata<BoundedString> {
 	/// The user friendly name of issuer in real world
-	pub issuer: BoundedVec<u8, StringLimit>,
+	pub(crate) issuer: BoundedString,
 	/// Description of the token
-	pub description: BoundedVec<u8, StringLimit>,
+	pub(crate) description: BoundedString,
 	/// Url of related to the token or issuer
-	pub url: BoundedVec<u8, StringLimit>,
+	pub(crate) url: BoundedString,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
-pub struct AssetMetadata {
+pub struct AssetMetadata<BoundedString, Balance> {
 	/// The user friendly name of this system token.
-	pub name: BoundedVec<u8, StringLimit>,
+	pub(crate) name: BoundedString,
 	/// The exchange symbol for this system token.
-	pub symbol: BoundedVec<u8, StringLimit>,
+	pub(crate) symbol: BoundedString,
 	/// The number of decimals this asset uses to represent one unit.
-	pub decimals: u8,
+	pub(crate) decimals: u8,
 	/// The minimum balance of this new asset that any single account must
 	/// have. If an account's balance is reduced below this, then it collapses to zero.
-	pub min_balance: u128,
+	pub(crate) min_balance: Balance,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
@@ -143,12 +142,12 @@ pub mod pallet {
 		/// Register a new system token.
 		SystemTokenRegistered {
 			system_token_id: SystemTokenId,
-			system_token_metadata: SystemTokenMetadata,
+			system_token_metadata: SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
 		},
 		/// Deregister the system token.
 		SystemTokenDeregistered {
 			system_token_id: SystemTokenId,
-			system_token_metadata: SystemTokenMetadata,
+			system_token_metadata: SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
 		},
 		/// Register a wrapped system token id to an original system token id.
 		WrappedSystemTokenRegistered {
@@ -175,13 +174,22 @@ pub mod pallet {
 		SystemTokenAlreadyRegistered,
 		/// Failed to remove the system token as it is not registered.
 		SystemTokenNotRegistered,
+		/// Key for SystemTokenId is already existed
 		SameSystemTokenAlreadyRegistered,
+		/// Key for WrappedSystemTokenId, which is for parachain, is already existed
 		WrappedSystemTokenAlreadyRegistered,
+		/// WrappedSystemToken has not been set for Relay Chain
 		WrappedSystemTokenNotRegistered,
+		/// 
 		WrongSystemTokenMetadata,
+		/// Registered System Tokens are out of limit
 		TooManySystemTokensOnParachain,
+		/// Reigstered WrappedSystemTokens are out of limit
 		TooManyWrappedSystemTokens,
+		/// Some TryMutate Error
 		Unknown,
+		/// String metadata is out of limit
+		BadMetadata
 	}
 
 	#[pallet::pallet]
@@ -195,7 +203,7 @@ pub mod pallet {
 		_,
 		Twox64Concat,
 		SystemTokenId,
-		(SystemTokenMetadata, AssetMetadata),
+		(SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>, AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, T::Balance>),
 		OptionQuery,
 	>;
 
@@ -267,8 +275,13 @@ pub mod pallet {
 		pub fn register_system_token(
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
-			system_token_metadata: SystemTokenMetadata,
-			asset_metadata: AssetMetadata,
+			issuer: Vec<u8>,
+			description: Vec<u8>,
+			url: Vec<u8>,
+			name: Vec<u8>,
+			symbol: Vec<u8>,
+			decimals: u8,
+			min_balance: T::Balance,
 			weight: SystemTokenWeight,
 		) -> DispatchResult {
 			ensure_root(origin)?;
@@ -288,7 +301,22 @@ pub mod pallet {
 			);
 
 			Self::set_system_token_status(system_token_id.clone(), true);
-
+			let issuer: BoundedVec<u8, StringLimitOf<T>> = issuer.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
+			let description: BoundedVec<u8, StringLimitOf<T>> = description.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
+			let url: BoundedVec<u8, StringLimitOf<T>> = url.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
+			let system_token_metadata = SystemTokenMetadata {
+				issuer,
+				description,
+				url,
+			};
+			let name: BoundedVec<u8, StringLimitOf<T>> = name.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
+			let symbol: BoundedVec<u8, StringLimitOf<T>> = symbol.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
+			let asset_metadata = AssetMetadata {
+				name,
+				symbol,
+				decimals,
+				min_balance
+			};
 			SystemTokenList::<T>::insert(
 				&system_token_id,
 				(&system_token_metadata, &asset_metadata),
@@ -585,9 +613,7 @@ pub mod pallet {
 					pallet_assets::Call::<T>::force_create_with_metadata {
 						id: wrapped_system_token.clone().asset_id.into(),
 						owner: T::Lookup::unlookup(owner.clone()),
-						min_balance: <T as pallet_assets::Config>::Balance::from(
-							asset_metadata.min_balance,
-						),
+						min_balance: asset_metadata.min_balance,
 						is_sufficient: true,
 						name: asset_metadata.clone().name.to_vec(),
 						symbol: asset_metadata.clone().symbol.to_vec(),
