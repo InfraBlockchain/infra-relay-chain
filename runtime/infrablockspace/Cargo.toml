@@ -35,6 +35,8 @@ sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", branch =
 sp-session = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-version = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
+pallet-asset-registry = { path = "../../xcm/asset-registry", default-features = false }
+xcm-primitives = { path = "../../xcm/xcm-primitives", default-features = false }
 pallet-sudo = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-assets = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -174,6 +176,7 @@ std = [
 	"xcm-builder/std",
 ]
 runtime-benchmarks = [
+	"pallet-asset-registry/runtime-benchmarks",
 	"runtime-common/runtime-benchmarks",
 	"frame-benchmarking/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",

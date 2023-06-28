@@ -4424,6 +4424,7 @@ dependencies = [
  "infrablockspace-runtime-constants",
  "infrablockspace-runtime-parachains",
  "log",
+ "pallet-asset-registry",
  "pallet-assets",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -4491,6 +4492,7 @@ dependencies = [
  "xcm",
  "xcm-builder",
  "xcm-executor",
+ "xcm-primitives",
 ]
 
 [[package]]
@@ -4587,6 +4589,7 @@ dependencies = [
  "infrablockspace-primitives-test-helpers",
  "infrablockspace-runtime-metrics",
  "log",
+ "pallet-asset-registry",
  "pallet-assets",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -4622,6 +4625,7 @@ dependencies = [
  "thousands",
  "xcm",
  "xcm-executor",
+ "xcm-primitives",
 ]
 
 [[package]]
@@ -6789,6 +6793,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-asset-registry"
+version = "0.0.1"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "infrablockspace-core-primitives",
+ "infrablockspace-parachain",
+ "infrablockspace-runtime-parachains",
+ "pallet-assets",
+ "pallet-balances",
+ "pallet-xcm",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
+ "xcm-primitives",
+ "xcm-simulator",
+]
+
+[[package]]
 name = "pallet-assets"
 version = "4.0.0-dev"
 source = "git+https://github.com/InfraBlockchain/infra-substrate?branch=master#8131c066e1f6f3f5602fa9ef5f1f0b780ba7c96e"
@@ -8770,6 +8800,7 @@ dependencies = [
  "infrablockspace-runtime-common",
  "infrablockspace-runtime-parachains",
  "log",
+ "pallet-asset-registry",
  "pallet-assets",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -8845,6 +8876,7 @@ dependencies = [
  "xcm",
  "xcm-builder",
  "xcm-executor",
+ "xcm-primitives",
 ]
 
 [[package]]
@@ -13864,6 +13896,16 @@ dependencies = [
  "sp-runtime",
  "sp-state-machine",
  "sp-tracing",
+ "xcm",
+ "xcm-executor",
+]
+
+[[package]]
+name = "xcm-primitives"
+version = "0.0.1"
+dependencies = [
+ "frame-support",
+ "sp-std",
  "xcm",
  "xcm-executor",
 ]
