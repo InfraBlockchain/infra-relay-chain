@@ -1,0 +1,15 @@
+[package]
+name = "xcm-primitives"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+
+xcm = { path = "..", default-features = false }
+xcm-executor = { path = "../xcm-executor", default-features = false }
+
+[features]
+default = ["std"]
+std = ["sp-std/std", "frame-support/std", "xcm/std", "xcm-executor/std"]

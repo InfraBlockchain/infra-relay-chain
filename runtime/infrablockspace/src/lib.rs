@@ -1085,6 +1085,13 @@ impl pallet_validator_election::Config for Runtime {
 	type RewardInterface = ValidatorRewardManager;
 }
 
+impl pallet_asset_registry::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type ReserveAssetModifierOrigin = EnsureRoot<AccountId>;
+	type Assets = Assets;
+	type WeightInfo = ();
+}
+
 impl system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type UnixTime = Timestamp;
@@ -1282,6 +1289,8 @@ construct_runtime! {
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 6,
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 31,
 		SystemTokenPayment: pallet_system_token_payment::{Pallet, Event<T>} = 32,
+		AssetRegistry: pallet_asset_registry = 75,
+
 		// Consensus support.
 		// Authorship must be before session in order to note author in the correct session and era
 		// for im-online and staking.

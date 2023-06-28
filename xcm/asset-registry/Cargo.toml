@@ -1,0 +1,70 @@
+[package]
+name = "pallet-asset-registry"
+version = "0.0.1"
+description = "Trappist pallet for XCM Asset Registry."
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/paritytech/trappist"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = [
+	"derive",
+] }
+scale-info = { version = "2.3.1", default-features = false, features = ["derive"] }
+sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+frame-benchmarking = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+pallet-assets = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+pallet-balances = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+
+xcm = { path = "..", default-features = false }
+xcm-primitives = { path = "../xcm-primitives", default-features = false }
+
+[dev-dependencies]
+# substrate
+sp-core = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+# relay chain
+xcm = { path = "..", default-features = false }
+xcm-simulator = { path = "../xcm-simulator", default-features = false }
+xcm-executor = { path = "../xcm-executor", default-features = false }
+xcm-builder = { path = "../xcm-builder", default-features = false }
+pallet-xcm = { path = "../pallet-xcm", default-features = false }
+infrablockspace-core-primitives = { path = "../../core-primitives", default-features = false }
+infrablockspace-runtime-parachains = { path = "../../runtime/parachains", default-features = false }
+infrablockspace-parachain = { path = "../../parachain", default-features = false }
+
+[features]
+default = ["std"]
+std = [
+	"codec/std",
+	"sp-runtime/std",
+	"sp-std/std",
+	"pallet-assets/std",
+	"pallet-balances/std",
+	"frame-benchmarking/std",
+	"frame-support/std",
+	"frame-system/std",
+	"scale-info/std",
+	"xcm-primitives/std",
+	"xcm/std",
+	"xcm-executor/std",
+	"xcm-builder/std",
+	"pallet-xcm/std",
+	"infrablockspace-core-primitives/std",
+	"infrablockspace-runtime-parachains/std",
+	"infrablockspace-parachain/std",
+	# "parachain-info/std",
+	# "parachains-common/std",
+	# "cumulus-pallet-dmp-queue/std",
+	# "cumulus-pallet-xcmp-queue/std",
+	# "cumulus-primitives-core/std",
+]
+runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks"]
+try-runtime = ["frame-support/try-runtime"]
