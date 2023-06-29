@@ -1,4 +1,4 @@
-use crate as pallet_asset_registry;
+use crate as pallet_asset_link;
 use frame_support::traits::{AsEnsureOriginWithArg, ConstU16, ConstU64, GenesisBuild};
 use frame_system as system;
 use sp_core::H256;
@@ -24,7 +24,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system,
-		AssetRegistry: pallet_asset_registry::{Pallet, Call, Storage, Event<T>},
+		AssetRegistry: pallet_asset_link::{Pallet, Call, Storage, Event<T>},
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>},
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 	}
@@ -57,11 +57,11 @@ impl system::Config for Test {
 	type MaxConsumers = ConstU32<16>;
 }
 
-impl pallet_asset_registry::Config for Test {
+impl pallet_asset_link::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type ReserveAssetModifierOrigin = frame_system::EnsureRoot<Self::AccountId>;
 	type Assets = Assets;
-	type WeightInfo = pallet_asset_registry::weights::SubstrateWeight<Test>;
+	type WeightInfo = pallet_asset_link::weights::SubstrateWeight<Test>;
 }
 
 impl pallet_balances::Config for Test {

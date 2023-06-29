@@ -20,7 +20,7 @@ benchmarks! {
 			T::Assets: Inspect<<T as frame_system::Config>::AccountId, AssetId = u32>,
 	}
 
-	register_reserve_asset {
+	link_system_token {
 		let asset_multi_location = MultiLocation {
 			parents: 1,
 			interior: Junctions::X3(Parachain(Default::default()), PalletInstance(Default::default()), GeneralIndex(Default::default()))
@@ -33,13 +33,13 @@ benchmarks! {
 		assert_eq!(read_asset_multi_location, asset_multi_location);
 	}
 
-	unregister_reserve_asset {
+	unlink_system_token {
 		let asset_multi_location = MultiLocation {
 			parents: 1,
 			interior: Junctions::X3(Parachain(Default::default()), PalletInstance(Default::default()), GeneralIndex(Default::default()))
 		};
 
-		assert_ok!(AssetRegistry::<T>::register_reserve_asset(RawOrigin::Root.into(), LOCAL_ASSET_ID, asset_multi_location.clone()));
+		assert_ok!(AssetRegistry::<T>::link_system_token(RawOrigin::Root.into(), LOCAL_ASSET_ID, asset_multi_location.clone()));
 		let read_asset_multi_location = AssetRegistry::<T>::asset_id_multilocation(LOCAL_ASSET_ID)
 			.expect("error reading AssetIdMultiLocation");
 		assert_eq!(read_asset_multi_location, asset_multi_location);

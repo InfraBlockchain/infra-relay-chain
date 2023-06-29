@@ -1078,7 +1078,7 @@ impl system_token_manager::Config for Runtime {
 	type MaxSystemTokenOnParachain = ConstU32<10>;
 }
 
-impl pallet_asset_registry::Config for Runtime {
+impl pallet_asset_link::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type ReserveAssetModifierOrigin = EnsureRoot<AccountId>;
 	type Assets = Assets;
@@ -1464,7 +1464,7 @@ construct_runtime! {
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 74,
-		AssetRegistry: pallet_asset_registry = 75,
+		AssetRegistry: pallet_asset_link = 75,
 
 		// Pot Related
 		ValidatorRewardManager: validator_reward_manager::{Pallet, Call, Storage, Event<T>} = 81,

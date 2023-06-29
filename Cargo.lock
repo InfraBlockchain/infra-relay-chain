@@ -4424,7 +4424,7 @@ dependencies = [
  "infrablockspace-runtime-constants",
  "infrablockspace-runtime-parachains",
  "log",
- "pallet-asset-registry",
+ "pallet-asset-link",
  "pallet-assets",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -4589,7 +4589,7 @@ dependencies = [
  "infrablockspace-primitives-test-helpers",
  "infrablockspace-runtime-metrics",
  "log",
- "pallet-asset-registry",
+ "pallet-asset-link",
  "pallet-assets",
  "pallet-authority-discovery",
  "pallet-authorship",
@@ -6793,7 +6793,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-asset-registry"
+name = "pallet-asset-link"
 version = "0.0.1"
 dependencies = [
  "frame-benchmarking",
@@ -8800,7 +8800,7 @@ dependencies = [
  "infrablockspace-runtime-common",
  "infrablockspace-runtime-parachains",
  "log",
- "pallet-asset-registry",
+ "pallet-asset-link",
  "pallet-assets",
  "pallet-authority-discovery",
  "pallet-authorship",

@@ -67,7 +67,7 @@ pub struct SystemTokenMetadata<BoundedString> {
 	/// Url of related to the token or issuer
 	pub(crate) url: BoundedString,
 	/// pallet id of AssetRegistry in the issued parachain
-	pub(crate) asset_registry_pallet_id: u8,
+	pub(crate) asset_link_pallet_id: u8,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
@@ -93,9 +93,9 @@ pub struct SystemTokenProperty {
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 pub struct WrappedSystemTokenProperty {
-	/// The pallet id of AssetRegistry in the parachain which uses the wrapped system token
+	/// The pallet id of AseetLink in the parachain which uses the wrapped system token
 	/// This could be moved to WrappedSystemTokenMetadata if it needs and exists
-	pub(crate) asset_registry_pallet_id: u8,
+	pub(crate) asset_link_pallet_id: u8,
 	/// The epoch time of this system token registered
 	pub(crate) created_at: u128,
 }
@@ -112,11 +112,11 @@ pub trait SystemTokenInterface {
 	fn adjusted_weight(system_token: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight;
 }
 
-pub enum AssetRegistryCall {
-	/// Register Asset Call on the AssetRegistry pallet
-	RegisterAsset,
-	/// Deregister Asset Call on the AssetRegistry pallet
-	DeregisterAsset,
+pub enum AssetLinkCall {
+	/// Register Asset Call on the AssetLink pallet
+	LinkAsset,
+	/// Deregister Asset Call on the AssetLink pallet
+	UnlinkAsset,
 }
 
 #[frame_support::pallet]
@@ -124,7 +124,7 @@ pub mod pallet {
 	use super::*;
 	use crate::{configuration, dmp, paras};
 	use frame_system::pallet_prelude::*;
-	use pallet_asset_registry::AssetIdOf;
+	use pallet_asset_link::AssetIdOf;
 
 	#[pallet::config]
 	pub trait Config:
@@ -133,7 +133,7 @@ pub mod pallet {
 		+ paras::Config
 		+ dmp::Config
 		+ pallet_assets::Config
-		+ pallet_asset_registry::Config
+		+ pallet_asset_link::Config
 	{
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
@@ -296,7 +296,7 @@ pub mod pallet {
 			issuer: Vec<u8>,
 			description: Vec<u8>,
 			url: Vec<u8>,
-			asset_registry_pallet_id: u8,
+			asset_link_pallet_id: u8,
 			name: Vec<u8>,
 			symbol: Vec<u8>,
 			decimals: u8,
@@ -327,7 +327,7 @@ pub mod pallet {
 			let url: BoundedVec<u8, StringLimitOf<T>> =
 				url.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 			let system_token_metadata =
-				SystemTokenMetadata { issuer, description, url, asset_registry_pallet_id };
+				SystemTokenMetadata { issuer, description, url, asset_link_pallet_id };
 			let name: BoundedVec<u8, StringLimitOf<T>> =
 				name.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 			let symbol: BoundedVec<u8, StringLimitOf<T>> =
@@ -364,7 +364,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
-			wrapped_asset_registry_pallet_id: u8,
+			wrapped_asset_link_pallet_id: u8,
 		) -> DispatchResult {
 			ensure_root(origin)?;
 			let now_as_millis_u128 = T::UnixTime::now().as_millis();
@@ -404,12 +404,12 @@ pub mod pallet {
 			Self::create_wrapped_system_token(
 				system_token_id.clone(),
 				wrapped_system_token_id.clone(),
-				wrapped_asset_registry_pallet_id,
+				wrapped_asset_link_pallet_id,
 			)?;
 
 			SystemTokenOnParachain::<T>::insert(&wrapped_system_token_id, &system_token_id);
 			let property = WrappedSystemTokenProperty {
-				asset_registry_pallet_id: wrapped_asset_registry_pallet_id,
+				asset_link_pallet_id: wrapped_asset_link_pallet_id,
 				created_at: now_as_millis_u128,
 			};
 			WrappedSystemTokenProperties::<T>::insert(&wrapped_system_token_id, &property);
@@ -471,19 +471,19 @@ pub mod pallet {
 				);
 			}
 
-			let wrapped_asset_registry_pallet_id = {
+			let wrapped_asset_link_pallet_id = {
 				let wrapped_property =
 					WrappedSystemTokenProperties::<T>::get(&wrapped_system_token_id)
 						.ok_or("property id should be obtained")?;
-				wrapped_property.asset_registry_pallet_id
+				wrapped_property.asset_link_pallet_id
 			};
 
 			let (system_token_metadata, _asset_metadata) =
 				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
-			let original_asset_registry_pallet_id = system_token_metadata.asset_registry_pallet_id;
+			let original_asset_link_pallet_id = system_token_metadata.asset_link_pallet_id;
 
-			Self::remove_asset_registry(wrapped_system_token_id, wrapped_asset_registry_pallet_id)?;
-			Self::remove_asset_registry(system_token_id, original_asset_registry_pallet_id)?;
+			Self::unlink_asset(wrapped_system_token_id, wrapped_asset_link_pallet_id)?;
+			Self::unlink_asset(system_token_id, original_asset_link_pallet_id)?;
 
 			WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
 
@@ -622,11 +622,11 @@ pub mod pallet {
 		fn create_wrapped_system_token(
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
-			wrapped_asset_registry_pallet_id: u8,
+			wrapped_asset_link_pallet_id: u8,
 		) -> DispatchResult {
 			let (system_token_metadata, asset_metadata) =
 				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
-			let original_asset_registry_pallet_id = system_token_metadata.asset_registry_pallet_id;
+			let original_asset_link_pallet_id = system_token_metadata.asset_link_pallet_id;
 
 			let config = <configuration::Pallet<T>>::config();
 
@@ -684,20 +684,20 @@ pub mod pallet {
 				);
 			};
 
-			let asset_registry_call = AssetRegistryCall::RegisterAsset;
+			let asset_link_call = AssetLinkCall::LinkAsset;
 
 			// para which wanna use wrapped STI -> para which issued original STI
-			Self::asset_registry_dmp(
-				&asset_registry_call,
-				wrapped_asset_registry_pallet_id,
+			Self::call_dmp_asset_link(
+				&asset_link_call,
+				wrapped_asset_link_pallet_id,
 				wrapped_system_token_id,
 				system_token_id,
 			);
 
 			// para which issued original STI -> para which wanna use wrapped STI
-			Self::asset_registry_dmp(
-				&asset_registry_call,
-				original_asset_registry_pallet_id,
+			Self::call_dmp_asset_link(
+				&asset_link_call,
+				original_asset_link_pallet_id,
 				system_token_id,
 				wrapped_system_token_id,
 			);
@@ -705,15 +705,15 @@ pub mod pallet {
 			Ok(())
 		}
 
-		fn remove_asset_registry(
+		fn unlink_asset(
 			system_token_id: SystemTokenId,
-			wrapped_asset_registry_pallet_id: u8,
+			wrapped_asset_link_pallet_id: u8,
 		) -> DispatchResult {
-			let asset_registry_call = AssetRegistryCall::DeregisterAsset;
+			let asset_link_call = AssetLinkCall::UnlinkAsset;
 			let dummy_system_token_id = SystemTokenId::default();
-			Self::asset_registry_dmp(
-				&asset_registry_call,
-				wrapped_asset_registry_pallet_id,
+			Self::call_dmp_asset_link(
+				&asset_link_call,
+				wrapped_asset_link_pallet_id,
 				system_token_id,
 				dummy_system_token_id,
 			);
@@ -779,15 +779,15 @@ pub mod pallet {
 			}
 		}
 
-		fn asset_registry_dmp(
-			asset_registry_call: &AssetRegistryCall,
-			asset_registry_pallet_id: u8,
+		fn call_dmp_asset_link(
+			asset_link_call: &AssetLinkCall,
+			asset_link_pallet_id: u8,
 			local_system_token_id: SystemTokenId,
 			target_system_token_id: SystemTokenId,
 		) {
 			let config = <configuration::Pallet<T>>::config();
 
-			let xcm_asset_registry = {
+			let xcm_asset_link = {
 				use parity_scale_codec::Encode as _;
 				use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
@@ -807,17 +807,16 @@ pub mod pallet {
 					}
 				};
 
-				let mut create_call_encode: Vec<u8> = [asset_registry_pallet_id as u8].into();
+				let mut create_call_encode: Vec<u8> = [asset_link_pallet_id as u8].into();
 
-				let mut call_encode: Vec<u8> = match asset_registry_call {
-					AssetRegistryCall::RegisterAsset =>
-						pallet_asset_registry::Call::<T>::register_reserve_asset {
-							asset_id: local_system_token_id.asset_id.into(),
-							asset_multi_location: original_multi_location,
-						}
-						.encode(),
-					AssetRegistryCall::DeregisterAsset =>
-						pallet_asset_registry::Call::<T>::unregister_reserve_asset {
+				let mut call_encode: Vec<u8> = match asset_link_call {
+					AssetLinkCall::LinkAsset => pallet_asset_link::Call::<T>::link_system_token {
+						asset_id: local_system_token_id.asset_id.into(),
+						asset_multi_location: original_multi_location,
+					}
+					.encode(),
+					AssetLinkCall::UnlinkAsset =>
+						pallet_asset_link::Call::<T>::unlink_system_token {
 							asset_id: local_system_token_id.asset_id.into(),
 						}
 						.encode(),
@@ -847,7 +846,7 @@ pub mod pallet {
 				<dmp::Pallet<T>>::queue_downward_message(
 					&config,
 					ParaId::from(local_system_token_id.clone().para_id).into(),
-					xcm_asset_registry,
+					xcm_asset_link,
 				) {
 				log::error!(
 					target: "runtime::system_token_manager",
