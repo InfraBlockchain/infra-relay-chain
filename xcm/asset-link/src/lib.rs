@@ -55,18 +55,18 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-		ReserveAssetRegistered { asset_id: AssetIdOf<T>, asset_multi_location: MultiLocation },
-		ReserveAssetUnregistered { asset_id: AssetIdOf<T>, asset_multi_location: MultiLocation },
+		AssetLinked { asset_id: AssetIdOf<T>, asset_multi_location: MultiLocation },
+		AssetUnlinked { asset_id: AssetIdOf<T>, asset_multi_location: MultiLocation },
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
 		/// The Asset ID is already registered
-		AssetAlreadyRegistered,
+		AssetAlreadyLinked,
 		/// The Asset ID does not exist
 		AssetDoesNotExist,
 		/// The Asset ID is not registered
-		AssetIsNotRegistered,
+		AssetIsNotLinked,
 		/// Invalid MultiLocation
 		WrongMultiLocation,
 	}
@@ -74,8 +74,8 @@ pub mod pallet {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		#[pallet::call_index(0)]
-		#[pallet::weight(<T as pallet::Config>::WeightInfo::register_reserve_asset())]
-		pub fn register_reserve_asset(
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::link_system_token())]
+		pub fn link_system_token(
 			origin: OriginFor<T>,
 			asset_id: AssetIdOf<T>,
 			asset_multi_location: MultiLocation,
@@ -88,7 +88,7 @@ pub mod pallet {
 			// verify asset is not yet registered
 			ensure!(
 				!AssetIdMultiLocation::<T>::contains_key(asset_id),
-				Error::<T>::AssetAlreadyRegistered
+				Error::<T>::AssetAlreadyLinked
 			);
 
 			// verify MultiLocation is valid
@@ -107,28 +107,25 @@ pub mod pallet {
 			AssetIdMultiLocation::<T>::insert(asset_id, &asset_multi_location);
 			AssetMultiLocationId::<T>::insert(&asset_multi_location, asset_id);
 
-			Self::deposit_event(Event::ReserveAssetRegistered { asset_id, asset_multi_location });
+			Self::deposit_event(Event::AssetLinked { asset_id, asset_multi_location });
 
 			Ok(())
 		}
 
 		#[pallet::call_index(1)]
-		#[pallet::weight(<T as pallet::Config>::WeightInfo::unregister_reserve_asset())]
-		pub fn unregister_reserve_asset(
-			origin: OriginFor<T>,
-			asset_id: AssetIdOf<T>,
-		) -> DispatchResult {
+		#[pallet::weight(<T as pallet::Config>::WeightInfo::unlink_system_token())]
+		pub fn unlink_system_token(origin: OriginFor<T>, asset_id: AssetIdOf<T>) -> DispatchResult {
 			T::ReserveAssetModifierOrigin::ensure_origin(origin)?;
 
 			// verify asset is registered
 			let asset_multi_location =
-				AssetIdMultiLocation::<T>::get(asset_id).ok_or(Error::<T>::AssetIsNotRegistered)?;
+				AssetIdMultiLocation::<T>::get(asset_id).ok_or(Error::<T>::AssetIsNotLinked)?;
 
 			// unregister asset
 			AssetIdMultiLocation::<T>::remove(asset_id);
 			AssetMultiLocationId::<T>::remove(&asset_multi_location);
 
-			Self::deposit_event(Event::ReserveAssetUnregistered { asset_id, asset_multi_location });
+			Self::deposit_event(Event::AssetUnlinked { asset_id, asset_multi_location });
 			Ok(())
 		}
 	}

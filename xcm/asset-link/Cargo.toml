@@ -1,5 +1,5 @@
 [package]
-name = "pallet-asset-registry"
+name = "pallet-asset-link"
 version = "0.0.1"
 description = "Trappist pallet for XCM Asset Registry."
 edition = "2021"
