@@ -57,7 +57,6 @@ pub type StringLimitOf<T> = <T as Config>::StringLimit;
 const REF_WEIGHT: u64 = 500_000_000;
 const PROOF_WEIGHT: u64 = 20_000;
 
-type StringLimit = ConstU32<128>;
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 
 pub struct SystemTokenMetadata<BoundedString> {
@@ -68,7 +67,7 @@ pub struct SystemTokenMetadata<BoundedString> {
 	/// Url of related to the token or issuer
 	pub(crate) url: BoundedString,
 	/// pallet id of AssetRegistry in the issued parachain
-	pub asset_registry_pallet_id: u128,
+	pub(crate) asset_registry_pallet_id: u8,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
@@ -86,16 +85,19 @@ pub struct AssetMetadata<BoundedString, Balance> {
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 pub struct SystemTokenProperty {
-	/// weight of this system token
-	pub weight: SystemTokenWeight,
-	/// epoch time of this system token registered
-	pub created_at: u128,
+	/// Weight of this system token
+	pub(crate) weight: SystemTokenWeight,
+	/// Epoch time of this system token registered
+	pub(crate) created_at: u128,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 pub struct WrappedSystemTokenProperty {
-	/// epoch time of this system token registered
-	pub created_at: u128,
+	/// The pallet id of AssetRegistry in the parachain which uses the wrapped system token
+	/// This could be moved to WrappedSystemTokenMetadata if it needs and exists
+	pub(crate) asset_registry_pallet_id: u8,
+	/// The epoch time of this system token registered
+	pub(crate) created_at: u128,
 }
 
 /// System tokens API.
@@ -108,6 +110,13 @@ pub trait SystemTokenInterface {
 	) -> Option<SystemTokenId>;
 	/// Adjust the vote weight calculating exchange rate.
 	fn adjusted_weight(system_token: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight;
+}
+
+pub enum AssetRegistryCall {
+	/// Register Asset Call on the AssetRegistry pallet
+	RegisterAsset,
+	/// Deregister Asset Call on the AssetRegistry pallet
+	DeregisterAsset,
 }
 
 #[frame_support::pallet]
@@ -287,6 +296,7 @@ pub mod pallet {
 			issuer: Vec<u8>,
 			description: Vec<u8>,
 			url: Vec<u8>,
+			asset_registry_pallet_id: u8,
 			name: Vec<u8>,
 			symbol: Vec<u8>,
 			decimals: u8,
@@ -303,7 +313,7 @@ pub mod pallet {
 
 			let system_tokens =
 				SystemTokenOnParachainByParaId::<T>::get(&system_token_id.clone().para_id)
-					.ok_or("metadata should be gotten")?;
+					.ok_or("metadata should be obtained")?;
 			ensure!(
 				system_tokens.len() < T::MaxWrappedSystemToken::get() as usize,
 				Error::<T>::TooManySystemTokensOnParachain
@@ -316,7 +326,8 @@ pub mod pallet {
 				description.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 			let url: BoundedVec<u8, StringLimitOf<T>> =
 				url.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
-			let system_token_metadata = SystemTokenMetadata { issuer, description, url };
+			let system_token_metadata =
+				SystemTokenMetadata { issuer, description, url, asset_registry_pallet_id };
 			let name: BoundedVec<u8, StringLimitOf<T>> =
 				name.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 			let symbol: BoundedVec<u8, StringLimitOf<T>> =
@@ -353,7 +364,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
-			wrapped_asset_registry_pallet_id: u32,
+			wrapped_asset_registry_pallet_id: u8,
 		) -> DispatchResult {
 			ensure_root(origin)?;
 			let now_as_millis_u128 = T::UnixTime::now().as_millis();
@@ -371,7 +382,7 @@ pub mod pallet {
 			);
 
 			let para_ids = ParaIdsBySystemToken::<T>::get(&system_token_id)
-				.ok_or("metadata should be gotten")?;
+				.ok_or("metadata should be obtained")?;
 
 			ensure!(
 				!para_ids.contains(&wrapped_para_id),
@@ -383,7 +394,7 @@ pub mod pallet {
 			);
 
 			let system_tokens = SystemTokenOnParachainByParaId::<T>::get(&original_para_id)
-				.ok_or("metadata should be gotten")?;
+				.ok_or("metadata should be obtained")?;
 
 			ensure!(
 				system_tokens.len() < T::MaxWrappedSystemToken::get() as usize,
@@ -397,7 +408,10 @@ pub mod pallet {
 			)?;
 
 			SystemTokenOnParachain::<T>::insert(&wrapped_system_token_id, &system_token_id);
-			let property = WrappedSystemTokenProperty { created_at: now_as_millis_u128 };
+			let property = WrappedSystemTokenProperty {
+				asset_registry_pallet_id: wrapped_asset_registry_pallet_id,
+				created_at: now_as_millis_u128,
+			};
 			WrappedSystemTokenProperties::<T>::insert(&wrapped_system_token_id, &property);
 			Self::insert_system_token_on_parachain_by_para_id(
 				wrapped_para_id,
@@ -421,14 +435,13 @@ pub mod pallet {
 			wrapped_system_token_id: SystemTokenId,
 		) -> DispatchResult {
 			ensure_root(origin)?;
-
 			ensure!(
 				SystemTokenOnParachain::<T>::contains_key(&wrapped_system_token_id),
 				Error::<T>::WrappedSystemTokenNotRegistered
 			);
 
-			let system_token_id =
-				SystemTokenOnParachain::<T>::get(&wrapped_system_token_id).unwrap();
+			let system_token_id = SystemTokenOnParachain::<T>::get(&wrapped_system_token_id)
+				.ok_or("original system token id should be obtained")?;
 
 			Self::set_system_token_status(wrapped_system_token_id.clone(), false);
 
@@ -458,6 +471,20 @@ pub mod pallet {
 				);
 			}
 
+			let wrapped_asset_registry_pallet_id = {
+				let wrapped_property =
+					WrappedSystemTokenProperties::<T>::get(&wrapped_system_token_id)
+						.ok_or("property id should be obtained")?;
+				wrapped_property.asset_registry_pallet_id
+			};
+
+			let (system_token_metadata, _asset_metadata) =
+				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
+			let original_asset_registry_pallet_id = system_token_metadata.asset_registry_pallet_id;
+
+			Self::remove_asset_registry(wrapped_system_token_id, wrapped_asset_registry_pallet_id)?;
+			Self::remove_asset_registry(system_token_id, original_asset_registry_pallet_id)?;
+
 			WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered {
@@ -483,7 +510,8 @@ pub mod pallet {
 				Error::<T>::SystemTokenNotRegistered
 			);
 
-			let mut property = SystemTokenProperties::<T>::get(&system_token_id).unwrap();
+			let mut property = SystemTokenProperties::<T>::get(&system_token_id)
+				.ok_or("property should be obtained")?;
 			property.weight = new_weight;
 
 			SystemTokenProperties::<T>::insert(&system_token_id, &property);
@@ -508,7 +536,7 @@ pub mod pallet {
 			);
 
 			let (system_token_metadata, _asset_metadata) =
-				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be gotten")?;
+				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
 
 			let wrapped_system_tokens = SystemTokenOnParachain::<T>::iter_keys()
 				.filter(|wrapped_system_token_id| {
@@ -594,12 +622,11 @@ pub mod pallet {
 		fn create_wrapped_system_token(
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
-			wrapped_asset_registry_pallet_id: u32,
+			wrapped_asset_registry_pallet_id: u8,
 		) -> DispatchResult {
 			let (system_token_metadata, asset_metadata) =
-				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be gotten")?;
-			let original_asset_registry_pallet_id =
-				system_token_metadata.asset_registry_pallet_id as u32;
+				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
+			let original_asset_registry_pallet_id = system_token_metadata.asset_registry_pallet_id;
 
 			let config = <configuration::Pallet<T>>::config();
 
@@ -657,8 +684,11 @@ pub mod pallet {
 				);
 			};
 
+			let asset_registry_call = AssetRegistryCall::RegisterAsset;
+
 			// para which wanna use wrapped STI -> para which issued original STI
 			Self::asset_registry_dmp(
+				&asset_registry_call,
 				wrapped_asset_registry_pallet_id,
 				wrapped_system_token_id,
 				system_token_id,
@@ -666,6 +696,7 @@ pub mod pallet {
 
 			// para which issued original STI -> para which wanna use wrapped STI
 			Self::asset_registry_dmp(
+				&asset_registry_call,
 				original_asset_registry_pallet_id,
 				system_token_id,
 				wrapped_system_token_id,
@@ -673,6 +704,23 @@ pub mod pallet {
 
 			Ok(())
 		}
+
+		fn remove_asset_registry(
+			system_token_id: SystemTokenId,
+			wrapped_asset_registry_pallet_id: u8,
+		) -> DispatchResult {
+			let asset_registry_call = AssetRegistryCall::DeregisterAsset;
+			let dummy_system_token_id = SystemTokenId::default();
+			Self::asset_registry_dmp(
+				&asset_registry_call,
+				wrapped_asset_registry_pallet_id,
+				system_token_id,
+				dummy_system_token_id,
+			);
+
+			Ok(())
+		}
+
 		fn insert_system_token_on_parachain_by_para_id(
 			para_id: ParaId,
 			system_token_id: SystemTokenId,
@@ -732,7 +780,8 @@ pub mod pallet {
 		}
 
 		fn asset_registry_dmp(
-			asset_registry_pallet_id: u32,
+			asset_registry_call: &AssetRegistryCall,
+			asset_registry_pallet_id: u8,
 			local_system_token_id: SystemTokenId,
 			target_system_token_id: SystemTokenId,
 		) {
@@ -760,12 +809,19 @@ pub mod pallet {
 
 				let mut create_call_encode: Vec<u8> = [asset_registry_pallet_id as u8].into();
 
-				let mut call_encode: Vec<u8> =
-					pallet_asset_registry::Call::<T>::register_reserve_asset {
-						asset_id: local_system_token_id.asset_id.into(),
-						asset_multi_location: original_multi_location,
-					}
-					.encode();
+				let mut call_encode: Vec<u8> = match asset_registry_call {
+					AssetRegistryCall::RegisterAsset =>
+						pallet_asset_registry::Call::<T>::register_reserve_asset {
+							asset_id: local_system_token_id.asset_id.into(),
+							asset_multi_location: original_multi_location,
+						}
+						.encode(),
+					AssetRegistryCall::DeregisterAsset =>
+						pallet_asset_registry::Call::<T>::unregister_reserve_asset {
+							asset_id: local_system_token_id.asset_id.into(),
+						}
+						.encode(),
+				};
 
 				create_call_encode.append(&mut call_encode);
 
