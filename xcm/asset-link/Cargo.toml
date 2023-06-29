@@ -60,11 +60,6 @@ std = [
 	"infrablockspace-core-primitives/std",
 	"infrablockspace-runtime-parachains/std",
 	"infrablockspace-parachain/std",
-	# "parachain-info/std",
-	# "parachains-common/std",
-	# "cumulus-pallet-dmp-queue/std",
-	# "cumulus-pallet-xcmp-queue/std",
-	# "cumulus-primitives-core/std",
 ]
 runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks"]
 try-runtime = ["frame-support/try-runtime"]
