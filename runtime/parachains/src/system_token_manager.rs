@@ -62,11 +62,11 @@ const PROOF_WEIGHT: u64 = 20_000;
 pub struct SystemTokenMetadata<BoundedString> {
 	/// The user friendly name of issuer in real world
 	pub(crate) issuer: BoundedString,
-	/// Description of the token
+	/// The description of the token
 	pub(crate) description: BoundedString,
-	/// Url of related to the token or issuer
+	/// The url of related to the token or issuer
 	pub(crate) url: BoundedString,
-	/// pallet id of AssetRegistry in the issued parachain
+	/// The Pallet id of AssetLink in the issued parachain
 	pub(crate) asset_link_pallet_id: u8,
 }
 
@@ -85,9 +85,9 @@ pub struct AssetMetadata<BoundedString, Balance> {
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 pub struct SystemTokenProperty {
-	/// Weight of this system token
+	/// The weight of this system token
 	pub(crate) weight: SystemTokenWeight,
-	/// Epoch time of this system token registered
+	/// The epoch time of this system token registered
 	pub(crate) created_at: u128,
 }
 
@@ -194,8 +194,6 @@ pub mod pallet {
 		WrappedSystemTokenAlreadyRegistered,
 		/// WrappedSystemToken has not been set for Relay Chain
 		WrappedSystemTokenNotRegistered,
-		///
-		WrongSystemTokenMetadata,
 		/// Registered System Tokens are out of limit
 		TooManySystemTokensOnParachain,
 		/// Reigstered WrappedSystemTokens are out of limit
