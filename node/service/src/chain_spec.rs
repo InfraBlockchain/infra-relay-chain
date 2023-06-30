@@ -814,7 +814,7 @@ pub fn infrablockspace_testnet_genesis(
 				99,                                                 // asset_id
 				get_account_id_from_seed::<sr25519::Public>("Bob"), // owner
 				true,                                               // is_sufficient
-				1000,                                               // min_balance
+				1,                                                  // min_balance
 			)],
 			metadata: vec![(99, "iTEST".into(), "iTEST".into(), 12)],
 			accounts: vec![(

@@ -18,22 +18,22 @@ fn register_reserve_asset_works() {
 			),
 		};
 
-		assert_ok!(AssetRegistry::link_system_token(
+		assert_ok!(AssetLink::link_system_token(
 			RuntimeOrigin::root(),
 			LOCAL_ASSET_ID,
 			statemine_asset_multi_location.clone(),
 		));
 
-		let read_asset_multi_location = AssetRegistry::asset_id_multilocation(LOCAL_ASSET_ID)
+		let read_asset_multi_location = AssetLink::asset_id_multilocation(LOCAL_ASSET_ID)
 			.expect("error reading AssetIdMultiLocation");
 		assert_eq!(read_asset_multi_location, statemine_asset_multi_location);
 
-		let read_asset_id = AssetRegistry::asset_multilocation_id(&statemine_asset_multi_location)
+		let read_asset_id = AssetLink::asset_multilocation_id(&statemine_asset_multi_location)
 			.expect("error reading AssetMultiLocationId");
 		assert_eq!(read_asset_id, LOCAL_ASSET_ID);
 
 		assert_noop!(
-			AssetRegistry::link_system_token(
+			AssetLink::link_system_token(
 				RuntimeOrigin::root(),
 				LOCAL_ASSET_ID,
 				statemine_asset_multi_location,
@@ -59,17 +59,15 @@ fn unregister_reserve_asset_works() {
 			),
 		};
 
-		assert_ok!(AssetRegistry::link_system_token(
+		assert_ok!(AssetLink::link_system_token(
 			RuntimeOrigin::root(),
 			LOCAL_ASSET_ID,
 			statemine_asset_multi_location.clone(),
 		));
 
-		assert_ok!(AssetRegistry::unlink_system_token(RuntimeOrigin::root(), LOCAL_ASSET_ID));
+		assert_ok!(AssetLink::unlink_system_token(RuntimeOrigin::root(), LOCAL_ASSET_ID));
 
-		assert!(AssetRegistry::asset_id_multilocation(LOCAL_ASSET_ID).is_none());
-		assert!(
-			AssetRegistry::asset_multilocation_id(statemine_asset_multi_location.clone()).is_none()
-		);
+		assert!(AssetLink::asset_id_multilocation(LOCAL_ASSET_ID).is_none());
+		assert!(AssetLink::asset_multilocation_id(statemine_asset_multi_location.clone()).is_none());
 	});
 }

@@ -93,7 +93,7 @@ impl<AssetId, AssetIdInfoGetter, AssetsPallet, BalancesPallet, XcmPallet, Accoun
 
 		for asset in multi_assets {
 			if let MultiAsset { id: Concrete(location), fun: Fungible(amount) } = asset.clone() {
-				// is location a fungible on AssetRegistry?
+				// is location a fungible on AssetLink?
 				if let Some(asset_id) = AssetIdInfoGetter::get_asset_id(location.clone()) {
 					let min_balance = AssetsPallet::minimum_balance(asset_id);
 

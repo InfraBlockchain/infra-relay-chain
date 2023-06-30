@@ -1289,7 +1289,7 @@ construct_runtime! {
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 6,
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 31,
 		SystemTokenPayment: pallet_system_token_payment::{Pallet, Event<T>} = 32,
-		AssetRegistry: pallet_asset_link = 75,
+		AssetLink: pallet_asset_link = 75,
 
 		// Consensus support.
 		// Authorship must be before session in order to note author in the correct session and era

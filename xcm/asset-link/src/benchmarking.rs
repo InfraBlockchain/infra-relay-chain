@@ -3,7 +3,7 @@
 use super::*;
 
 #[allow(unused)]
-use crate::Pallet as AssetRegistry;
+use crate::Pallet as AssetLink;
 use frame_benchmarking::benchmarks;
 use frame_support::{assert_ok, traits::fungibles::Inspect};
 use frame_system::RawOrigin;
@@ -28,7 +28,7 @@ benchmarks! {
 
 	}: _(RawOrigin::Root, LOCAL_ASSET_ID, asset_multi_location.clone())
 	verify {
-		let read_asset_multi_location = AssetRegistry::<T>::asset_id_multilocation(LOCAL_ASSET_ID)
+		let read_asset_multi_location = AssetLink::<T>::asset_id_multilocation(LOCAL_ASSET_ID)
 			.expect("error reading AssetIdMultiLocation");
 		assert_eq!(read_asset_multi_location, asset_multi_location);
 	}
@@ -39,15 +39,15 @@ benchmarks! {
 			interior: Junctions::X3(Parachain(Default::default()), PalletInstance(Default::default()), GeneralIndex(Default::default()))
 		};
 
-		assert_ok!(AssetRegistry::<T>::link_system_token(RawOrigin::Root.into(), LOCAL_ASSET_ID, asset_multi_location.clone()));
-		let read_asset_multi_location = AssetRegistry::<T>::asset_id_multilocation(LOCAL_ASSET_ID)
+		assert_ok!(AssetLink::<T>::link_system_token(RawOrigin::Root.into(), LOCAL_ASSET_ID, asset_multi_location.clone()));
+		let read_asset_multi_location = AssetLink::<T>::asset_id_multilocation(LOCAL_ASSET_ID)
 			.expect("error reading AssetIdMultiLocation");
 		assert_eq!(read_asset_multi_location, asset_multi_location);
 
 	}: _(RawOrigin::Root, LOCAL_ASSET_ID)
 	verify {
-		assert_eq!(AssetRegistry::<T>::asset_id_multilocation(LOCAL_ASSET_ID), None);
+		assert_eq!(AssetLink::<T>::asset_id_multilocation(LOCAL_ASSET_ID), None);
 	}
 
-	impl_benchmark_test_suite!(AssetRegistry, crate::mock::new_test_ext(), crate::mock::Test);
+	impl_benchmark_test_suite!(AssetLink, crate::mock::new_test_ext(), crate::mock::Test);
 }

@@ -131,7 +131,7 @@ construct_runtime!(
     {
         // --snip---
         Assets: pallet_assets,
-        AssetRegistry: pallet_asset_registry::{Pallet, Call, Storage, Event<T>},
+        AssetLink: pallet_asset_registry::{Pallet, Call, Storage, Event<T>},
         // --snip---
     }
 );
@@ -145,7 +145,7 @@ pub type ReservedFungiblesTransactor = FungiblesAdapter<
 	ConvertedConcreteAssetId<
 		AssetId,
 		Balance,
-		AsAssetMultiLocation<AssetId, AssetRegistry>,
+		AsAssetMultiLocation<AssetId, AssetLink>,
 		JustTry,
 	>,
 	LocationToAccountId,
