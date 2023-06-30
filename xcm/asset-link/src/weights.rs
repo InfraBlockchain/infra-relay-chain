@@ -41,15 +41,15 @@ pub trait WeightInfo {
 pub struct SubstrateWeight<T>(PhantomData<T>);
 impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	// Storage: Assets Asset (r:1 w:0)
-	// Storage: AssetRegistry AssetIdMultiLocation (r:1 w:1)
-	// Storage: AssetRegistry AssetMultiLocationId (r:0 w:1)
+	// Storage: AssetLink AssetIdMultiLocation (r:1 w:1)
+	// Storage: AssetLink AssetMultiLocationId (r:0 w:1)
 	fn link_system_token() -> Weight {
 		Weight::from_parts(18_710_000, 0)
 			.saturating_add(T::DbWeight::get().reads(2))
 			.saturating_add(T::DbWeight::get().writes(2))
 	}
-	// Storage: AssetRegistry AssetIdMultiLocation (r:1 w:1)
-	// Storage: AssetRegistry AssetMultiLocationId (r:0 w:1)
+	// Storage: AssetLink AssetIdMultiLocation (r:1 w:1)
+	// Storage: AssetLink AssetMultiLocationId (r:0 w:1)
 	fn unlink_system_token() -> Weight {
 		Weight::from_parts(16_570_000, 0)
 			.saturating_add(T::DbWeight::get().reads(1))
@@ -59,15 +59,15 @@ impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 
 impl WeightInfo for () {
 	// Storage: Assets Asset (r:1 w:0)
-	// Storage: AssetRegistry AssetIdMultiLocation (r:1 w:1)
-	// Storage: AssetRegistry AssetMultiLocationId (r:0 w:1)
+	// Storage: AssetLink AssetIdMultiLocation (r:1 w:1)
+	// Storage: AssetLink AssetMultiLocationId (r:0 w:1)
 	fn link_system_token() -> Weight {
 		Weight::from_parts(18_710_000, 0)
 			.saturating_add(RocksDbWeight::get().reads(2))
 			.saturating_add(RocksDbWeight::get().writes(2))
 	}
-	// Storage: AssetRegistry AssetIdMultiLocation (r:1 w:1)
-	// Storage: AssetRegistry AssetMultiLocationId (r:0 w:1)
+	// Storage: AssetLink AssetIdMultiLocation (r:1 w:1)
+	// Storage: AssetLink AssetMultiLocationId (r:0 w:1)
 	fn unlink_system_token() -> Weight {
 		Weight::from_parts(16_570_000, 0)
 			.saturating_add(RocksDbWeight::get().reads(1))

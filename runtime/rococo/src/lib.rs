@@ -1464,7 +1464,7 @@ construct_runtime! {
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 74,
-		AssetRegistry: pallet_asset_link = 75,
+		AssetLink: pallet_asset_link = 75,
 
 		// Pot Related
 		ValidatorRewardManager: validator_reward_manager::{Pallet, Call, Storage, Event<T>} = 81,
