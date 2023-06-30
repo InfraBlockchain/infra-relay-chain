@@ -33,6 +33,8 @@ frame-election-provider-support = { git = "https://github.com/InfraBlockchain/in
 tx-pool-api = { package = "sp-transaction-pool", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 block-builder-api = { package = "sp-block-builder", git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
+pallet-asset-link = { path = "../../xcm/asset-link", default-features = false }
+xcm-primitives = { path = "../../xcm/xcm-primitives", default-features = false }
 pallet-assets = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-authorship = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }

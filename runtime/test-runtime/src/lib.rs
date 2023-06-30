@@ -557,6 +557,13 @@ impl validator_reward_manager::Config for Runtime {
 	type ValidatorSet = Historical;
 }
 
+impl pallet_asset_link::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type ReserveAssetModifierOrigin = EnsureRoot<AccountId>;
+	type Assets = Assets;
+	type WeightInfo = ();
+}
+
 impl parachains_disputes::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RewardValidators = ();
@@ -761,6 +768,7 @@ construct_runtime! {
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>},
 		ValidatorElection: pallet_validator_election::{Pallet, Call, Storage, Event<T>},
 		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>},
+		AssetLink: pallet_asset_link,
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>},
 
