@@ -33,6 +33,7 @@ pallet-authority-discovery = { git = "https://github.com/InfraBlockchain/infra-s
 pallet-authorship = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-assets = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-asset-link = { path = "../../xcm/asset-link", default-features = false }
+pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
 xcm-primitives = { path = "../../xcm/xcm-primitives", default-features = false }
 pallet-balances = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-babe = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -99,6 +100,7 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-vesting/std",
 	"pallet-validator-election/std",
+	"pallet-xcm/std",
 	"frame-system/std",
 	"xcm/std",
 	"xcm-executor/std",

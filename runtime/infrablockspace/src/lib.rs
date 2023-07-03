@@ -33,8 +33,8 @@ use runtime_parachains::{
 	initializer as parachains_initializer, origin as parachains_origin, paras as parachains_paras,
 	paras_inherent as parachains_paras_inherent,
 	runtime_api_impl::v2 as parachains_runtime_api_impl, scheduler as parachains_scheduler,
-	session_info as parachains_session_info, shared as parachains_shared, system_token_manager,
-	ump as parachains_ump, validator_reward_manager,
+	session_info as parachains_session_info, shared as parachains_shared, system_token_aggregator,
+	system_token_manager, ump as parachains_ump, validator_reward_manager,
 };
 
 use authority_discovery_primitives::AuthorityId as AuthorityDiscoveryId;
@@ -1265,6 +1265,12 @@ impl pallet_assets::Config for Runtime {
 	type RemoveItemsLimit = ConstU32<1000>;
 }
 
+impl system_token_aggregator::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Assets = Assets;
+	type AssetMultiLocationGetter = AssetLink;
+}
+
 construct_runtime! {
 	pub enum Runtime where
 		Block = Block,
@@ -1362,6 +1368,8 @@ construct_runtime! {
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
 		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
+		SystemTokenAggregator: system_token_aggregator = 83,
+
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,
