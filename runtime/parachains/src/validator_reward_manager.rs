@@ -35,11 +35,10 @@ use frame_support::{
 use frame_system::pallet_prelude::*;
 pub use pallet::*;
 use pallet_validator_election::{RewardInterface, SessionIndex};
-use primitives::Id as ParaId;
 use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{AccountIdConversion, Convert, StaticLookup},
-	types::{SystemTokenId, VoteWeight},
+	types::{ParaId, SystemTokenId, VoteWeight},
 };
 use sp_std::prelude::*;
 
@@ -102,6 +101,19 @@ pub mod pallet {
 	#[pallet::unbounded]
 	pub type TotalSessionRewards<T: Config> =
 		StorageMap<_, Twox64Concat, SessionIndex, Vec<ValidatorReward>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn rewards_by_parachain)]
+	#[pallet::unbounded]
+	pub type RewardsByParaId<T: Config> = StorageDoubleMap<
+		_,
+		Twox64Concat,
+		SessionIndex,
+		Twox64Concat,
+		ParaId,
+		Vec<ValidatorReward>,
+		OptionQuery,
+	>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
@@ -189,7 +201,7 @@ pub mod pallet {
 				if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
 					<dmp::Pallet<T>>::queue_downward_message(
 						&config,
-						ParaId::from(asset_id.clone().para_id),
+						ParaId::from(asset_id.clone().para_id).into(),
 						xcm,
 					) {
 					log::error!(
@@ -218,10 +230,20 @@ impl<T: Config> Pallet<T> {
 
 	fn aggregate_reward(
 		session_index: SessionIndex,
+		para_id: ParaId,
 		system_token_id: SystemTokenId,
 		amount: VoteWeight,
 	) {
 		let amount: u128 = amount.into();
+
+		if let Some(rewards) = RewardsByParaId::<T>::get(session_index, para_id.clone()) {
+			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == system_token_id) {
+				reward.amount += amount;
+			}
+		} else {
+			let rewards = vec![ValidatorReward::new(system_token_id, amount)];
+			RewardsByParaId::<T>::insert(session_index, para_id.clone(), rewards);
+		}
 
 		if let Some(rewards) = TotalSessionRewards::<T>::get(session_index) {
 			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == system_token_id) {
@@ -232,6 +254,7 @@ impl<T: Config> Pallet<T> {
 			TotalSessionRewards::<T>::insert(session_index, rewards);
 		}
 	}
+
 	fn distribute_reward(session_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
 		let aggregated_rewards = TotalSessionRewards::<T>::get(session_index).unwrap_or_default();
@@ -273,10 +296,11 @@ impl<T: Config> Pallet<T> {
 impl<T: Config> RewardInterface for Pallet<T> {
 	fn aggregate_reward(
 		session_index: SessionIndex,
+		para_id: ParaId,
 		system_token_id: SystemTokenId,
 		amount: VoteWeight,
 	) {
-		Self::aggregate_reward(session_index, system_token_id, amount);
+		Self::aggregate_reward(session_index, para_id, system_token_id, amount);
 	}
 
 	fn distribute_reward(session_index: SessionIndex) {
