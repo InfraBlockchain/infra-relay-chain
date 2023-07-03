@@ -62,12 +62,12 @@ pub mod time {
 /// Fee-related.
 pub mod fee {
 	use crate::weights::ExtrinsicBaseWeight;
+	pub use frame_support::sp_runtime::Perbill;
 	use frame_support::weights::{
 		WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
 	};
 	use primitives::Balance;
 	use smallvec::smallvec;
-	pub use sp_runtime::Perbill;
 
 	/// The block saturation level. Fees will be updates based on this value.
 	pub const TARGET_BLOCK_FULLNESS: Perbill = Perbill::from_percent(25);

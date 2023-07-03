@@ -44,6 +44,7 @@ use sp_runtime::{
 use sp_std::prelude::*;
 
 type AccountIdLookupOf<T> = <<T as frame_system::Config>::Lookup as StaticLookup>::Source;
+type WrappedSystemTokenId = SystemTokenId;
 
 /// A type for representing the validator id in a session.
 pub type ValidatorId<T> = <<T as Config>::ValidatorSet as ValidatorSet<
@@ -102,6 +103,19 @@ pub mod pallet {
 	#[pallet::unbounded]
 	pub type TotalSessionRewards<T: Config> =
 		StorageMap<_, Twox64Concat, SessionIndex, Vec<ValidatorReward>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn rewards_by_parachain)]
+	#[pallet::unbounded]
+	pub type RewardsByParaId<T: Config> = StorageDoubleMap<
+		_,
+		Twox64Concat,
+		SessionIndex,
+		Twox64Concat,
+		ParaId,
+		Vec<ValidatorReward>,
+		OptionQuery,
+	>;
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
@@ -218,10 +232,20 @@ impl<T: Config> Pallet<T> {
 
 	fn aggregate_reward(
 		session_index: SessionIndex,
+		para_id: ParaId,
 		system_token_id: SystemTokenId,
 		amount: VoteWeight,
 	) {
 		let amount: u128 = amount.into();
+
+		if let Some(rewards) = RewardsByParaId::<T>::get(session_index, para_id.clone()) {
+			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == system_token_id) {
+				reward.amount += amount;
+			}
+		} else {
+			let rewards = vec![ValidatorReward::new(system_token_id, amount)];
+			RewardsByParaId::<T>::insert(session_index, para_id.clone(), rewards);
+		}
 
 		if let Some(rewards) = TotalSessionRewards::<T>::get(session_index) {
 			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == system_token_id) {
@@ -232,6 +256,7 @@ impl<T: Config> Pallet<T> {
 			TotalSessionRewards::<T>::insert(session_index, rewards);
 		}
 	}
+
 	fn distribute_reward(session_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
 		let aggregated_rewards = TotalSessionRewards::<T>::get(session_index).unwrap_or_default();
@@ -273,10 +298,11 @@ impl<T: Config> Pallet<T> {
 impl<T: Config> RewardInterface for Pallet<T> {
 	fn aggregate_reward(
 		session_index: SessionIndex,
+		wrapped_system_token_id: WrappedSystemTokenId,
 		system_token_id: SystemTokenId,
 		amount: VoteWeight,
 	) {
-		Self::aggregate_reward(session_index, system_token_id, amount);
+		Self::aggregate_reward(session_index, wrapped_system_token_id, system_token_id, amount);
 	}
 
 	fn distribute_reward(session_index: SessionIndex) {

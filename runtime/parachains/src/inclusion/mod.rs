@@ -787,8 +787,9 @@ impl<T: Config> Pallet<T> {
 			let session_index = shared::Pallet::<T>::session_index();
 			for vote in vote_result.clone().into_iter() {
 				if let Some(system_token_id) =
-					T::SystemTokenManager::convert_to_original_system_token(vote.system_token_id)
-				{
+					T::SystemTokenManager::convert_to_original_system_token(
+						vote.clone().system_token_id,
+					) {
 					let who = vote.account_id;
 					let weight = vote.vote_weight;
 					let adjusted_weight =
@@ -796,6 +797,7 @@ impl<T: Config> Pallet<T> {
 					T::VotingManager::update_vote_status(who, adjusted_weight);
 					T::RewardInterface::aggregate_reward(
 						session_index,
+						vote.clone().system_token_id.para_id,
 						system_token_id.clone(),
 						weight,
 					);
