@@ -90,7 +90,7 @@ pub mod pallet {
 		[u8; 32]: From<<T as frame_system::Config>::AccountId>,
 		u128: From<<T as pallet_assets::Config>::Balance>,
 	{
-		fn on_finalize(block_num: T::BlockNumber) {
+		fn on_initialize(block_num: T::BlockNumber) -> Weight {
 			let block_num: u32 = block_num.into();
 			if block_num % 10 == 0 {
 				let sovereign = PalletId(*b"infrafee");
@@ -143,6 +143,9 @@ pub mod pallet {
 						}
 					}
 				}
+				T::DbWeight::get().reads(2 + balances.len() as u64)
+			} else {
+				T::DbWeight::get().reads(0)
 			}
 		}
 	}
