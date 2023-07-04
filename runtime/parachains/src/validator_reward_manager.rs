@@ -51,13 +51,13 @@ pub type ValidatorId<T> = <<T as Config>::ValidatorSet as ValidatorSet<
 
 #[derive(Encode, Decode, Clone, PartialEq, Eq, sp_core::RuntimeDebug, TypeInfo)]
 pub struct ValidatorReward {
-	pub asset_id: SystemTokenId,
+	pub system_token_id: SystemTokenId,
 	pub amount: u128,
 }
 
 impl ValidatorReward {
-	pub fn new(asset_id: SystemTokenId, amount: u128) -> Self {
-		Self { asset_id, amount }
+	pub fn new(system_token_id: SystemTokenId, amount: u128) -> Self {
+		Self { system_token_id, amount }
 	}
 }
 
@@ -119,7 +119,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(crate) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// The validator has been rewarded.
-		ValidatorRewarded { stash: ValidatorId<T>, asset_id: SystemTokenId, amount: u128 },
+		ValidatorRewarded { stash: ValidatorId<T>, system_token_id: SystemTokenId, amount: u128 },
 	}
 
 	#[pallet::error]
@@ -148,7 +148,7 @@ pub mod pallet {
 		pub fn claim(
 			origin: OriginFor<T>,
 			validator: AccountIdLookupOf<T>,
-			asset_id: SystemTokenId,
+			system_token_id: SystemTokenId,
 		) -> DispatchResult {
 			let origin = ensure_signed(origin)?;
 			let validator = T::Lookup::lookup(validator.clone())?;
@@ -165,15 +165,17 @@ pub mod pallet {
 			ensure!(rewards.len() != 0, Error::<T>::NothingToClaim);
 
 			let sovereign = Self::account_id();
-			if let Some(reward) = rewards.iter_mut().find(|ar| ar.asset_id == asset_id) {
+			if let Some(reward) =
+				rewards.iter_mut().find(|ar| ar.system_token_id == system_token_id)
+			{
 				let config = <configuration::Pallet<T>>::config();
 				let xcm = {
 					use parity_scale_codec::Encode as _;
 					use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
-					let mut encoded: Vec<u8> = [asset_id.clone().pallet_id as u8].into(); // asset pallet number
+					let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
 					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
-						id: asset_id.clone().asset_id.into(),
+						id: system_token_id.clone().asset_id.into(),
 						source: T::Lookup::unlookup(sovereign.clone()),
 						dest: T::Lookup::unlookup(validator.clone()),
 						amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
@@ -201,7 +203,7 @@ pub mod pallet {
 				if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
 					<dmp::Pallet<T>>::queue_downward_message(
 						&config,
-						ParaId::from(asset_id.clone().para_id).into(),
+						ParaId::from(system_token_id.clone().para_id).into(),
 						xcm,
 					) {
 					log::error!(
@@ -211,7 +213,7 @@ pub mod pallet {
 				};
 				Self::deposit_event(Event::ValidatorRewarded {
 					stash: who.into(),
-					asset_id,
+					system_token_id,
 					amount: reward.amount,
 				});
 				reward.amount = 0;
@@ -237,7 +239,9 @@ impl<T: Config> Pallet<T> {
 		let amount: u128 = amount.into();
 
 		if let Some(rewards) = RewardsByParaId::<T>::get(session_index, para_id.clone()) {
-			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == system_token_id) {
+			for reward in
+				rewards.clone().iter_mut().filter(|r| r.system_token_id == system_token_id)
+			{
 				reward.amount += amount;
 			}
 		} else {
@@ -246,7 +250,9 @@ impl<T: Config> Pallet<T> {
 		}
 
 		if let Some(rewards) = TotalSessionRewards::<T>::get(session_index) {
-			for reward in rewards.clone().iter_mut().filter(|r| r.asset_id == system_token_id) {
+			for reward in
+				rewards.clone().iter_mut().filter(|r| r.system_token_id == system_token_id)
+			{
 				reward.amount += amount;
 			}
 		} else {
@@ -266,8 +272,9 @@ impl<T: Config> Pallet<T> {
 					|maybe_rewards| -> Result<(), DispatchError> {
 						let rewards = maybe_rewards.as_mut().ok_or(Error::<T>::Unknown)?;
 						for reward in rewards.iter_mut() {
-							if let Some(aggregated_reward) =
-								aggregated_rewards.iter().find(|ar| ar.asset_id == reward.asset_id)
+							if let Some(aggregated_reward) = aggregated_rewards
+								.iter()
+								.find(|ar| ar.system_token_id == reward.system_token_id)
 							{
 								let amount =
 									aggregated_reward.amount / current_validators.len() as u128;
@@ -282,7 +289,7 @@ impl<T: Config> Pallet<T> {
 					.iter()
 					.map(|reward| {
 						ValidatorReward::new(
-							reward.clone().asset_id,
+							reward.clone().system_token_id,
 							reward.clone().amount / current_validators.len() as u128,
 						)
 					})
