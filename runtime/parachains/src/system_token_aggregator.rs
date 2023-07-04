@@ -106,41 +106,41 @@ pub mod pallet {
 					let asset_id = balance.0;
 					let amount = balance.1;
 					if system_token_asset_list.contains(&asset_id.clone().into()) {
-						let sovereign = PalletId(*b"infrafee");
-						let owner: AccountIdOf<T> = sovereign.into_account_truncating();
-						let asset_multilocation =
+						if let Some(asset_multilocation) =
 							T::AssetMultiLocationGetter::get_asset_multi_location(
 								asset_id.clone().into(),
-							)
-							.unwrap_or_default();
-						let dest_para_id = match asset_multilocation.clone().interior() {
-							X3(Junction::Parachain(para_id), _, _) => *para_id,
-							_ => 1000,
-						};
+							) {
+							let dest_para_id = match asset_multilocation.clone().interior() {
+								X3(Junction::Parachain(para_id), _, _) => *para_id,
+								_ => 1000,
+							};
 
-						let result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
-							<T as frame_system::Config>::RuntimeOrigin::signed(
-								owner.clone().into(),
-							),
-							Box::new(xcm::VersionedMultiLocation::V3(MultiLocation {
-								parents: 1,
-								interior: X1(Junction::Parachain(dest_para_id.clone())),
-							})),
-							Box::new(
-								Junction::AccountId32 { network: None, id: owner.clone().into() }
-									.into_location()
+							let result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
+								<T as frame_system::Config>::RuntimeOrigin::signed(
+									who.clone().into(),
+								),
+								Box::new(xcm::VersionedMultiLocation::V3(MultiLocation {
+									parents: 1,
+									interior: X1(Junction::Parachain(dest_para_id.clone())),
+								})),
+								Box::new(
+									Junction::AccountId32 { network: None, id: who.clone().into() }
+										.into_location()
+										.into(),
+								),
+								Box::new(
+									MultiAsset {
+										id: Concrete(asset_multilocation),
+										fun: Fungible(amount.clone().into()),
+									}
 									.into(),
-							),
-							Box::new(
-								MultiAsset {
-									id: Concrete(asset_multilocation),
-									fun: Fungible(amount.clone().into()),
-								}
-								.into(),
-							),
-							0,
-							xcm::v3::WeightLimit::Unlimited,
-						);
+								),
+								0,
+								xcm::v3::WeightLimit::Unlimited,
+							);
+						} else {
+							continue
+						}
 					}
 				}
 			}
@@ -183,7 +183,7 @@ pub mod pallet {
 			let dest_pallet_id = system_token_id.pallet_id;
 			let dest_asset_id = system_token_id.asset_id;
 
-			let result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
+			let _result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
 				<T as frame_system::Config>::RuntimeOrigin::signed(owner.clone().into()),
 				Box::new(xcm::VersionedMultiLocation::V3(MultiLocation {
 					parents: 1,
