@@ -115,7 +115,7 @@ pub mod pallet {
 								_ => 1000,
 							};
 
-							let result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
+							let _result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
 								<T as frame_system::Config>::RuntimeOrigin::signed(
 									who.clone().into(),
 								),
@@ -161,7 +161,7 @@ pub mod pallet {
 		#[pallet::call_index(0)]
 		#[pallet::weight(1_000)]
 		pub fn test(
-			origin: OriginFor<T>,
+			_origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
 			amount: u128,
 		) -> DispatchResult {
