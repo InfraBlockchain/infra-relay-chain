@@ -238,23 +238,25 @@ impl<T: Config> Pallet<T> {
 	) {
 		let amount: u128 = amount.into();
 
-		if let Some(rewards) = RewardsByParaId::<T>::get(session_index, para_id.clone()) {
-			for reward in
-				rewards.clone().iter_mut().filter(|r| r.system_token_id == system_token_id)
-			{
-				reward.amount += amount;
+		if let Some(mut rewards) = RewardsByParaId::<T>::get(session_index, para_id.clone()) {
+			for reward in rewards.iter_mut() {
+				if reward.system_token_id == system_token_id {
+					reward.amount += amount;
+				}
 			}
+			RewardsByParaId::<T>::insert(session_index, para_id.clone(), rewards.clone());
 		} else {
 			let rewards = vec![ValidatorReward::new(system_token_id, amount)];
 			RewardsByParaId::<T>::insert(session_index, para_id.clone(), rewards);
 		}
 
-		if let Some(rewards) = TotalSessionRewards::<T>::get(session_index) {
-			for reward in
-				rewards.clone().iter_mut().filter(|r| r.system_token_id == system_token_id)
-			{
-				reward.amount += amount;
+		if let Some(mut rewards) = TotalSessionRewards::<T>::get(session_index) {
+			for reward in rewards.iter_mut() {
+				if reward.system_token_id == system_token_id {
+					reward.amount += amount;
+				}
 			}
+			TotalSessionRewards::<T>::insert(session_index, rewards.clone());
 		} else {
 			let rewards = vec![ValidatorReward::new(system_token_id, amount)];
 			TotalSessionRewards::<T>::insert(session_index, rewards);
@@ -264,6 +266,10 @@ impl<T: Config> Pallet<T> {
 	fn distribute_reward(session_index: SessionIndex) {
 		let current_validators = T::ValidatorSet::validators();
 		let aggregated_rewards = TotalSessionRewards::<T>::get(session_index).unwrap_or_default();
+
+		if aggregated_rewards.len() == 0 {
+			return
+		}
 
 		for validator in current_validators.iter() {
 			if ValidatorRewards::<T>::contains_key(validator) {
@@ -276,8 +282,8 @@ impl<T: Config> Pallet<T> {
 								.iter()
 								.find(|ar| ar.system_token_id == reward.system_token_id)
 							{
-								let amount =
-									aggregated_reward.amount / current_validators.len() as u128;
+								let amount = (aggregated_reward.amount /
+									current_validators.len() as u128) as u128;
 								reward.amount += amount;
 							}
 						}
@@ -285,16 +291,16 @@ impl<T: Config> Pallet<T> {
 					},
 				);
 			} else {
-				let rewards: Vec<ValidatorReward> = aggregated_rewards
-					.iter()
-					.map(|reward| {
-						ValidatorReward::new(
-							reward.clone().system_token_id,
-							reward.clone().amount / current_validators.len() as u128,
-						)
-					})
-					.collect();
-				ValidatorRewards::<T>::insert(validator, rewards);
+				let mut rewards: Vec<ValidatorReward> = vec![];
+				for aggregated_reward in aggregated_rewards.iter() {
+					let reward = ValidatorReward::new(
+						aggregated_reward.clone().system_token_id,
+						(aggregated_reward.clone().amount / current_validators.len() as u128)
+							as u128,
+					);
+					rewards.push(reward);
+				}
+				ValidatorRewards::<T>::insert(validator, rewards.clone());
 			}
 		}
 	}
