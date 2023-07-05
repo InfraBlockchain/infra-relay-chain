@@ -39,15 +39,15 @@ use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{AccountIdConversion, StaticLookup},
-	types::{SystemTokenId, VoteAssetId, VoteWeight},
+	types::{ParaId, SystemTokenId, VoteAssetId, VoteWeight},
 	BoundedVec, RuntimeDebug,
 };
 use sp_std::prelude::*;
 
 pub type ParaAssetId = VoteAssetId;
 pub type RelayAssetId = VoteAssetId;
-pub type ParaId = u32;
 pub type PalletIndex = u32;
+
 pub type SystemTokenWeight = u64;
 
 /// Data structure for Wrapped system tokens
@@ -265,7 +265,7 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn allowed_system_token)]
 	/// Wrapped System token list used in parachains.
-	/// Key: (PalletIndex, ParaAssetId) of Wrapped System token. ParaId is omitted.
+	/// Key: (PalletId, ParaAssetId) of Wrapped System token. ParaId is omitted.
 	/// Value: (SystemTokenId)
 	pub(super) type AllowedSystemToken<T: Config> = StorageDoubleMap<
 		_,
@@ -441,7 +441,6 @@ pub mod pallet {
 			Self::create_wrapped_system_token(
 				system_token_id.clone(),
 				wrapped_system_token_id.clone(),
-				wrapped_asset_link_pallet_id,
 			)?;
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered {
@@ -494,13 +493,6 @@ pub mod pallet {
 				);
 			}
 
-			let wrapped_asset_link_pallet_id = {
-				let wrapped_property =
-					WrappedSystemTokenProperties::<T>::get(&wrapped_system_token_id)
-						.ok_or("property id should be obtained")?;
-				wrapped_property.asset_link_pallet_id
-			};
-
 			let original_asset_link_pallet_id = {
 				let (system_token_metadata, _asset_metadata) =
 					SystemTokenList::<T>::get(&system_token_id)
@@ -511,9 +503,8 @@ pub mod pallet {
 			WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
 
 			// DMP calls
-			Self::unlink_asset(wrapped_system_token_id, wrapped_asset_link_pallet_id)?;
-			Self::unlink_asset(system_token_id, original_asset_link_pallet_id)?;
 			Self::set_system_token_status(wrapped_system_token_id.clone(), false);
+			Self::unlink_asset(system_token_id, original_asset_link_pallet_id)?;
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered {
 				wrapped_system_token_id,
@@ -615,11 +606,18 @@ pub mod pallet {
 				use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
 				let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
-				let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::set_sufficient {
-					id: system_token_id.clone().asset_id.into(),
-					is_sufficient,
-				}
-				.encode();
+				let mut call_encode = match is_sufficient {
+					true => pallet_assets::Call::<T>::set_sufficient {
+						id: system_token_id.clone().asset_id.into(),
+						is_sufficient,
+					}
+					.encode(),
+					false => pallet_assets::Call::<T>::set_sufficient_with_unlink_system_token {
+						id: system_token_id.clone().asset_id.into(),
+						is_sufficient,
+					}
+					.encode(),
+				};
 
 				encoded.append(&mut call_encode);
 
@@ -654,7 +652,6 @@ pub mod pallet {
 		fn create_wrapped_system_token(
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
-			wrapped_asset_link_pallet_id: u8,
 		) -> DispatchResult {
 			let (system_token_metadata, asset_metadata) =
 				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
@@ -681,6 +678,7 @@ pub mod pallet {
 						symbol: asset_metadata.clone().symbol.to_vec(),
 						decimals: asset_metadata.clone().decimals,
 						is_frozen: false,
+						system_token_id,
 					}
 					.encode();
 
@@ -718,15 +716,7 @@ pub mod pallet {
 
 			let asset_link_call = AssetLinkCall::LinkAsset;
 
-			// para which wanna use wrapped STI -> para which issued original STI
-			Self::call_dmp_asset_link(
-				&asset_link_call,
-				wrapped_asset_link_pallet_id,
-				wrapped_system_token_id,
-				system_token_id,
-			);
-
-			// para which issued original STI -> para which wanna use wrapped STI
+			// para which issued original STI
 			Self::call_dmp_asset_link(
 				&asset_link_call,
 				original_asset_link_pallet_id,
@@ -823,28 +813,12 @@ pub mod pallet {
 				use parity_scale_codec::Encode as _;
 				use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
-				let original_multi_location = {
-					let (para, pallet, asset) = (
-						target_system_token_id.para_id,
-						target_system_token_id.pallet_id,
-						target_system_token_id.asset_id,
-					);
-					MultiLocation {
-						parents: 1,
-						interior: X3(
-							Parachain(para),
-							PalletInstance(pallet as u8),
-							GeneralIndex(asset.into()),
-						),
-					}
-				};
-
 				let mut create_call_encode: Vec<u8> = [asset_link_pallet_id as u8].into();
 
 				let mut call_encode: Vec<u8> = match asset_link_call {
 					AssetLinkCall::LinkAsset => pallet_asset_link::Call::<T>::link_system_token {
 						asset_id: local_system_token_id.asset_id.into(),
-						asset_multi_location: original_multi_location,
+						system_token_id: target_system_token_id,
 					}
 					.encode(),
 					AssetLinkCall::UnlinkAsset =>
@@ -890,8 +864,8 @@ pub mod pallet {
 }
 
 impl<T: Config> SystemTokenInterface for Pallet<T> {
-	fn is_system_token(system_token: SystemTokenId) -> bool {
-		if let Some(_) = <SystemTokenList<T>>::get(system_token) {
+	fn is_system_token(system_token_id: SystemTokenId) -> bool {
+		if let Some(_) = <SystemTokenList<T>>::get(system_token_id) {
 			return true
 		}
 		false
@@ -908,8 +882,8 @@ impl<T: Config> SystemTokenInterface for Pallet<T> {
 		}
 		None
 	}
-	fn adjusted_weight(system_token: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight {
-		match <SystemTokenProperties<T>>::get(system_token) {
+	fn adjusted_weight(system_token_id: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight {
+		match <SystemTokenProperties<T>>::get(system_token_id) {
 			Some(property) => {
 				let weight: u128 = property.weight.into();
 				return vote_weight.saturating_mul(weight)
