@@ -267,29 +267,30 @@ impl<T: Config> Pallet<T> {
 		let current_validators = T::ValidatorSet::validators();
 		let aggregated_rewards = TotalSessionRewards::<T>::get(session_index).unwrap_or_default();
 
-		if aggregated_rewards.len() == 0 {
+		if aggregated_rewards.is_empty() {
 			return
 		}
 
 		for validator in current_validators.iter() {
 			if ValidatorRewards::<T>::contains_key(validator) {
-				let _ = ValidatorRewards::<T>::try_mutate_exists(
-					validator,
-					|maybe_rewards| -> Result<(), DispatchError> {
-						let rewards = maybe_rewards.as_mut().ok_or(Error::<T>::Unknown)?;
-						for reward in rewards.iter_mut() {
-							if let Some(aggregated_reward) = aggregated_rewards
-								.iter()
-								.find(|ar| ar.system_token_id == reward.system_token_id)
-							{
-								let amount = (aggregated_reward.amount /
-									current_validators.len() as u128) as u128;
-								reward.amount += amount;
-							}
-						}
-						Ok(())
-					},
-				);
+				let mut rewards = ValidatorRewards::<T>::get(validator.clone()).unwrap_or_default();
+				for aggregated_reward in aggregated_rewards.iter() {
+					if let Some(reward) = rewards
+						.iter_mut()
+						.find(|ar| ar.system_token_id == aggregated_reward.system_token_id)
+					{
+						reward.amount +=
+							(aggregated_reward.amount / current_validators.len() as u128) as u128;
+					} else {
+						let new_reward = ValidatorReward::new(
+							aggregated_reward.clone().system_token_id,
+							(aggregated_reward.clone().amount / current_validators.len() as u128)
+								as u128,
+						);
+						rewards.push(new_reward);
+					}
+				}
+				ValidatorRewards::<T>::insert(validator, rewards.clone());
 			} else {
 				let mut rewards: Vec<ValidatorReward> = vec![];
 				for aggregated_reward in aggregated_rewards.iter() {
