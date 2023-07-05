@@ -93,7 +93,7 @@ pub mod pallet {
 		fn on_initialize(block_num: T::BlockNumber) -> Weight {
 			let block_num: u32 = block_num.into();
 			if block_num % 10 == 0 {
-				let sovereign = PalletId(*b"infrafee");
+				let sovereign = PalletId(*b"infrapid");
 				let who: AccountIdOf<T> = sovereign.into_account_truncating();
 
 				let system_token_asset_list =
@@ -180,7 +180,7 @@ pub mod pallet {
 		[u8; 32]: From<<T as frame_system::Config>::AccountId>,
 	{
 		pub fn teleport_system_token(system_token_id: SystemTokenId, amount: u128) {
-			let sovereign = PalletId(*b"infrafee");
+			let sovereign = PalletId(*b"infrapid");
 			let owner: AccountIdOf<T> = sovereign.into_account_truncating();
 			let dest_para_id = system_token_id.para_id;
 			let dest_pallet_id = system_token_id.pallet_id;

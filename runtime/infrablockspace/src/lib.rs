@@ -327,7 +327,7 @@ impl pallet_transaction_payment::Config for Runtime {
 }
 
 parameter_types! {
-	pub const FeeTreasuryId: PalletId = PalletId(*b"i8/trsry");
+	pub const FeeTreasuryId: PalletId = PalletId(*b"infrapid");
 }
 
 pub struct CreditToBucket;

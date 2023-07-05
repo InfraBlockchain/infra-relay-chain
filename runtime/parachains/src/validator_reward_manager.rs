@@ -212,12 +212,13 @@ pub mod pallet {
 					);
 				};
 				Self::deposit_event(Event::ValidatorRewarded {
-					stash: who.into(),
+					stash: who.clone().into(),
 					system_token_id,
 					amount: reward.amount,
 				});
 				reward.amount = 0;
 			}
+			ValidatorRewards::<T>::insert(who.clone(), rewards.clone());
 
 			Ok(())
 		}
@@ -226,7 +227,7 @@ pub mod pallet {
 
 impl<T: Config> Pallet<T> {
 	pub fn account_id() -> T::AccountId {
-		let pallet_id = PalletId(*b"infrafee");
+		let pallet_id = PalletId(*b"infrapid");
 		pallet_id.into_account_truncating()
 	}
 
