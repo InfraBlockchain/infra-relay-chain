@@ -29,9 +29,12 @@
 //! * `set_name` - Set the associated name of an account; a small deposit is reserved if not already
 //!   taken.
 //! *
+//!
+#![cfg_attr(not(feature = "std"), no_std)]
+
 use frame_support::{
 	pallet_prelude::*,
-	traits::{tokens::fungibles::Balanced, OriginTrait},
+	traits::{fungibles::roles::Inspect, OriginTrait},
 	PalletId,
 };
 pub use pallet::*;
@@ -45,7 +48,6 @@ use xcm::opaque::lts::{
 	AssetId::Concrete, Fungibility::Fungible, Junction, Junctions::*, MultiAsset, MultiLocation,
 };
 use xcm_primitives::AssetMultiLocationGetter;
-
 type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 
 #[frame_support::pallet]
@@ -63,7 +65,7 @@ pub mod pallet {
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 		/// The fungibles instance used to pay for transactions in assets.
-		type Assets: Balanced<Self::AccountId> + SystemTokenLocalAssetProvider;
+		type Assets: Inspect<Self::AccountId> + SystemTokenLocalAssetProvider;
 		type AssetMultiLocationGetter: AssetMultiLocationGetter<AssetId>;
 	}
 
@@ -71,7 +73,7 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// Aggrate System Token Successfully
-		SystemTokenAggregated { system_token_id: SystemTokenId, amount: u128 },
+		SystemTokenAggregated { multilocation: MultiLocation, amount: u128 },
 	}
 
 	#[pallet::error]
@@ -99,8 +101,9 @@ pub mod pallet {
 				let system_token_asset_list =
 					pallet_assets::Pallet::<T>::token_list().unwrap_or_default();
 				let balances = pallet_assets::Pallet::<T>::account_balances(who.clone());
-				log::info!("system_token_asset_list {:?}", system_token_asset_list);
-				log::info!("balances {:?}", balances);
+
+				let root = PalletId(*b"infra/rt");
+				let root_account: AccountIdOf<T> = root.into_account_truncating();
 
 				for balance in balances.iter() {
 					let asset_id = balance.0;
@@ -114,6 +117,24 @@ pub mod pallet {
 								X3(Junction::Parachain(para_id), _, _) => *para_id,
 								_ => 1000,
 							};
+
+							let owner = pallet_assets::Pallet::<T>::owner(asset_id.clone())
+								.unwrap_or(who.clone());
+							let issuer = pallet_assets::Pallet::<T>::issuer(asset_id.clone())
+								.unwrap_or(who.clone());
+							let admin = pallet_assets::Pallet::<T>::admin(asset_id.clone())
+								.unwrap_or(who.clone());
+							let freezer = pallet_assets::Pallet::<T>::freezer(asset_id.clone())
+								.unwrap_or(who.clone());
+
+							// Check original system token or not
+							if owner != root_account &&
+								issuer != root_account && admin != root_account &&
+								freezer != root_account
+							{
+								// if original system token, then skip the teleport
+								continue
+							}
 
 							let _result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
 								<T as frame_system::Config>::RuntimeOrigin::signed(
@@ -138,6 +159,10 @@ pub mod pallet {
 								0,
 								xcm::v3::WeightLimit::Unlimited,
 							);
+							Self::deposit_event(Event::<T>::SystemTokenAggregated {
+								multilocation: asset_multilocation.clone(),
+								amount: amount.clone().into(),
+							});
 						} else {
 							continue
 						}
@@ -150,29 +175,6 @@ pub mod pallet {
 		}
 	}
 
-	#[pallet::call]
-	impl<T: Config> Pallet<T>
-	where
-		<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId:
-			From<AccountIdOf<T>>,
-		[u8; 32]: From<<T as frame_system::Config>::AccountId>,
-	{
-		/// Test Function.
-		#[pallet::call_index(0)]
-		#[pallet::weight(1_000)]
-		pub fn test(
-			_origin: OriginFor<T>,
-			system_token_id: SystemTokenId,
-			amount: u128,
-		) -> DispatchResult {
-			Self::teleport_system_token(system_token_id.clone(), amount.clone());
-			Self::deposit_event(Event::<T>::SystemTokenAggregated {
-				system_token_id: system_token_id.clone(),
-				amount: amount.clone(),
-			});
-			Ok(())
-		}
-	}
 	impl<T: Config> Pallet<T>
 	where
 		<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId:
