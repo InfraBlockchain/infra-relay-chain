@@ -66,8 +66,6 @@ pub struct SystemTokenMetadata<BoundedString> {
 	pub(crate) description: BoundedString,
 	/// The url of related to the token or issuer
 	pub(crate) url: BoundedString,
-	/// The Pallet id of AssetLink in the issued parachain
-	pub(crate) asset_link_pallet_id: u8,
 }
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
@@ -93,9 +91,6 @@ pub struct SystemTokenProperty {
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 pub struct WrappedSystemTokenProperty {
-	/// The pallet id of AseetLink in the parachain which uses the wrapped system token
-	/// This could be moved to WrappedSystemTokenMetadata if it needs and exists
-	pub(crate) asset_link_pallet_id: u8,
 	/// The epoch time of this system token registered
 	pub(crate) created_at: u128,
 }
@@ -294,7 +289,6 @@ pub mod pallet {
 			issuer: Vec<u8>,
 			description: Vec<u8>,
 			url: Vec<u8>,
-			origin_asset_link_pallet_id: u8,
 			relay_asset_pallet_id: u8,
 			relay_wrapped_system_token_asset_id: u32,
 			relay_asset_link_pallet_id: u8,
@@ -332,12 +326,7 @@ pub mod pallet {
 					let url: BoundedVec<u8, StringLimitOf<T>> =
 						url.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 
-					SystemTokenMetadata {
-						issuer,
-						description,
-						url,
-						asset_link_pallet_id: origin_asset_link_pallet_id,
-					}
+					SystemTokenMetadata { issuer, description, url }
 				};
 
 				let a_m = {
@@ -400,10 +389,8 @@ pub mod pallet {
 				Self::insert_para_ids_by_system_token(system_token_id.clone(), original_para_id);
 
 				// relay chain wrapped system token state
-				let wrapped_system_token_property = WrappedSystemTokenProperty {
-					asset_link_pallet_id: relay_asset_link_pallet_id,
-					created_at: now_as_millis_u128,
-				};
+				let wrapped_system_token_property =
+					WrappedSystemTokenProperty { created_at: now_as_millis_u128 };
 
 				Self::insert_system_token_on_parachain_by_para_id(
 					relay_wrapped_system_token_id.clone().para_id,
@@ -437,7 +424,6 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
-			wrapped_asset_link_pallet_id: u8,
 		) -> DispatchResult {
 			ensure_root(origin.clone())?;
 
@@ -481,10 +467,7 @@ pub mod pallet {
 			SystemTokenOnParachain::<T>::insert(&wrapped_system_token_id, &system_token_id);
 			{
 				let now_as_millis_u128 = T::UnixTime::now().as_millis();
-				let property = WrappedSystemTokenProperty {
-					asset_link_pallet_id: wrapped_asset_link_pallet_id,
-					created_at: now_as_millis_u128,
-				};
+				let property = WrappedSystemTokenProperty { created_at: now_as_millis_u128 };
 				WrappedSystemTokenProperties::<T>::insert(&wrapped_system_token_id, &property);
 			}
 
@@ -494,26 +477,21 @@ pub mod pallet {
 			);
 			Self::insert_para_ids_by_system_token(system_token_id.clone(), wrapped_para_id);
 
+			let wrapped_asset_id = wrapped_system_token_id.clone().asset_id;
+
 			// Register wrapped system token in relay chain
 			if wrapped_system_token_id.clone().para_id == 0.into() {
-				let (_, asset_metadata) = SystemTokenList::<T>::get(&system_token_id)
-					.ok_or("metadata should be obtained")?;
-
-				let root = PalletId(*b"infra/rt");
-				let owner: T::AccountId = root.into_account_truncating();
-
-				let _ = pallet_assets::pallet::Pallet::<T>::force_create_with_metadata(
+				pallet_assets::pallet::Pallet::<T>::set_sufficient(
 					origin.clone(),
-					wrapped_system_token_id.clone().asset_id.into(),
-					T::Lookup::unlookup(owner.clone()),
+					wrapped_asset_id.into(),
 					true,
-					asset_metadata.min_balance,
-					asset_metadata.clone().name.to_vec(),
-					asset_metadata.clone().symbol.to_vec(),
-					asset_metadata.clone().decimals,
-					false,
+				)?;
+
+				pallet_asset_link::pallet::Pallet::<T>::link_system_token(
+					origin,
+					wrapped_asset_id.into(),
 					system_token_id,
-				);
+				)?;
 			} else {
 				Self::create_wrapped_system_token(
 					system_token_id.clone(),
@@ -571,13 +549,6 @@ pub mod pallet {
 				);
 			}
 
-			let original_asset_link_pallet_id = {
-				let (system_token_metadata, _asset_metadata) =
-					SystemTokenList::<T>::get(&system_token_id)
-						.ok_or("metadata should be obtained")?;
-				system_token_metadata.asset_link_pallet_id
-			};
-
 			WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
 
 			// Deregister wrapped system token in relay chain
@@ -589,8 +560,7 @@ pub mod pallet {
 				);
 			} else {
 				// DMP calls
-				Self::set_system_token_status(wrapped_system_token_id.clone(), false);
-				Self::unlink_asset(system_token_id, original_asset_link_pallet_id)?;
+				Self::set_system_token_status_with_unlink(wrapped_system_token_id.clone(), false);
 			}
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered {
@@ -660,7 +630,10 @@ pub mod pallet {
 							false,
 						);
 					} else {
-						Self::set_system_token_status(wrapped_system_token_id.clone(), false);
+						Self::set_system_token_status_with_unlink(
+							wrapped_system_token_id.clone(),
+							false,
+						);
 					}
 					SystemTokenOnParachain::<T>::remove(&wrapped_system_token_id);
 					WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
@@ -694,6 +667,53 @@ pub mod pallet {
 		<T as pallet_assets::Config>::AssetIdParameter: From<u32>,
 		AssetIdOf<T>: From<u32>,
 	{
+		fn set_system_token_status_with_unlink(
+			system_token_id: SystemTokenId,
+			is_sufficient: bool,
+		) {
+			let config = <configuration::Pallet<T>>::config();
+			let xcm = {
+				use parity_scale_codec::Encode as _;
+				use xcm::opaque::{latest::prelude::*, VersionedXcm};
+
+				let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
+				let mut call_encode =
+					pallet_assets::Call::<T>::set_sufficient_with_unlink_system_token {
+						id: system_token_id.clone().asset_id.into(),
+						is_sufficient,
+					}
+					.encode();
+
+				encoded.append(&mut call_encode);
+
+				let fee_multilocation =
+					MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
+
+				VersionedXcm::from(Xcm(vec![
+					BuyExecution {
+						fees: fee_multilocation.clone().into(),
+						weight_limit: WeightLimit::Unlimited,
+					},
+					Transact {
+						origin_kind: OriginKind::Superuser,
+						require_weight_at_most: Weight::from_parts(REF_WEIGHT, PROOF_WEIGHT),
+						call: encoded.into(),
+					},
+				]))
+				.encode()
+			};
+			if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
+				<dmp::Pallet<T>>::queue_downward_message(
+					&config,
+					ParaId::from(system_token_id.clone().para_id).into(),
+					xcm,
+				) {
+				log::error!(
+					target: "runtime::system_token_manager",
+					"sending 'dmp' failed."
+				);
+			};
+		}
 		fn set_system_token_status(system_token_id: SystemTokenId, is_sufficient: bool) {
 			let config = <configuration::Pallet<T>>::config();
 			let xcm = {
@@ -701,18 +721,11 @@ pub mod pallet {
 				use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
 				let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
-				let mut call_encode = match is_sufficient {
-					true => pallet_assets::Call::<T>::set_sufficient {
-						id: system_token_id.clone().asset_id.into(),
-						is_sufficient,
-					}
-					.encode(),
-					false => pallet_assets::Call::<T>::set_sufficient_with_unlink_system_token {
-						id: system_token_id.clone().asset_id.into(),
-						is_sufficient,
-					}
-					.encode(),
-				};
+				let mut call_encode = pallet_assets::Call::<T>::set_sufficient {
+					id: system_token_id.clone().asset_id.into(),
+					is_sufficient,
+				}
+				.encode();
 
 				encoded.append(&mut call_encode);
 
@@ -748,9 +761,8 @@ pub mod pallet {
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
 		) -> DispatchResult {
-			let (system_token_metadata, asset_metadata) =
+			let (_system_token_metadata, asset_metadata) =
 				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
-			let original_asset_link_pallet_id = system_token_metadata.asset_link_pallet_id;
 
 			let config = <configuration::Pallet<T>>::config();
 
@@ -808,32 +820,6 @@ pub mod pallet {
 					"sending 'create_asset dmp's failed."
 				);
 			};
-
-			let asset_link_call = AssetLinkCall::LinkAsset;
-
-			// para which issued original STI
-			Self::call_dmp_asset_link(
-				&asset_link_call,
-				original_asset_link_pallet_id,
-				system_token_id,
-				wrapped_system_token_id,
-			);
-
-			Ok(())
-		}
-
-		fn unlink_asset(
-			system_token_id: SystemTokenId,
-			wrapped_asset_link_pallet_id: u8,
-		) -> DispatchResult {
-			let asset_link_call = AssetLinkCall::UnlinkAsset;
-			let dummy_system_token_id = SystemTokenId::default();
-			Self::call_dmp_asset_link(
-				&asset_link_call,
-				wrapped_asset_link_pallet_id,
-				system_token_id,
-				dummy_system_token_id,
-			);
 
 			Ok(())
 		}
@@ -894,66 +880,6 @@ pub mod pallet {
 			} else {
 				SystemTokenOnParachainByParaId::<T>::remove(&system_token_id.clone().para_id);
 			}
-		}
-
-		fn call_dmp_asset_link(
-			asset_link_call: &AssetLinkCall,
-			asset_link_pallet_id: u8,
-			local_system_token_id: SystemTokenId,
-			target_system_token_id: SystemTokenId,
-		) {
-			let config = <configuration::Pallet<T>>::config();
-
-			let xcm_asset_link = {
-				use parity_scale_codec::Encode as _;
-				use xcm::opaque::{latest::prelude::*, VersionedXcm};
-
-				let mut create_call_encode: Vec<u8> = [asset_link_pallet_id as u8].into();
-
-				let mut call_encode: Vec<u8> = match asset_link_call {
-					AssetLinkCall::LinkAsset => pallet_asset_link::Call::<T>::link_system_token {
-						asset_id: local_system_token_id.asset_id.into(),
-						system_token_id: target_system_token_id,
-					}
-					.encode(),
-					AssetLinkCall::UnlinkAsset =>
-						pallet_asset_link::Call::<T>::unlink_system_token {
-							asset_id: local_system_token_id.asset_id.into(),
-						}
-						.encode(),
-				};
-
-				create_call_encode.append(&mut call_encode);
-
-				let fee_multilocation =
-					MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
-
-				VersionedXcm::from(Xcm(vec![
-					BuyExecution {
-						fees: fee_multilocation.clone().into(),
-						weight_limit: WeightLimit::Unlimited,
-					},
-					Transact {
-						origin_kind: OriginKind::Superuser,
-						// require_weight_at_most: Weight::from_parts(1_000_000_000, 1_100_000),
-						require_weight_at_most: Weight::from_parts(REF_WEIGHT, PROOF_WEIGHT),
-						call: create_call_encode.into(),
-					},
-				]))
-				.encode()
-			};
-
-			if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
-				<dmp::Pallet<T>>::queue_downward_message(
-					&config,
-					ParaId::from(local_system_token_id.clone().para_id).into(),
-					xcm_asset_link,
-				) {
-				log::error!(
-					target: "runtime::system_token_manager",
-					"sending 'register_asset dmp' failed."
-				);
-			};
 		}
 	}
 }
