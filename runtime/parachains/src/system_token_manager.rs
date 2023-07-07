@@ -294,14 +294,17 @@ pub mod pallet {
 			issuer: Vec<u8>,
 			description: Vec<u8>,
 			url: Vec<u8>,
-			asset_link_pallet_id: u8,
+			origin_asset_link_pallet_id: u8,
+			relay_asset_pallet_id: u8,
+			relay_wrapped_system_token_asset_id: u32,
+			relay_asset_link_pallet_id: u8,
 			name: Vec<u8>,
 			symbol: Vec<u8>,
 			decimals: u8,
 			min_balance: T::Balance,
 			weight: SystemTokenWeight,
 		) -> DispatchResult {
-			ensure_root(origin)?;
+			ensure_root(origin.clone())?;
 
 			let original_para_id = system_token_id.clone().para_id;
 
@@ -329,7 +332,12 @@ pub mod pallet {
 					let url: BoundedVec<u8, StringLimitOf<T>> =
 						url.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 
-					SystemTokenMetadata { issuer, description, url, asset_link_pallet_id }
+					SystemTokenMetadata {
+						issuer,
+						description,
+						url,
+						asset_link_pallet_id: origin_asset_link_pallet_id,
+					}
 				};
 
 				let a_m = {
@@ -344,13 +352,41 @@ pub mod pallet {
 				(s_m, a_m)
 			};
 
+			// Create wrapped token in relay chain
+			let relay_wrapped_system_token_id = SystemTokenId {
+				para_id: 0,
+				pallet_id: relay_asset_pallet_id,
+				asset_id: relay_wrapped_system_token_asset_id,
+			};
+
+			let root = PalletId(*b"infra/rt");
+			let owner: T::AccountId = root.into_account_truncating();
+
+			let _ = pallet_assets::pallet::Pallet::<T>::force_create_with_metadata(
+				origin.clone(),
+				relay_wrapped_system_token_asset_id.into(),
+				T::Lookup::unlookup(owner.clone()),
+				true,
+				min_balance,
+				name,
+				symbol,
+				decimals,
+				false,
+				system_token_id,
+			);
+
 			// Storage insert logics
 			{
 				let now_as_millis_u128 = T::UnixTime::now().as_millis();
 				let property = SystemTokenProperty { weight, created_at: now_as_millis_u128 };
 
 				SystemTokenProperties::<T>::insert(&system_token_id, &property);
+
 				SystemTokenOnParachain::<T>::insert(&system_token_id, &system_token_id);
+				SystemTokenOnParachain::<T>::insert(
+					&relay_wrapped_system_token_id,
+					&system_token_id,
+				);
 
 				SystemTokenList::<T>::insert(
 					&system_token_id,
@@ -362,6 +398,25 @@ pub mod pallet {
 					system_token_id.clone(),
 				);
 				Self::insert_para_ids_by_system_token(system_token_id.clone(), original_para_id);
+
+				// relay chain wrapped system token state
+				let wrapped_system_token_property = WrappedSystemTokenProperty {
+					asset_link_pallet_id: relay_asset_link_pallet_id,
+					created_at: now_as_millis_u128,
+				};
+
+				Self::insert_system_token_on_parachain_by_para_id(
+					relay_wrapped_system_token_id.clone().para_id,
+					relay_wrapped_system_token_id.clone(),
+				);
+				Self::insert_para_ids_by_system_token(
+					system_token_id.clone(),
+					relay_wrapped_system_token_id.clone().para_id,
+				);
+				WrappedSystemTokenProperties::<T>::insert(
+					&relay_wrapped_system_token_id,
+					&wrapped_system_token_property,
+				);
 			}
 
 			// DMP call to the parachain
@@ -384,7 +439,7 @@ pub mod pallet {
 			wrapped_system_token_id: WrappedSystemTokenId,
 			wrapped_asset_link_pallet_id: u8,
 		) -> DispatchResult {
-			ensure_root(origin)?;
+			ensure_root(origin.clone())?;
 
 			let original_para_id = system_token_id.clone().para_id;
 			let wrapped_para_id = wrapped_system_token_id.clone().para_id;
@@ -438,10 +493,33 @@ pub mod pallet {
 				wrapped_system_token_id.clone(),
 			);
 			Self::insert_para_ids_by_system_token(system_token_id.clone(), wrapped_para_id);
-			Self::create_wrapped_system_token(
-				system_token_id.clone(),
-				wrapped_system_token_id.clone(),
-			)?;
+
+			// Register wrapped system token in relay chain
+			if wrapped_system_token_id.clone().para_id == 0.into() {
+				let (_, asset_metadata) = SystemTokenList::<T>::get(&system_token_id)
+					.ok_or("metadata should be obtained")?;
+
+				let root = PalletId(*b"infra/rt");
+				let owner: T::AccountId = root.into_account_truncating();
+
+				let _ = pallet_assets::pallet::Pallet::<T>::force_create_with_metadata(
+					origin.clone(),
+					wrapped_system_token_id.clone().asset_id.into(),
+					T::Lookup::unlookup(owner.clone()),
+					true,
+					asset_metadata.min_balance,
+					asset_metadata.clone().name.to_vec(),
+					asset_metadata.clone().symbol.to_vec(),
+					asset_metadata.clone().decimals,
+					false,
+					system_token_id,
+				);
+			} else {
+				Self::create_wrapped_system_token(
+					system_token_id.clone(),
+					wrapped_system_token_id.clone(),
+				)?;
+			}
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered {
 				system_token_id,
@@ -458,7 +536,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			wrapped_system_token_id: SystemTokenId,
 		) -> DispatchResult {
-			ensure_root(origin)?;
+			ensure_root(origin.clone())?;
 			ensure!(
 				SystemTokenOnParachain::<T>::contains_key(&wrapped_system_token_id),
 				Error::<T>::WrappedSystemTokenNotRegistered
@@ -502,9 +580,18 @@ pub mod pallet {
 
 			WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
 
-			// DMP calls
-			Self::set_system_token_status(wrapped_system_token_id.clone(), false);
-			Self::unlink_asset(system_token_id, original_asset_link_pallet_id)?;
+			// Deregister wrapped system token in relay chain
+			if wrapped_system_token_id.clone().para_id == 0.into() {
+				let _ = pallet_assets::pallet::Pallet::<T>::set_sufficient_with_unlink_system_token(
+					origin.clone(),
+					wrapped_system_token_id.clone().asset_id.into(),
+					false,
+				);
+			} else {
+				// DMP calls
+				Self::set_system_token_status(wrapped_system_token_id.clone(), false);
+				Self::unlink_asset(system_token_id, original_asset_link_pallet_id)?;
+			}
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered {
 				wrapped_system_token_id,
@@ -547,7 +634,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
 		) -> DispatchResult {
-			ensure_root(origin)?;
+			ensure_root(origin.clone())?;
 
 			ensure!(
 				SystemTokenList::<T>::contains_key(&system_token_id),
@@ -566,7 +653,15 @@ pub mod pallet {
 					.collect::<Vec<SystemTokenId>>();
 
 				for wrapped_system_token_id in wrapped_system_tokens {
-					Self::set_system_token_status(wrapped_system_token_id.clone(), false);
+					if wrapped_system_token_id.para_id == 0.into() {
+						let _ = pallet_assets::pallet::Pallet::<T>::set_sufficient_with_unlink_system_token(
+							origin.clone(),
+							wrapped_system_token_id.asset_id.into(),
+							false,
+						);
+					} else {
+						Self::set_system_token_status(wrapped_system_token_id.clone(), false);
+					}
 					SystemTokenOnParachain::<T>::remove(&wrapped_system_token_id);
 					WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
 					Self::remove_system_token_on_parachain_by_para_id(
