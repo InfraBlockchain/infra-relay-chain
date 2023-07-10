@@ -73,7 +73,7 @@ pallet-treasury = { git = "https://github.com/InfraBlockchain/infra-substrate", 
 pallet-vesting = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-utility = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false }
-
+infrablockspace-parachain = { path = "../../parachain", default-features = false }
 # infra-related
 pallet-validator-election = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
@@ -89,8 +89,10 @@ runtime-parachains = { package = "infrablockspace-runtime-parachains", path = ".
 primitives = { package = "infrablockspace-primitives", path = "../../primitives", default-features = false }
 
 xcm = { package = "xcm", path = "../../xcm", default-features = false }
+assets-common = { package = "assets-common", path = "../../xcm/assets-common", default-features = false }
 xcm-executor = { package = "xcm-executor", path = "../../xcm/xcm-executor", default-features = false }
 xcm-builder = { package = "xcm-builder", path = "../../xcm/xcm-builder", default-features = false }
+cumulus-primitives-utility = { path = "../../xcm/utility", default-features = false }
 
 [dev-dependencies]
 hex-literal = "0.3.4"
@@ -174,6 +176,8 @@ std = [
 	"xcm/std",
 	"xcm-executor/std",
 	"xcm-builder/std",
+	"assets-common/std",
+	"infrablockspace-parachain/std",
 ]
 runtime-benchmarks = [
 	"pallet-asset-link/runtime-benchmarks",
@@ -245,6 +249,7 @@ try-runtime = [
 	"pallet-vesting/try-runtime",
 	"pallet-utility/try-runtime",
 	"pallet-xcm/try-runtime",
+	"cumulus-primitives-utility/std",
 ]
 # When enabled, the runtime API will not be build.
 #

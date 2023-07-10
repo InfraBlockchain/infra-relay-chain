@@ -1,0 +1,46 @@
+[package]
+name = "assets-common"
+version = "0.1.0"
+authors = ["Parity Technologies <admin@parity.io>"]
+edition = "2021"
+description = "Assets common utilities"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = [
+	"derive",
+] }
+log = { version = "0.4.17", default-features = false }
+
+# Substrate
+frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+sp-api = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+pallet-assets = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
+
+# infrablockspace
+infrablockspace-primitives = { path = "../../primitives", default-features = false }
+xcm = { path = "..", default-features = false }
+xcm-builder = { path = "../xcm-builder", default-features = false }
+xcm-executor = { path = "../xcm-executor", default-features = false }
+xcm-primitives = { path = "../xcm-primitives", default-features = false }
+cumulus-primitives-utility = { path = "../utility", default-features = false }
+
+[build-dependencies]
+substrate-wasm-builder = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
+
+[features]
+default = ["std"]
+std = [
+	"infrablockspace-primitives/std",
+	"codec/std",
+	"frame-support/std",
+	"frame-system/std",
+	"sp-api/std",
+	"sp-std/std",
+	"xcm/std",
+	"xcm-builder/std",
+	"xcm-executor/std",
+	"pallet-assets/std",
+]

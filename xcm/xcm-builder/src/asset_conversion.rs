@@ -16,10 +16,34 @@
 
 //! Adapters to work with `frame_support::traits::tokens::fungibles` through XCM.
 
-use frame_support::traits::{Contains, Get};
-use sp_std::{borrow::Borrow, marker::PhantomData, prelude::*, result};
-use xcm::latest::prelude::*;
+use frame_support::{
+	traits::{Contains, Get},
+	RuntimeDebug,
+};
+use parity_scale_codec::{Codec, Decode, Encode};
+use sp_std::{borrow::Borrow, marker::PhantomData, prelude::*, result, vec::Vec};
+use xcm::latest::{prelude::*, MultiAsset};
 use xcm_executor::traits::{Convert, Error as MatchError, MatchesFungibles, MatchesNonFungibles};
+
+/// The possible errors that can happen querying the storage of assets.
+#[derive(Eq, PartialEq, Encode, Decode, RuntimeDebug)]
+pub enum FungiblesAccessError {
+	/// `MultiLocation` to `AssetId`/`ClassId` conversion failed.
+	AssetIdConversionFailed,
+	/// `u128` amount to currency `Balance` conversion failed.
+	AmountToBalanceConversionFailed,
+}
+
+sp_api::decl_runtime_apis! {
+	/// The API for querying account's balances from runtime.
+	pub trait FungiblesApi<AccountId>
+	where
+		AccountId: Codec,
+	{
+		/// Returns the list of all [`MultiAsset`] that an `AccountId` has.
+		fn query_account_balances(account: AccountId) -> Result<Vec<MultiAsset>, FungiblesAccessError>;
+	}
+}
 
 /// Converter struct implementing `AssetIdConversion` converting a numeric asset ID (must be `TryFrom/TryInto<u128>`) into
 /// a `GeneralIndex` junction, prefixed by some `MultiLocation` value. The `MultiLocation` value will typically be a
@@ -148,6 +172,42 @@ pub type ConvertedConcreteAssetId<A, B, C, O> = ConvertedConcreteId<A, B, C, O>;
 #[deprecated = "Use `ConvertedAbstractId` instead"]
 pub type ConvertedAbstractAssetId<A, B, C, O> = ConvertedAbstractId<A, B, C, O>;
 
+/// Converting any [`(AssetId, Balance)`] to [`MultiAsset`]
+pub trait MultiAssetConverter<AssetId, Balance, ConvertAssetId, ConvertBalance>:
+	MatchesFungibles<AssetId, Balance>
+where
+	AssetId: Clone,
+	Balance: Clone,
+	ConvertAssetId: Convert<MultiLocation, AssetId>,
+	ConvertBalance: Convert<u128, Balance>,
+{
+	fn convert_ref(
+		value: impl Borrow<(AssetId, Balance)>,
+	) -> Result<MultiAsset, FungiblesAccessError>;
+}
+
+impl<
+		AssetId: Clone,
+		Balance: Clone,
+		ConvertAssetId: Convert<MultiLocation, AssetId>,
+		ConvertBalance: Convert<u128, Balance>,
+	> MultiAssetConverter<AssetId, Balance, ConvertAssetId, ConvertBalance>
+	for ConvertedConcreteId<AssetId, Balance, ConvertAssetId, ConvertBalance>
+{
+	fn convert_ref(
+		value: impl Borrow<(AssetId, Balance)>,
+	) -> Result<MultiAsset, FungiblesAccessError> {
+		let (asset_id, balance) = value.borrow();
+		match ConvertAssetId::reverse_ref(asset_id) {
+			Ok(asset_id_as_multilocation) => match ConvertBalance::reverse_ref(balance) {
+				Ok(amount) => Ok((asset_id_as_multilocation, amount).into()),
+				Err(_) => Err(FungiblesAccessError::AmountToBalanceConversionFailed),
+			},
+			Err(_) => Err(FungiblesAccessError::AssetIdConversionFailed),
+		}
+	}
+}
+
 pub struct MatchedConvertedConcreteId<AssetId, Balance, MatchAssetId, ConvertAssetId, ConvertOther>(
 	PhantomData<(AssetId, Balance, MatchAssetId, ConvertAssetId, ConvertOther)>,
 );
@@ -192,6 +252,29 @@ impl<
 		let instance = ConvertInstanceId::convert_ref(instance)
 			.map_err(|_| MatchError::InstanceConversionFailed)?;
 		Ok((what, instance))
+	}
+}
+
+impl<
+		AssetId: Clone,
+		Balance: Clone,
+		MatchAssetId: Contains<MultiLocation>,
+		ConvertAssetId: Convert<MultiLocation, AssetId>,
+		ConvertBalance: Convert<u128, Balance>,
+	> MultiAssetConverter<AssetId, Balance, ConvertAssetId, ConvertBalance>
+	for MatchedConvertedConcreteId<AssetId, Balance, MatchAssetId, ConvertAssetId, ConvertBalance>
+{
+	fn convert_ref(
+		value: impl Borrow<(AssetId, Balance)>,
+	) -> Result<MultiAsset, FungiblesAccessError> {
+		let (asset_id, balance) = value.borrow();
+		match ConvertAssetId::reverse_ref(asset_id) {
+			Ok(asset_id_as_multilocation) => match ConvertBalance::reverse_ref(balance) {
+				Ok(amount) => Ok((asset_id_as_multilocation, amount).into()),
+				Err(_) => Err(FungiblesAccessError::AmountToBalanceConversionFailed),
+			},
+			Err(_) => Err(FungiblesAccessError::AssetIdConversionFailed),
+		}
 	}
 }
 
