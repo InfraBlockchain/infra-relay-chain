@@ -15,6 +15,7 @@ sp-std = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = 
 sp-arithmetic = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-io = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 sp-runtime = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+sp-api = { git = "https://github.com/InfraBlockchain/infra-substrate", default-features = false, branch = "master" }
 frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -32,10 +33,7 @@ assert_matches = "1.5.0"
 
 [features]
 default = ["std"]
-runtime-benchmarks = [
-	"frame-support/runtime-benchmarks",
-	"frame-system/runtime-benchmarks"
-]
+runtime-benchmarks = ["frame-support/runtime-benchmarks", "frame-system/runtime-benchmarks"]
 std = [
 	"log/std",
 	"parity-scale-codec/std",
@@ -43,6 +41,7 @@ std = [
 	"xcm/std",
 	"xcm-executor/std",
 	"sp-std/std",
+	"sp-api/std",
 	"sp-arithmetic/std",
 	"sp-io/std",
 	"sp-runtime/std",

@@ -291,7 +291,6 @@ pub mod pallet {
 			url: Vec<u8>,
 			relay_asset_pallet_id: u8,
 			relay_wrapped_system_token_asset_id: u32,
-			relay_asset_link_pallet_id: u8,
 			name: Vec<u8>,
 			symbol: Vec<u8>,
 			decimals: u8,
@@ -362,6 +361,7 @@ pub mod pallet {
 				decimals,
 				false,
 				system_token_id,
+				0,
 			);
 
 			// Storage insert logics
@@ -489,6 +489,7 @@ pub mod pallet {
 
 				pallet_asset_link::pallet::Pallet::<T>::link_system_token(
 					origin,
+					0,
 					wrapped_asset_id.into(),
 					system_token_id,
 				)?;
@@ -786,6 +787,7 @@ pub mod pallet {
 						decimals: asset_metadata.clone().decimals,
 						is_frozen: false,
 						system_token_id,
+						asset_link_parents: 1,
 					}
 					.encode();
 

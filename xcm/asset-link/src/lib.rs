@@ -82,6 +82,7 @@ pub mod pallet {
 		#[pallet::weight(<T as pallet::Config>::WeightInfo::link_system_token())]
 		pub fn link_system_token(
 			origin: OriginFor<T>,
+			parents: u8,
 			asset_id: AssetIdOf<T>,
 			system_token_id: SystemTokenId,
 		) -> DispatchResult {
@@ -97,7 +98,7 @@ pub mod pallet {
 			);
 
 			let asset_multi_location = MultiLocation {
-				parents: 1,
+				parents,
 				interior: Junctions::X3(
 					Parachain(system_token_id.para_id),
 					PalletInstance(system_token_id.pallet_id as u8),
@@ -106,16 +107,12 @@ pub mod pallet {
 			};
 
 			// verify MultiLocation is valid
-			let parents_multi_location_ok = { asset_multi_location.parents == 1 };
 			let junctions_multi_location_ok = matches!(
 				asset_multi_location.interior,
 				Junctions::X3(Parachain(_), PalletInstance(_), GeneralIndex(_))
 			);
 
-			ensure!(
-				parents_multi_location_ok && junctions_multi_location_ok,
-				Error::<T>::WrongMultiLocation
-			);
+			ensure!(junctions_multi_location_ok, Error::<T>::WrongMultiLocation);
 
 			// register asset
 			AssetIdMultiLocation::<T>::insert(asset_id, &asset_multi_location);
@@ -166,6 +163,7 @@ pub mod pallet {
 		T: Config,
 	{
 		fn link_system_token(
+			parents: u8,
 			asset_id: AssetIdOf<T>,
 			system_token_id: SystemTokenId,
 		) -> DispatchResult {
@@ -179,7 +177,7 @@ pub mod pallet {
 			);
 
 			let asset_multi_location = MultiLocation {
-				parents: 1,
+				parents,
 				interior: Junctions::X3(
 					Parachain(system_token_id.para_id),
 					PalletInstance(system_token_id.pallet_id),
@@ -188,16 +186,12 @@ pub mod pallet {
 			};
 
 			// verify MultiLocation is valid
-			let parents_multi_location_ok = { asset_multi_location.parents == 1 };
 			let junctions_multi_location_ok = matches!(
 				asset_multi_location.interior,
 				Junctions::X3(Parachain(_), PalletInstance(_), GeneralIndex(_))
 			);
 
-			ensure!(
-				parents_multi_location_ok && junctions_multi_location_ok,
-				Error::<T>::WrongMultiLocation
-			);
+			ensure!(junctions_multi_location_ok, Error::<T>::WrongMultiLocation);
 
 			// register asset
 			AssetIdMultiLocation::<T>::insert(asset_id, &asset_multi_location);

@@ -17,25 +17,107 @@
 //! XCM configuration for infrablockspace.
 
 use super::{
-	parachains_origin, AccountId, AllPalletsWithSystem, Balances, ParaId, Runtime, RuntimeCall,
-	RuntimeEvent, RuntimeOrigin, ValidatorCollective, WeightToFee, XcmPallet,
+	parachains_origin, AccountId, AllPalletsWithSystem, AssetLink, Assets, Authorship, Balance,
+	Balances, ParaId, Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, ValidatorCollective,
+	WeightToFee, XcmPallet,
 };
+use assets_common::matching::{StartsWith, StartsWithExplicitGlobalConsensus};
+
+use assets_common::AssetFeeAsExistentialDepositMultiplier;
 use frame_support::{
 	match_types, parameter_types,
-	traits::{Contains, Everything, Nothing},
+	traits::{Contains, Everything, Nothing, PalletInfoAccess},
 	weights::Weight,
 };
+use infrablockspace_parachain::primitives::Sibling;
 use runtime_common::{paras_registrar, xcm_sender, ToAuthor};
 use sp_core::ConstU32;
+use sp_runtime::traits::ConvertInto;
 use xcm::latest::prelude::*;
 use xcm_builder::{
 	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom, AllowSubscriptionsFrom,
 	AllowTopLevelPaidExecutionFrom, BackingToPlurality, ChildParachainAsNative,
 	ChildParachainConvertsVia, CurrencyAdapter as XcmCurrencyAdapter, FixedWeightBounds,
-	IsConcrete, MintLocation, SignedAccountId32AsNative, SignedToAccountId32,
+	FungiblesAdapter, IsConcrete, LocalMint, MintLocation, NonLocalMint, ParentIsPreset,
+	SiblingParachainConvertsVia, SignedAccountId32AsNative, SignedToAccountId32,
 	SovereignSignedViaLocation, TakeWeightCredit, UsingComponents,
 };
 use xcm_executor::traits::WithOriginFilter;
+use xcm_primitives::TrappistDropAssets;
+pub type AssetId = u32;
+
+pub type AssetFeeAsExistentialDepositMultiplierFeeCharger = AssetFeeAsExistentialDepositMultiplier<
+	Runtime,
+	WeightToFee,
+	pallet_assets::BalanceToAssetBalance<Balances, Runtime, ConvertInto, ()>,
+	(),
+>;
+
+/// `AssetId/Balancer` converter for `TrustBackedAssets``
+pub type TrustBackedAssetsConvertedConcreteId =
+	assets_common::TrustBackedAssetsConvertedConcreteId<TrustBackedAssetsPalletLocation, Balance>;
+
+/// Means for transacting assets besides the native currency on this chain.
+pub type LocalIssuedFungiblesTransactor = FungiblesAdapter<
+	// Use this fungibles implementation:
+	Assets,
+	// Use this currency when it is a fungible asset matching the given location or name:
+	TrustBackedAssetsConvertedConcreteId,
+	// Convert an XCM MultiLocation into a local account id:
+	LocationToAccountId,
+	// Our chain's account ID type (we can't get away without mentioning it explicitly):
+	AccountId,
+	// We only want to allow teleports of known assets. We use non-zero issuance as an indication
+	// that this asset is known.
+	LocalMint<assets_common::NonZeroIssuance<AccountId, Assets>>,
+	// The account to use for tracking teleports.
+	CheckingAccount,
+>;
+
+/// `AssetId/Balance` converter for `TrustBackedAssets`
+pub type ForeignAssetsConvertedConcreteId = assets_common::ForeignAssetsConvertedConcreteId<
+	(
+		// Ignore `TrustBackedAssets` explicitly
+		StartsWith<TrustBackedAssetsPalletLocation>,
+		// Ignore asset which starts explicitly with our `GlobalConsensus(NetworkId)`, means:
+		// - foreign assets from our consensus should be: `MultiLocation {parent: 1, X*(Parachain(xyz))}
+		// - foreign assets outside our consensus with the same `GlobalConsensus(NetworkId)` wont be accepted here
+		StartsWithExplicitGlobalConsensus<UniversalLocationNetworkId>,
+	),
+	AssetLink,
+	Balance,
+>;
+
+/// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
+/// when determining ownership of accounts for asset transacting and when attempting to use XCM
+/// `Transact` in order to determine the dispatch Origin.
+pub type LocationToAccountId = (
+	// The parent (Relay-chain) origin converts to the parent `AccountId`.
+	ParentIsPreset<AccountId>,
+	// Sibling parachain origins convert to AccountId via the `ParaId::into`.
+	SiblingParachainConvertsVia<Sibling, AccountId>,
+	// Straight up local `AccountId32` origins just alias directly to `AccountId`.
+	AccountId32Aliases<RelayNetwork, AccountId>,
+);
+
+/// Means for transacting foreign assets from different global consensus.
+pub type ForeignFungiblesTransactor = FungiblesAdapter<
+	// Use this fungibles implementation:
+	Assets,
+	// Use this currency when it is a fungible asset matching the given location or name:
+	ForeignAssetsConvertedConcreteId,
+	// Convert an XCM MultiLocation into a local account id:
+	LocationToAccountId,
+	// Our chain's account ID type (we can't get away without mentioning it explicitly):
+	AccountId,
+	// We dont need to check teleports here.
+	NonLocalMint<assets_common::AnyIssuance<AccountId, Assets>>,
+	// The account to use for tracking teleports.
+	CheckingAccount,
+>;
+
+/// Means for transacting assets on this chain.
+pub type AssetTransactors = (ForeignFungiblesTransactor, LocalIssuedFungiblesTransactor);
 
 parameter_types! {
 	/// The location of the DOT token, from the context of this chain. Since this token is native to this
@@ -47,9 +129,14 @@ parameter_types! {
 	/// Our location in the universe of consensus systems.
 	pub const UniversalLocation: InteriorMultiLocation = X1(GlobalConsensus(ThisNetwork::get()));
 	/// The Checking Account, which holds any native assets that have been teleported out and not back in (yet).
-	pub CheckAccount: AccountId = XcmPallet::check_account();
+	pub CheckingAccount: AccountId = XcmPallet::check_account();
 	/// The Checking Account along with the indication that the local chain is able to mint tokens.
-	pub LocalCheckAccount: (AccountId, MintLocation) = (CheckAccount::get(), MintLocation::Local);
+	pub LocalCheckAccount: (AccountId, MintLocation) = (CheckingAccount::get(), MintLocation::Local);
+	pub TrustBackedAssetsPalletLocation: MultiLocation =
+		PalletInstance(<Assets as PalletInfoAccess>::index() as u8).into();
+	pub UniversalLocationNetworkId: NetworkId = UniversalLocation::get().global_consensus().unwrap();
+	pub const RelayNetwork: Option<NetworkId> = Some(NetworkId::Infrablockspace);
+	pub XcmAssetFeesReceiver: Option<AccountId> = Authorship::author();
 }
 
 /// The canonical means of converting a `MultiLocation` into an `AccountId`, used when we want to determine
@@ -114,10 +201,6 @@ parameter_types! {
 	pub const DotForCollectives: (MultiAssetFilter, MultiLocation) = (Dot::get(), Parachain(1001).into_location());
 	pub const MaxAssetsIntoHolding: u32 = 64;
 }
-
-/// infrablockspace Relay recognizes/respects the Statemint chain as a teleporter.
-pub type TrustedTeleporters =
-	(xcm_builder::Case<DotForStatemint>, xcm_builder::Case<DotForCollectives>);
 
 match_types! {
 	pub type OnlyParachains: impl Contains<MultiLocation> = {
@@ -260,19 +343,31 @@ pub struct XcmConfig;
 impl xcm_executor::Config for XcmConfig {
 	type RuntimeCall = RuntimeCall;
 	type XcmSender = XcmRouter;
-	type AssetTransactor = LocalAssetTransactor;
+	type AssetTransactor = AssetTransactors;
 	type OriginConverter = LocalOriginConverter;
 	// infrablockspace Relay recognises no chains which act as reserves.
 	type IsReserve = ();
-	type IsTeleporter = TrustedTeleporters;
+	type IsTeleporter = ();
 	type UniversalLocation = UniversalLocation;
 	type Barrier = Barrier;
 	type Weigher = FixedWeightBounds<BaseXcmWeight, RuntimeCall, MaxInstructions>;
 	// The weight trader piggybacks on the existing transaction-fee conversion logic.
-	type Trader =
-		UsingComponents<WeightToFee, TokenLocation, AccountId, Balances, ToAuthor<Runtime>>;
+	type Trader = (
+		UsingComponents<WeightToFee, TokenLocation, AccountId, Balances, ToAuthor<Runtime>>,
+		cumulus_primitives_utility::TakeFirstAssetTrader<
+			AccountId,
+			AssetFeeAsExistentialDepositMultiplierFeeCharger,
+			TrustBackedAssetsConvertedConcreteId,
+			Assets,
+			cumulus_primitives_utility::XcmFeesTo32ByteAccount<
+				LocalIssuedFungiblesTransactor,
+				AccountId,
+				XcmAssetFeesReceiver,
+			>,
+		>,
+	);
 	type ResponseHandler = XcmPallet;
-	type AssetTrap = XcmPallet;
+	type AssetTrap = TrappistDropAssets<AssetId, AssetLink, Assets, Balances, XcmPallet, AccountId>;
 	type AssetLocker = ();
 	type AssetExchanger = ();
 	type AssetClaims = XcmPallet;
