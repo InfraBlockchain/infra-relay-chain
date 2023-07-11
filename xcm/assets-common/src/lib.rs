@@ -18,7 +18,7 @@
 pub mod fungible_conversion;
 pub mod matching;
 pub mod runtime_api;
-use crate::matching::{Equals, LocalMultiLocationPattern, ParentLocation, StartsWith};
+use crate::matching::{Equals, ParentLocation, StartsWith};
 use sp_runtime::traits::Zero;
 
 use frame_support::traits::{
@@ -241,7 +241,7 @@ pub type ForeignAssetsConvertedConcreteId<
 		// Here we rely on fact that something like this works:
 		// assert!(MultiLocation::new(1, X1(Parachain(100))).starts_with(&MultiLocation::parent()));
 		// assert!(X1(Parachain(100)).starts_with(&Here));
-		StartsWith<LocalMultiLocationPattern>,
+		// StartsWith<LocalMultiLocationPattern>,
 		// Here we can exclude more stuff or leave it as `()`
 		AdditionalMultiLocationExclusionFilter,
 	)>,

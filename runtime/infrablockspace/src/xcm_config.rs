@@ -30,7 +30,7 @@ use frame_support::{
 	weights::Weight,
 };
 use infrablockspace_parachain::primitives::Sibling;
-use runtime_common::{paras_registrar, xcm_sender, ToAuthor};
+use runtime_common::{paras_registrar, xcm_sender};
 use sp_core::ConstU32;
 use sp_runtime::traits::ConvertInto;
 use xcm::latest::prelude::*;
@@ -40,7 +40,7 @@ use xcm_builder::{
 	ChildParachainConvertsVia, CurrencyAdapter as XcmCurrencyAdapter, FixedWeightBounds,
 	FungiblesAdapter, IsConcrete, LocalMint, MintLocation, NonLocalMint, ParentIsPreset,
 	SiblingParachainConvertsVia, SignedAccountId32AsNative, SignedToAccountId32,
-	SovereignSignedViaLocation, TakeWeightCredit, UsingComponents,
+	SovereignSignedViaLocation, TakeWeightCredit,
 };
 use xcm_executor::traits::WithOriginFilter;
 use xcm_primitives::TrappistDropAssets;
@@ -353,11 +353,10 @@ impl xcm_executor::Config for XcmConfig {
 	type Weigher = FixedWeightBounds<BaseXcmWeight, RuntimeCall, MaxInstructions>;
 	// The weight trader piggybacks on the existing transaction-fee conversion logic.
 	type Trader = (
-		UsingComponents<WeightToFee, TokenLocation, AccountId, Balances, ToAuthor<Runtime>>,
 		cumulus_primitives_utility::TakeFirstAssetTrader<
 			AccountId,
 			AssetFeeAsExistentialDepositMultiplierFeeCharger,
-			TrustBackedAssetsConvertedConcreteId,
+			ForeignAssetsConvertedConcreteId,
 			Assets,
 			cumulus_primitives_utility::XcmFeesTo32ByteAccount<
 				LocalIssuedFungiblesTransactor,
