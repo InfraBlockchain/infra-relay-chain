@@ -782,7 +782,7 @@ impl<T: Config> Pallet<T> {
 			receipt.descriptor.para_id,
 			commitments.horizontal_messages,
 		);
-
+		let mut is_collected: bool = false;
 		if let Some(vote_result) = commitments.vote_result {
 			let session_index = shared::Pallet::<T>::session_index();
 			for vote in vote_result.clone().into_iter() {
@@ -790,6 +790,7 @@ impl<T: Config> Pallet<T> {
 					T::SystemTokenManager::convert_to_original_system_token(
 						vote.clone().system_token_id,
 					) {
+					is_collected = true;
 					let who = vote.clone().account_id;
 					let weight = vote.clone().vote_weight;
 					let adjusted_weight =
@@ -803,7 +804,9 @@ impl<T: Config> Pallet<T> {
 					);
 				};
 			}
-			Self::deposit_event(Event::<T>::VoteCollected(receipt.descriptor.para_id, vote_result));
+			if is_collected {
+				Self::deposit_event(Event::<T>::VoteCollected(receipt.descriptor.para_id, vote_result));
+			}
 		};
 
 		Self::deposit_event(Event::<T>::CandidateIncluded(
