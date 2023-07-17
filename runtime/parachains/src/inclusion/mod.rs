@@ -790,7 +790,9 @@ impl<T: Config> Pallet<T> {
 					T::SystemTokenManager::convert_to_original_system_token(
 						vote.clone().system_token_id,
 					) {
-					is_collected = true;
+					if !is_collected {
+						is_collected = true;
+					}
 					let who = vote.clone().account_id;
 					let weight = vote.clone().vote_weight;
 					let adjusted_weight =
