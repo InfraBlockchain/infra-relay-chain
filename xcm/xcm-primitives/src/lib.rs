@@ -6,11 +6,12 @@ use frame_support::{
 	weights::{OldWeight, Weight},
 };
 use sp_std::{borrow::Borrow, marker::PhantomData, vec::Vec};
+use sp_runtime::types::AssetId as IbsAssetId;
 use xcm::{
 	latest::{
 		AssetId::Concrete, Fungibility::Fungible, Junctions::Here, MultiAsset, MultiLocation,
 	},
-	v3::XcmContext,
+	v3::{XcmContext, Junction::{self, PalletInstance, GeneralIndex}},
 };
 use xcm_executor::{
 	traits::{Convert, DropAssets, Error as MatchError, MatchesFungibles},
@@ -80,7 +81,7 @@ impl<AssetId, AssetIdInfoGetter, AssetsPallet, BalancesPallet, XcmPallet, Accoun
 		XcmPallet,
 		AccountId,
 	> where
-	AssetId: Clone,
+	AssetId: Clone + From<IbsAssetId>,
 	AssetIdInfoGetter: AssetMultiLocationGetter<AssetId>,
 	AssetsPallet: Inspect<AccountId, AssetId = AssetId>,
 	BalancesPallet: Currency<AccountId>,
@@ -104,14 +105,29 @@ impl<AssetId, AssetIdInfoGetter, AssetsPallet, BalancesPallet, XcmPallet, Accoun
 					}
 
 				// is location the native token?
-				} else if location == (MultiLocation { parents: 0, interior: Here }) {
-					let min_balance = BalancesPallet::minimum_balance();
+				} else if matches!(
+					location, 
+					MultiLocation { parents: 0, interior: xcm::v3::Junctions::X2(PalletInstance(_), GeneralIndex(_))}
+				) {
+					let asset_id = match location.interior {
+						xcm::v3::Junctions::X2(PalletInstance(_), GeneralIndex(asset_id)) => {
+							let asset_id = asset_id.saturated_into::<IbsAssetId>();
+							Some(asset_id)
+						},
+						_ => None,
+					};
+					if let Some(id) = asset_id {
+						let min_balance = AssetsPallet::minimum_balance(id.into());
 
-					// only trap if amount ≥ min_balance
-					// do nothing otherwise (asset is lost)
-					if min_balance <= amount.saturated_into::<BalancesPallet::Balance>() {
-						trap.push(asset);
+						// only trap if amount ≥ min_balance
+						// do nothing otherwise (asset is lost)
+						if min_balance <= amount.saturated_into::<AssetsPallet::Balance>() {
+							trap.push(asset);
+						}
 					}
+				} else {
+					// ToDo: Check min balance?
+					trap.push(asset);
 				}
 			}
 		}
