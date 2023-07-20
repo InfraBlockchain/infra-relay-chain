@@ -126,6 +126,7 @@ impl<AssetId, AssetIdInfoGetter, AssetsPallet, BalancesPallet, XcmPallet, Accoun
 						}
 					}
 				} else {
+					// When asset link has not set
 					// ToDo: Check min balance?
 					trap.push(asset);
 				}
