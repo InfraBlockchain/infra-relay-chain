@@ -56,6 +56,8 @@ pub type StringLimitOf<T> = <T as Config>::StringLimit;
 
 const REF_WEIGHT: u64 = 500_000_000;
 const PROOF_WEIGHT: u64 = 20_000;
+/// The base_system_token_weight(USD). Assume that it SHOULD not be changed.
+const BASE_SYSTEM_TOKEN_WEIGHT: u128 = 100_000;
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 
@@ -84,7 +86,7 @@ pub struct AssetMetadata<BoundedString, Balance> {
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
 pub struct SystemTokenProperty {
 	/// The weight of this system token
-	pub(crate) weight: SystemTokenWeight,
+	pub(crate) system_token_weight: SystemTokenWeight,
 	/// The epoch time of this system token registered
 	pub(crate) created_at: u128,
 }
@@ -173,8 +175,10 @@ pub mod pallet {
 			wrapped_system_token_id: WrappedSystemTokenId,
 			system_token_id: SystemTokenId,
 		},
-		/// Convert a wrapped system token id to an original system token id.
-		SetSystemTokenProperty { system_token_id: SystemTokenId, property: SystemTokenProperty },
+		/// Update the weight for system token. The weight is calculated with exchange_rate and decimal.
+		SetSystemTokenWeight { system_token_id: SystemTokenId, property: SystemTokenProperty },
+		/// Update the fee rate of the parachain. The default value is 1_000(1).
+		SetParaFeeRate { para_id: u32, para_fee_rate: u32 },
 	}
 
 	#[pallet::error]
@@ -295,7 +299,7 @@ pub mod pallet {
 			symbol: Vec<u8>,
 			decimals: u8,
 			min_balance: T::Balance,
-			weight: SystemTokenWeight,
+			system_token_weight: SystemTokenWeight,
 		) -> DispatchResult {
 			ensure_root(origin.clone())?;
 
@@ -350,7 +354,7 @@ pub mod pallet {
 			let root = PalletId(*b"infra/rt");
 			let owner: T::AccountId = root.into_account_truncating();
 
-			let _ = pallet_assets::pallet::Pallet::<T>::force_create_with_metadata(
+			pallet_assets::pallet::Pallet::<T>::force_create_with_metadata(
 				origin.clone(),
 				relay_wrapped_system_token_asset_id.into(),
 				T::Lookup::unlookup(owner.clone()),
@@ -361,13 +365,15 @@ pub mod pallet {
 				decimals,
 				false,
 				system_token_id,
-				0,
-			);
+				0, // parents for the multilocation of AssetLink
+				system_token_weight,
+			)?;
 
 			// Storage insert logics
 			{
 				let now_as_millis_u128 = T::UnixTime::now().as_millis();
-				let property = SystemTokenProperty { weight, created_at: now_as_millis_u128 };
+				let property =
+					SystemTokenProperty { system_token_weight, created_at: now_as_millis_u128 };
 
 				SystemTokenProperties::<T>::insert(&system_token_id, &property);
 
@@ -407,7 +413,7 @@ pub mod pallet {
 			}
 
 			// DMP call to the parachain
-			Self::set_system_token_status(system_token_id.clone(), true);
+			Self::dmp_set_sufficient(system_token_id.clone(), true);
 
 			Self::deposit_event(Event::<T>::SystemTokenRegistered {
 				system_token_id,
@@ -479,12 +485,22 @@ pub mod pallet {
 
 			let wrapped_asset_id = wrapped_system_token_id.clone().asset_id;
 
+			let property = SystemTokenProperties::<T>::get(&system_token_id)
+				.ok_or("property should be obtained")?;
+			let system_token_weight = property.system_token_weight;
+
 			// Register wrapped system token in relay chain
 			if wrapped_system_token_id.clone().para_id == 0.into() {
 				pallet_assets::pallet::Pallet::<T>::set_sufficient(
 					origin.clone(),
 					wrapped_asset_id.into(),
 					true,
+				)?;
+
+				pallet_assets::pallet::Pallet::<T>::update_system_token_weight(
+					origin.clone(),
+					wrapped_asset_id.into(),
+					system_token_weight,
 				)?;
 
 				pallet_asset_link::pallet::Pallet::<T>::link_system_token(
@@ -497,6 +513,7 @@ pub mod pallet {
 				Self::create_wrapped_system_token(
 					system_token_id.clone(),
 					wrapped_system_token_id.clone(),
+					system_token_weight,
 				)?;
 			}
 
@@ -509,6 +526,67 @@ pub mod pallet {
 		}
 
 		#[pallet::call_index(2)]
+		#[pallet::weight(1_000)]
+		/// Deregister the system token.
+		pub fn deregister_system_token(
+			origin: OriginFor<T>,
+			system_token_id: SystemTokenId,
+		) -> DispatchResult {
+			ensure_root(origin.clone())?;
+
+			ensure!(
+				SystemTokenList::<T>::contains_key(&system_token_id),
+				Error::<T>::SystemTokenNotRegistered
+			);
+
+			let (system_token_metadata, _asset_metadata) =
+				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
+			{
+				let wrapped_system_tokens = SystemTokenOnParachain::<T>::iter_keys()
+					.filter(|wrapped_system_token_id| {
+						SystemTokenOnParachain::<T>::get(wrapped_system_token_id) ==
+							Some(system_token_id.clone())
+					})
+					.collect::<Vec<SystemTokenId>>();
+
+				for wrapped_system_token_id in wrapped_system_tokens {
+					if wrapped_system_token_id.para_id == 0.into() {
+						let _ = pallet_assets::pallet::Pallet::<T>::set_sufficient_with_unlink_system_token(
+							origin.clone(),
+							wrapped_system_token_id.asset_id.into(),
+							false,
+						);
+					} else {
+						Self::dmp_set_sufficient_with_unlink(
+							wrapped_system_token_id.clone(),
+							false,
+						);
+					}
+					SystemTokenOnParachain::<T>::remove(&wrapped_system_token_id);
+					WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
+					Self::remove_system_token_on_parachain_by_para_id(
+						wrapped_system_token_id.clone(),
+					);
+				}
+			}
+
+			SystemTokenList::<T>::remove(&system_token_id);
+			SystemTokenProperties::<T>::remove(&system_token_id);
+			SystemTokenOnParachain::<T>::remove(&system_token_id);
+			ParaIdsBySystemToken::<T>::remove(&system_token_id);
+			Self::remove_system_token_on_parachain_by_para_id(system_token_id.clone());
+
+			Self::dmp_set_sufficient(system_token_id.clone(), false);
+
+			Self::deposit_event(Event::<T>::SystemTokenDeregistered {
+				system_token_id,
+				system_token_metadata,
+			});
+
+			Ok(())
+		}
+
+		#[pallet::call_index(3)]
 		#[pallet::weight(1_000)]
 		/// Deregister wrapped system token to other parachain.
 		pub fn deregister_wrapped_system_token(
@@ -561,7 +639,7 @@ pub mod pallet {
 				);
 			} else {
 				// DMP calls
-				Self::set_system_token_status_with_unlink(wrapped_system_token_id.clone(), false);
+				Self::dmp_set_sufficient_with_unlink(wrapped_system_token_id.clone(), false);
 			}
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered {
@@ -572,13 +650,13 @@ pub mod pallet {
 			Ok(())
 		}
 
-		#[pallet::call_index(3)]
+		#[pallet::call_index(4)]
 		#[pallet::weight(1_000)]
 		/// Deregister the system token.
-		pub fn set_system_token_weight(
+		pub fn update_system_token_weight(
 			origin: OriginFor<T>,
 			system_token_id: SystemTokenId,
-			new_weight: SystemTokenWeight,
+			system_token_weight: SystemTokenWeight,
 		) -> DispatchResult {
 			ensure_root(origin)?;
 
@@ -587,75 +665,53 @@ pub mod pallet {
 				Error::<T>::SystemTokenNotRegistered
 			);
 
+			let wrapped_system_tokens = SystemTokenOnParachain::<T>::iter_keys()
+				.filter(|wrapped_system_token_id| {
+					SystemTokenOnParachain::<T>::get(wrapped_system_token_id) ==
+						Some(system_token_id.clone())
+				})
+				.collect::<Vec<WrappedSystemTokenId>>();
+
+			// [DMP calls] update the system_token_weight to all chains which use WrappedSystemTokenId
+			for wrapped_system_token_id in wrapped_system_tokens {
+				if wrapped_system_token_id.clone().para_id == 0.into() {
+					pallet_assets::Call::<T>::update_system_token_weight {
+						id: wrapped_system_token_id.clone().asset_id.into(),
+						system_token_weight,
+					};
+				} else {
+					Self::dmp_update_system_token_weight(
+						wrapped_system_token_id,
+						system_token_weight,
+					)
+				}
+			}
+
 			let mut property = SystemTokenProperties::<T>::get(&system_token_id)
 				.ok_or("property should be obtained")?;
-			property.weight = new_weight;
+			property.system_token_weight = system_token_weight;
 
 			SystemTokenProperties::<T>::insert(&system_token_id, &property);
 
-			Self::deposit_event(Event::<T>::SetSystemTokenProperty { system_token_id, property });
+			Self::deposit_event(Event::<T>::SetSystemTokenWeight { system_token_id, property });
 
 			Ok(())
 		}
 
-		#[pallet::call_index(4)]
+		#[pallet::call_index(5)]
 		#[pallet::weight(1_000)]
 		/// Deregister the system token.
-		pub fn deregister_system_token(
+		pub fn update_fee_para_rate(
 			origin: OriginFor<T>,
-			system_token_id: SystemTokenId,
+			para_id: u32,
+			para_pallet_id: u32,
+			para_fee_rate: u32,
 		) -> DispatchResult {
-			ensure_root(origin.clone())?;
+			ensure_root(origin)?;
 
-			ensure!(
-				SystemTokenList::<T>::contains_key(&system_token_id),
-				Error::<T>::SystemTokenNotRegistered
-			);
+			Self::dmp_update_para_fee_rate(para_id, para_pallet_id, para_fee_rate);
 
-			let (system_token_metadata, _asset_metadata) =
-				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
-
-			{
-				let wrapped_system_tokens = SystemTokenOnParachain::<T>::iter_keys()
-					.filter(|wrapped_system_token_id| {
-						SystemTokenOnParachain::<T>::get(wrapped_system_token_id) ==
-							Some(system_token_id.clone())
-					})
-					.collect::<Vec<SystemTokenId>>();
-
-				for wrapped_system_token_id in wrapped_system_tokens {
-					if wrapped_system_token_id.para_id == 0.into() {
-						let _ = pallet_assets::pallet::Pallet::<T>::set_sufficient_with_unlink_system_token(
-							origin.clone(),
-							wrapped_system_token_id.asset_id.into(),
-							false,
-						);
-					} else {
-						Self::set_system_token_status_with_unlink(
-							wrapped_system_token_id.clone(),
-							false,
-						);
-					}
-					SystemTokenOnParachain::<T>::remove(&wrapped_system_token_id);
-					WrappedSystemTokenProperties::<T>::remove(&wrapped_system_token_id);
-					Self::remove_system_token_on_parachain_by_para_id(
-						wrapped_system_token_id.clone(),
-					);
-				}
-			}
-
-			SystemTokenList::<T>::remove(&system_token_id);
-			SystemTokenProperties::<T>::remove(&system_token_id);
-			SystemTokenOnParachain::<T>::remove(&system_token_id);
-			ParaIdsBySystemToken::<T>::remove(&system_token_id);
-			Self::remove_system_token_on_parachain_by_para_id(system_token_id.clone());
-
-			Self::set_system_token_status(system_token_id.clone(), false);
-
-			Self::deposit_event(Event::<T>::SystemTokenDeregistered {
-				system_token_id,
-				system_token_metadata,
-			});
+			Self::deposit_event(Event::<T>::SetParaFeeRate { para_id, para_fee_rate });
 
 			Ok(())
 		}
@@ -668,10 +724,7 @@ pub mod pallet {
 		<T as pallet_assets::Config>::AssetIdParameter: From<u32>,
 		AssetIdOf<T>: From<u32>,
 	{
-		fn set_system_token_status_with_unlink(
-			system_token_id: SystemTokenId,
-			is_sufficient: bool,
-		) {
+		fn dmp_set_sufficient_with_unlink(system_token_id: SystemTokenId, is_sufficient: bool) {
 			let config = <configuration::Pallet<T>>::config();
 			let xcm = {
 				use parity_scale_codec::Encode as _;
@@ -715,7 +768,7 @@ pub mod pallet {
 				);
 			};
 		}
-		fn set_system_token_status(system_token_id: SystemTokenId, is_sufficient: bool) {
+		fn dmp_set_sufficient(system_token_id: SystemTokenId, is_sufficient: bool) {
 			let config = <configuration::Pallet<T>>::config();
 			let xcm = {
 				use parity_scale_codec::Encode as _;
@@ -758,9 +811,96 @@ pub mod pallet {
 				);
 			};
 		}
+
+		fn dmp_update_system_token_weight(
+			system_token_id: SystemTokenId,
+			system_token_weight: u64,
+		) {
+			let config = <configuration::Pallet<T>>::config();
+			let xcm = {
+				use parity_scale_codec::Encode as _;
+				use xcm::opaque::{latest::prelude::*, VersionedXcm};
+
+				let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
+				let mut call_encode = pallet_assets::Call::<T>::update_system_token_weight {
+					id: system_token_id.clone().asset_id.into(),
+					system_token_weight,
+				}
+				.encode();
+
+				encoded.append(&mut call_encode);
+
+				let fee_multilocation =
+					MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
+
+				VersionedXcm::from(Xcm(vec![
+					BuyExecution {
+						fees: fee_multilocation.clone().into(),
+						weight_limit: WeightLimit::Unlimited,
+					},
+					Transact {
+						origin_kind: OriginKind::Superuser,
+						require_weight_at_most: Weight::from_parts(REF_WEIGHT, PROOF_WEIGHT),
+						call: encoded.into(),
+					},
+				]))
+				.encode()
+			};
+			if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
+				<dmp::Pallet<T>>::queue_downward_message(
+					&config,
+					ParaId::from(system_token_id.clone().para_id).into(),
+					xcm,
+				) {
+				log::error!(
+					target: "runtime::system_token_manager",
+					"sending 'dmp' failed."
+				);
+			};
+		}
+
+		fn dmp_update_para_fee_rate(para_id: u32, para_pallet_id: u32, para_fee_rate: u32) {
+			let config = <configuration::Pallet<T>>::config();
+			let xcm = {
+				use parity_scale_codec::Encode as _;
+				use xcm::opaque::{latest::prelude::*, VersionedXcm};
+
+				let mut encoded: Vec<u8> = [para_pallet_id as u8].into(); // asset pallet number
+				let mut call_encode =
+					pallet_assets::Call::<T>::update_para_fee_rate { para_fee_rate }.encode();
+
+				encoded.append(&mut call_encode);
+
+				let fee_multilocation =
+					MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
+
+				VersionedXcm::from(Xcm(vec![
+					BuyExecution {
+						fees: fee_multilocation.clone().into(),
+						weight_limit: WeightLimit::Unlimited,
+					},
+					Transact {
+						origin_kind: OriginKind::Superuser,
+						require_weight_at_most: Weight::from_parts(REF_WEIGHT, PROOF_WEIGHT),
+						call: encoded.into(),
+					},
+				]))
+				.encode()
+			};
+			if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
+				<dmp::Pallet<T>>::queue_downward_message(&config, ParaId::from(para_id).into(), xcm)
+			{
+				log::error!(
+					target: "runtime::system_token_manager",
+					"sending 'dmp' failed."
+				);
+			};
+		}
+
 		fn create_wrapped_system_token(
 			system_token_id: SystemTokenId,
 			wrapped_system_token_id: WrappedSystemTokenId,
+			system_token_weight: SystemTokenWeight,
 		) -> DispatchResult {
 			let (_system_token_metadata, asset_metadata) =
 				SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
@@ -788,6 +928,7 @@ pub mod pallet {
 						is_frozen: false,
 						system_token_id,
 						asset_link_parents: 1,
+						system_token_weight,
 					}
 					.encode();
 
@@ -906,10 +1047,11 @@ impl<T: Config> SystemTokenInterface for Pallet<T> {
 		None
 	}
 	fn adjusted_weight(system_token_id: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight {
+		// updated_vote_weight = vote_weight * system_token_weight / base_system_token_weight
 		match <SystemTokenProperties<T>>::get(system_token_id) {
 			Some(property) => {
-				let weight: u128 = property.weight.into();
-				return vote_weight.saturating_mul(weight)
+				let system_token_weight: u128 = property.system_token_weight.into();
+				return vote_weight.saturating_mul(system_token_weight) / BASE_SYSTEM_TOKEN_WEIGHT
 			},
 			None => return vote_weight,
 		}
