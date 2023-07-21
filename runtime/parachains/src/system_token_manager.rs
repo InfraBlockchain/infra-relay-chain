@@ -56,7 +56,7 @@ pub type StringLimitOf<T> = <T as Config>::StringLimit;
 
 const REF_WEIGHT: u64 = 500_000_000;
 const PROOF_WEIGHT: u64 = 20_000;
-/// The base_system_token_weight(USD). Assume that it SHOULD not be changed.
+/// The base_system_token_weight. Assume that it SHOULD not be changed.
 const BASE_SYSTEM_TOKEN_WEIGHT: u128 = 100_000;
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
