@@ -413,7 +413,11 @@ pub mod pallet {
 			}
 
 			// DMP call to the parachain
-			Self::dmp_set_sufficient(system_token_id.clone(), true);
+			Self::dmp_set_sufficient_and_system_token_weight(
+				system_token_id.clone(),
+				true,
+				Some(system_token_weight),
+			);
 
 			Self::deposit_event(Event::<T>::SystemTokenRegistered {
 				system_token_id,
@@ -491,10 +495,11 @@ pub mod pallet {
 
 			// Register wrapped system token in relay chain
 			if wrapped_system_token_id.clone().para_id == 0.into() {
-				pallet_assets::pallet::Pallet::<T>::set_sufficient(
+				pallet_assets::pallet::Pallet::<T>::set_sufficient_and_system_token_weight(
 					origin.clone(),
 					wrapped_asset_id.into(),
 					true,
+					Some(system_token_weight),
 				)?;
 
 				pallet_assets::pallet::Pallet::<T>::update_system_token_weight(
@@ -557,6 +562,7 @@ pub mod pallet {
 							false,
 						);
 					} else {
+						// Change `is_sufficient` of the chain which used the wrapped system token
 						Self::dmp_set_sufficient_with_unlink(
 							wrapped_system_token_id.clone(),
 							false,
@@ -576,7 +582,8 @@ pub mod pallet {
 			ParaIdsBySystemToken::<T>::remove(&system_token_id);
 			Self::remove_system_token_on_parachain_by_para_id(system_token_id.clone());
 
-			Self::dmp_set_sufficient(system_token_id.clone(), false);
+			// Change `is_sufficient` of the chain which originally issued the system token to false
+			Self::dmp_set_sufficient_and_system_token_weight(system_token_id.clone(), false, None);
 
 			Self::deposit_event(Event::<T>::SystemTokenDeregistered {
 				system_token_id,
@@ -768,18 +775,24 @@ pub mod pallet {
 				);
 			};
 		}
-		fn dmp_set_sufficient(system_token_id: SystemTokenId, is_sufficient: bool) {
+		fn dmp_set_sufficient_and_system_token_weight(
+			system_token_id: SystemTokenId,
+			is_sufficient: bool,
+			system_token_weight: Option<SystemTokenWeight>,
+		) {
 			let config = <configuration::Pallet<T>>::config();
 			let xcm = {
 				use parity_scale_codec::Encode as _;
 				use xcm::opaque::{latest::prelude::*, VersionedXcm};
 
 				let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
-				let mut call_encode = pallet_assets::Call::<T>::set_sufficient {
-					id: system_token_id.clone().asset_id.into(),
-					is_sufficient,
-				}
-				.encode();
+				let mut call_encode =
+					pallet_assets::Call::<T>::set_sufficient_and_system_token_weight {
+						id: system_token_id.clone().asset_id.into(),
+						is_sufficient,
+						system_token_weight,
+					}
+					.encode();
 
 				encoded.append(&mut call_encode);
 

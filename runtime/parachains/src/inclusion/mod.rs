@@ -35,13 +35,16 @@ use primitives::{
 	ValidatorIndex, ValidityAttestation,
 };
 use scale_info::TypeInfo;
-use sp_runtime::{traits::One, types::PotVotesResult, DispatchError};
+use sp_runtime::{traits::One, types::PotVotesResult, DispatchError, SaturatedConversion};
 use sp_std::{collections::btree_set::BTreeSet, prelude::*};
 
 pub use pallet::*;
 
 #[cfg(test)]
 pub(crate) mod tests;
+
+/// The number of blocks per year. i.e) 10 blocks/min * 60 min/hours* 24 hours/day * 365 days/year = 5_256_000
+const BLOCKS_PER_YEAR: u32 = 5_256_000;
 
 /// A bitfield signed by a validator indicating that it is keeping its piece of the erasure-coding
 /// for any backed candidates referred to by a `1` bit available.
@@ -795,8 +798,14 @@ impl<T: Config> Pallet<T> {
 					}
 					let who = vote.clone().account_id;
 					let weight = vote.clone().vote_weight;
-					let adjusted_weight =
-						T::SystemTokenManager::adjusted_weight(system_token_id.clone(), weight);
+					let block_time_weight: u128 = {
+						let r: u32 = relay_parent_number.saturated_into();
+						2u128.pow(r / BLOCKS_PER_YEAR)
+					};
+
+					let adjusted_weight = block_time_weight.saturating_mul(
+						T::SystemTokenManager::adjusted_weight(system_token_id.clone(), weight),
+					);
 					T::VotingManager::update_vote_status(who, adjusted_weight);
 					T::RewardInterface::aggregate_reward(
 						session_index,
@@ -807,7 +816,10 @@ impl<T: Config> Pallet<T> {
 				};
 			}
 			if is_collected {
-				Self::deposit_event(Event::<T>::VoteCollected(receipt.descriptor.para_id, vote_result));
+				Self::deposit_event(Event::<T>::VoteCollected(
+					receipt.descriptor.para_id,
+					vote_result,
+				));
 			}
 		};
 

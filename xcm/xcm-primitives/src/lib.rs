@@ -5,13 +5,14 @@ use frame_support::{
 	traits::{fungibles::Inspect, Currency},
 	weights::{OldWeight, Weight},
 };
-use sp_std::{borrow::Borrow, marker::PhantomData, vec::Vec};
 use sp_runtime::types::AssetId as IbsAssetId;
+use sp_std::{borrow::Borrow, marker::PhantomData, vec::Vec};
 use xcm::{
-	latest::{
-		AssetId::Concrete, Fungibility::Fungible, Junctions::Here, MultiAsset, MultiLocation,
+	latest::{AssetId::Concrete, Fungibility::Fungible, MultiAsset, MultiLocation},
+	v3::{
+		Junction::{GeneralIndex, PalletInstance},
+		XcmContext,
 	},
-	v3::{XcmContext, Junction::{self, PalletInstance, GeneralIndex}},
 };
 use xcm_executor::{
 	traits::{Convert, DropAssets, Error as MatchError, MatchesFungibles},
@@ -106,8 +107,11 @@ impl<AssetId, AssetIdInfoGetter, AssetsPallet, BalancesPallet, XcmPallet, Accoun
 
 				// is location the native token?
 				} else if matches!(
-					location, 
-					MultiLocation { parents: 0, interior: xcm::v3::Junctions::X2(PalletInstance(_), GeneralIndex(_))}
+					location,
+					MultiLocation {
+						parents: 0,
+						interior: xcm::v3::Junctions::X2(PalletInstance(_), GeneralIndex(_))
+					}
 				) {
 					let asset_id = match location.interior {
 						xcm::v3::Junctions::X2(PalletInstance(_), GeneralIndex(asset_id)) => {
