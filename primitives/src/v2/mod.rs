@@ -78,6 +78,10 @@ mod collator_app {
 /// Identity that collators use.
 pub type CollatorId = collator_app::Public;
 
+/// The block time weight that doubles every year. Decimal is 3. 
+/// i.e) 1_000 equals 1.
+type MilliBlockTimeWeight = u128;
+
 /// A Parachain collator keypair.
 #[cfg(feature = "std")]
 pub type CollatorPair = collator_app::Pair;
@@ -1004,7 +1008,7 @@ pub enum CandidateEvent<H = Hash> {
 	CandidateTimedOut(CandidateReceipt<H>, HeadData, CoreIndex),
 	/// Collecting vote for each parachain
 	#[codec(index = 3)]
-	VoteCollected(Id, PotVotesResult),
+	VoteCollected(Id, PotVotesResult, MilliBlockTimeWeight),
 }
 
 /// Scraped runtime backing votes and resolved disputes.

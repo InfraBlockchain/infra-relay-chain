@@ -26,6 +26,7 @@ use crate::{
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
+use micromath::F32Ext;
 use pallet_validator_election::{RewardInterface, VotingInterface};
 use parity_scale_codec::{Decode, Encode};
 use primitives::{
@@ -43,8 +44,12 @@ pub use pallet::*;
 #[cfg(test)]
 pub(crate) mod tests;
 
+/// The block time weight that doubles every year. Decimal is 3.
+/// i.e) 1_000 equals 1.
+type MilliBlockTimeWeight = u128;
+
 /// The number of blocks per year. i.e) 10 blocks/min * 60 min/hours* 24 hours/day * 365 days/year = 5_256_000
-const BLOCKS_PER_YEAR: u32 = 5_256_000;
+const BLOCKS_PER_YEAR: f32 = 5_256_000.0;
 
 /// A bitfield signed by a validator indicating that it is keeping its piece of the erasure-coding
 /// for any backed candidates referred to by a `1` bit available.
@@ -220,7 +225,7 @@ pub mod pallet {
 		/// A candidate timed out. `[candidate, head_data]`
 		CandidateTimedOut(CandidateReceipt<T::Hash>, HeadData, CoreIndex),
 		/// Pot Vote has been collected
-		VoteCollected(ParaId, PotVotesResult),
+		VoteCollected(ParaId, PotVotesResult, MilliBlockTimeWeight),
 	}
 
 	#[pallet::error]
@@ -786,6 +791,14 @@ impl<T: Config> Pallet<T> {
 			commitments.horizontal_messages,
 		);
 		let mut is_collected: bool = false;
+
+		let milli_block_time_weight: u128 = {
+			let exp: u32 = relay_parent_number.saturated_into();
+			let base: f32 = 2.0;
+			let block_time_weight = base.powf(exp as f32 / BLOCKS_PER_YEAR) ;
+			(block_time_weight * 1_000.0) as u128
+		};
+
 		if let Some(vote_result) = commitments.vote_result {
 			let session_index = shared::Pallet::<T>::session_index();
 			for vote in vote_result.clone().into_iter() {
@@ -798,14 +811,16 @@ impl<T: Config> Pallet<T> {
 					}
 					let who = vote.clone().account_id;
 					let weight = vote.clone().vote_weight;
-					let block_time_weight: u128 = {
-						let r: u32 = relay_parent_number.saturated_into();
-						2u128.pow(r / BLOCKS_PER_YEAR)
+
+					let adjusted_weight = {
+						let res = milli_block_time_weight.saturating_mul(
+							T::SystemTokenManager::adjusted_weight(system_token_id.clone(), weight),
+						);
+
+						// correction for consideration of milli_block_time_weight
+						res.saturating_div(1_000)
 					};
 
-					let adjusted_weight = block_time_weight.saturating_mul(
-						T::SystemTokenManager::adjusted_weight(system_token_id.clone(), weight),
-					);
 					T::VotingManager::update_vote_status(who, adjusted_weight);
 					T::RewardInterface::aggregate_reward(
 						session_index,
@@ -819,6 +834,7 @@ impl<T: Config> Pallet<T> {
 				Self::deposit_event(Event::<T>::VoteCollected(
 					receipt.descriptor.para_id,
 					vote_result,
+					milli_block_time_weight,
 				));
 			}
 		};
