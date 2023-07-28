@@ -31,7 +31,10 @@
 //! *
 use frame_support::{
 	pallet_prelude::{OptionQuery, *},
-	traits::UnixTime,
+	traits::{
+		UnixTime,
+		ibs_support::system_token::SystemTokenInterface,
+	},
 	PalletId,
 };
 pub use pallet::*;
@@ -43,7 +46,7 @@ use sp_runtime::{
 	BoundedVec, RuntimeDebug,
 };
 use sp_std::prelude::*;
-
+use sp_core::H256;
 pub type ParaAssetId = VoteAssetId;
 pub type RelayAssetId = VoteAssetId;
 pub type PalletIndex = u32;
@@ -95,18 +98,6 @@ pub struct SystemTokenProperty {
 pub struct WrappedSystemTokenProperty {
 	/// The epoch time of this system token registered
 	pub(crate) created_at: u128,
-}
-
-/// System tokens API.
-pub trait SystemTokenInterface {
-	/// Check the system token is registered.
-	fn is_system_token(system_token: SystemTokenId) -> bool;
-	/// Convert para system token to original system token.
-	fn convert_to_original_system_token(
-		wrapped_token: WrappedSystemTokenId,
-	) -> Option<SystemTokenId>;
-	/// Adjust the vote weight calculating exchange rate.
-	fn adjusted_weight(system_token: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight;
 }
 
 pub enum AssetLinkCall {
@@ -275,6 +266,10 @@ pub mod pallet {
 		SystemTokenId,
 		OptionQuery,
 	>;
+
+	#[pallet::storage]
+	/// Table for some extrinsic fees defined by some authorities.
+	pub(super) type FeeTable<T: Config> = StorageMap<_, Identity, H256, T::Balance, OptionQuery>;
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T>
