@@ -29,7 +29,7 @@
 //! * `set_name` - Set the associated name of an account; a small deposit is reserved if not already
 //!   taken.
 //! *
-use frame_support::{
+pub use frame_support::{
 	pallet_prelude::{OptionQuery, *},
 	traits::{
 		UnixTime,

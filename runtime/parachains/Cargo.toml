@@ -49,6 +49,7 @@ frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", bra
 
 # infra-related
 pallet-validator-election = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-system-token = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 
 xcm = { package = "xcm", path = "../../xcm", default-features = false }
 xcm-executor = { package = "xcm-executor", path = "../../xcm/xcm-executor", default-features = false }
@@ -101,6 +102,7 @@ std = [
 	"pallet-timestamp/std",
 	"pallet-vesting/std",
 	"pallet-validator-election/std",
+	"pallet-system-token/std",
 	"pallet-xcm/std",
 	"frame-system/std",
 	"xcm/std",
