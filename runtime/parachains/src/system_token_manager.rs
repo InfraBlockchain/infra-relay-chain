@@ -154,6 +154,8 @@ pub mod pallet {
 		SetSystemTokenWeight { system_token_id: SystemTokenId, property: SystemTokenProperty },
 		/// Update the fee rate of the parachain. The default value is 1_000(1).
 		SetParaFeeRate { para_id: u32, para_fee_rate: u32 },
+		/// Update the fee rate of the parachain. The default value is 1_000(1).
+		SetFeeTable { para_id: u32, pallet_name: Vec<u8>, function_name: Vec<u8>, fee: T::Balance },
 	}
 
 	#[pallet::error]
@@ -701,6 +703,33 @@ pub mod pallet {
 
 			Ok(())
 		}
+
+		#[pallet::call_index(6)]
+		#[pallet::weight(1_000)]
+		/// Deregister the system token.
+		pub fn set_fee_table(
+			origin: OriginFor<T>,
+			para_id: u32,
+			para_pallet_id: u32,
+			pallet_name: Vec<u8>,
+			function_name: Vec<u8>,
+			fee: T::Balance,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+
+			let commitment: CallCommitment =
+				CallCommitment::new(pallet_name.clone(), function_name.clone());
+			Self::dmp_set_fee_table(para_id, para_pallet_id, commitment.hash(), fee);
+
+			Self::deposit_event(Event::<T>::SetFeeTable {
+				para_id,
+				pallet_name,
+				function_name,
+				fee,
+			});
+
+			Ok(())
+		}
 	}
 
 	impl<T: Config> Pallet<T>
@@ -860,6 +889,44 @@ pub mod pallet {
 				let mut encoded: Vec<u8> = [para_pallet_id as u8].into(); // asset pallet number
 				let mut call_encode =
 					pallet_assets::Call::<T>::update_para_fee_rate { para_fee_rate }.encode();
+
+				encoded.append(&mut call_encode);
+
+				let fee_multilocation =
+					MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
+
+				VersionedXcm::from(Xcm(vec![
+					BuyExecution {
+						fees: fee_multilocation.clone().into(),
+						weight_limit: WeightLimit::Unlimited,
+					},
+					Transact {
+						origin_kind: OriginKind::Superuser,
+						require_weight_at_most: Weight::from_parts(REF_WEIGHT, PROOF_WEIGHT),
+						call: encoded.into(),
+					},
+				]))
+				.encode()
+			};
+			if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
+				<dmp::Pallet<T>>::queue_downward_message(&config, ParaId::from(para_id).into(), xcm)
+			{
+				log::error!(
+					target: "runtime::system_token_manager",
+					"sending 'dmp' failed."
+				);
+			};
+		}
+
+		fn dmp_set_fee_table(para_id: u32, para_pallet_id: u32, key: H256, fee: T::Balance) {
+			let config = <configuration::Pallet<T>>::config();
+			let xcm = {
+				use parity_scale_codec::Encode as _;
+				use xcm::opaque::{latest::prelude::*, VersionedXcm};
+
+				let mut encoded: Vec<u8> = [para_pallet_id as u8].into(); // asset pallet number
+				let mut call_encode =
+					pallet_system_token::Call::<T>::set_fee_table { key, fee }.encode();
 
 				encoded.append(&mut call_encode);
 

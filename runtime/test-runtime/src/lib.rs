@@ -630,6 +630,11 @@ impl pallet_test_notifier::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 }
 
+impl pallet_system_token::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type AuthorizedOrigin = EnsureRoot<AccountId>;
+}
+
 #[frame_support::pallet]
 pub mod pallet_test_notifier {
 	use frame_support::pallet_prelude::*;
@@ -770,6 +775,7 @@ construct_runtime! {
 		ValidatorElection: pallet_validator_election::{Pallet, Call, Storage, Event<T>},
 		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>},
 		AssetLink: pallet_asset_link,
+		SystemToken: pallet_system_token,
 
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>},
 

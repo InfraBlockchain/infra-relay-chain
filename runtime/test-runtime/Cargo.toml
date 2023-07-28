@@ -48,6 +48,7 @@ pallet-indices = { git = "https://github.com/InfraBlockchain/infra-substrate", b
 pallet-offences = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-session = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 frame-support = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
+pallet-system-token = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-staking = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
 pallet-staking-reward-curve = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master" }
 frame-system = { git = "https://github.com/InfraBlockchain/infra-substrate", branch = "master", default-features = false }
@@ -109,6 +110,7 @@ std = [
 	"sp-io/std",
 	"frame-support/std",
 	"pallet-authorship/std",
+	"pallet-system-token/std",
 	"pallet-balances/std",
 	"pallet-transaction-payment/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
