@@ -26,7 +26,7 @@ use scale_info::TypeInfo;
 use sp_core::H256;
 use sp_runtime::{
 	traits::{AccountIdConversion, StaticLookup},
-	types::{CallCommitment, ParaId, SystemTokenId, VoteAssetId, VoteWeight},
+	types::{ParaId, SystemTokenId, VoteAssetId, VoteWeight},
 	BoundedVec, RuntimeDebug,
 };
 use sp_std::prelude::*;
@@ -155,7 +155,7 @@ pub mod pallet {
 		/// Update the fee rate of the parachain. The default value is 1_000(1).
 		SetParaFeeRate { para_id: u32, para_fee_rate: u32 },
 		/// Update the fee rate of the parachain. The default value is 1_000(1).
-		SetFeeTable { para_id: u32, pallet_name: Vec<u8>, function_name: Vec<u8>, fee: T::Balance },
+		SetFeeTable { para_id: u32, pallet_name: Vec<u8>, call_name: Vec<u8>, fee: T::Balance },
 	}
 
 	#[pallet::error]
@@ -712,21 +712,20 @@ pub mod pallet {
 			para_id: u32,
 			para_pallet_id: u32,
 			pallet_name: Vec<u8>,
-			function_name: Vec<u8>,
+			call_name: Vec<u8>,
 			fee: T::Balance,
 		) -> DispatchResult {
 			ensure_root(origin)?;
 
-			let commitment: CallCommitment =
-				CallCommitment::new(pallet_name.clone(), function_name.clone());
-			Self::dmp_set_fee_table(para_id, para_pallet_id, commitment.hash(), fee);
-
-			Self::deposit_event(Event::<T>::SetFeeTable {
+			Self::dmp_set_fee_table(
 				para_id,
-				pallet_name,
-				function_name,
-				fee,
-			});
+				para_pallet_id,
+				pallet_name.clone(),
+				call_name.clone(),
+				fee.clone(),
+			);
+
+			Self::deposit_event(Event::<T>::SetFeeTable { para_id, pallet_name, call_name, fee });
 
 			Ok(())
 		}
@@ -918,7 +917,13 @@ pub mod pallet {
 			};
 		}
 
-		fn dmp_set_fee_table(para_id: u32, para_pallet_id: u32, key: H256, fee: T::Balance) {
+		fn dmp_set_fee_table(
+			para_id: u32,
+			para_pallet_id: u32,
+			pallet_name: Vec<u8>,
+			call_name: Vec<u8>,
+			fee: T::Balance,
+		) {
 			let config = <configuration::Pallet<T>>::config();
 			let xcm = {
 				use parity_scale_codec::Encode as _;
@@ -926,7 +931,8 @@ pub mod pallet {
 
 				let mut encoded: Vec<u8> = [para_pallet_id as u8].into(); // asset pallet number
 				let mut call_encode =
-					pallet_system_token::Call::<T>::set_fee_table { key, fee }.encode();
+					pallet_system_token::Call::<T>::set_fee_table { pallet_name, call_name, fee }
+						.encode();
 
 				encoded.append(&mut call_encode);
 
