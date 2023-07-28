@@ -78,7 +78,7 @@ mod collator_app {
 /// Identity that collators use.
 pub type CollatorId = collator_app::Public;
 
-/// The block time weight that doubles every year. Decimal is 3. 
+/// The block time weight that doubles every year. Decimal is 3.
 /// i.e) 1_000 equals 1.
 type MilliBlockTimeWeight = u128;
 

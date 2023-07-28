@@ -29,9 +29,8 @@ use primitives::{
 	ValidationCode, ValidationCodeHash, ValidatorId, ValidatorIndex,
 };
 use runtime_common::{
-	assigned_slots, auctions, claims, crowdloan, impl_runtime_weights, impls::ToAuthor,
-	paras_registrar, paras_sudo_wrapper, prod_or_fast, slots, BlockHashCount, BlockLength,
-	SlowAdjustingFeeUpdate,
+	assigned_slots, auctions, crowdloan, impl_runtime_weights, impls::ToAuthor, paras_registrar,
+	paras_sudo_wrapper, prod_or_fast, slots, BlockHashCount, BlockLength, SlowAdjustingFeeUpdate,
 };
 use sp_std::{cmp::Ordering, collections::btree_map::BTreeMap, prelude::*};
 
@@ -59,7 +58,7 @@ use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{
 		AsEnsureOriginWithArg, ConstU128, Contains, EitherOfDiverse, InstanceFilter,
-		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp, WithdrawReasons,
+		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp,
 	},
 	weights::ConstantMultiplier,
 	PalletId, RuntimeDebug,
@@ -74,8 +73,8 @@ use sp_mmr_primitives as mmr;
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
-		AccountIdLookup, BlakeTwo256, Block as BlockT, ConstU32, ConvertInto,
-		Extrinsic as ExtrinsicT, Keccak256, OpaqueKeys, SaturatedConversion, Verify,
+		AccountIdLookup, BlakeTwo256, Block as BlockT, ConstU32, Extrinsic as ExtrinsicT,
+		Keccak256, OpaqueKeys, SaturatedConversion, Verify,
 	},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
 	types::{VoteAccountId, VoteWeight},
@@ -751,19 +750,6 @@ where
 }
 
 parameter_types! {
-	pub Prefix: &'static [u8] = b"Pay ROCs to the Rococo account:";
-}
-
-impl claims::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type VestingSchedule = Vesting;
-	type Prefix = Prefix;
-	type MoveClaimOrigin =
-		pallet_collective::EnsureProportionMoreThan<AccountId, CouncilCollective, 1, 2>;
-	type WeightInfo = weights::runtime_common_claims::WeightInfo<Runtime>;
-}
-
-parameter_types! {
 	// Minimum 100 bytes/ROC deposited (1 CENT/byte)
 	pub const BasicDeposit: Balance = 1000 * CENTS;       // 258 bytes on-chain
 	pub const FieldDeposit: Balance = 250 * CENTS;        // 66 bytes on-chain
@@ -863,22 +849,6 @@ impl pallet_society::Config for Runtime {
 }
 
 parameter_types! {
-	pub const MinVestedTransfer: Balance = 100 * CENTS;
-	pub UnvestedFundsAllowedWithdrawReasons: WithdrawReasons =
-		WithdrawReasons::except(WithdrawReasons::TRANSFER | WithdrawReasons::RESERVE);
-}
-
-impl pallet_vesting::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type Currency = Balances;
-	type BlockNumberToBalance = ConvertInto;
-	type MinVestedTransfer = MinVestedTransfer;
-	type WeightInfo = weights::pallet_vesting::WeightInfo<Runtime>;
-	type UnvestedFundsAllowedWithdrawReasons = UnvestedFundsAllowedWithdrawReasons;
-	const MAX_VESTING_SCHEDULES: u32 = 28;
-}
-
-parameter_types! {
 	// One storage item; key size 32, value size 8; .
 	pub const ProxyDepositBase: Balance = deposit(1, 8);
 	// Additional storage item size of 33 bytes.
@@ -943,7 +913,6 @@ impl InstanceFilter<RuntimeCall> for ProxyType {
 				RuntimeCall::Bounties(..) |
 				RuntimeCall::ChildBounties(..) |
 				RuntimeCall::Tips(..) |
-				RuntimeCall::Claims(..) |
 				RuntimeCall::Utility(..) |
 				RuntimeCall::Identity(..) |
 				RuntimeCall::Society(..) |
@@ -953,9 +922,6 @@ impl InstanceFilter<RuntimeCall> for ProxyType {
 				RuntimeCall::Recovery(pallet_recovery::Call::close_recovery {..}) |
 				RuntimeCall::Recovery(pallet_recovery::Call::remove_recovery {..}) |
 				RuntimeCall::Recovery(pallet_recovery::Call::cancel_recovered {..}) |
-				// Specifically omitting Recovery `create_recovery`, `initiate_recovery`
-				RuntimeCall::Vesting(pallet_vesting::Call::vest {..}) |
-				RuntimeCall::Vesting(pallet_vesting::Call::vest_other {..}) |
 				// Specifically omitting Vesting `vested_transfer`, and `force_vested_transfer`
 				RuntimeCall::Scheduler(..) |
 				RuntimeCall::Proxy(..) |
@@ -1076,6 +1042,11 @@ impl system_token_manager::Config for Runtime {
 	type StringLimit = ConstU32<50>;
 	type MaxWrappedSystemToken = ConstU32<10>;
 	type MaxSystemTokenOnParachain = ConstU32<10>;
+}
+
+impl pallet_system_token::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type AuthorizedOrigin = EnsureRoot<AccountId>;
 }
 
 impl pallet_asset_link::Config for Runtime {
@@ -1401,9 +1372,6 @@ construct_runtime! {
 		TechnicalMembership: pallet_membership::<Instance1>::{Pallet, Call, Storage, Event<T>, Config<T>} = 17,
 		Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 18,
 
-		// Claims. Usable initially.
-		Claims: claims::{Pallet, Call, Storage, Event<T>, Config<T>, ValidateUnsigned} = 19,
-
 		// Utility module.
 		Utility: pallet_utility::{Pallet, Call, Event} = 24,
 
@@ -1415,9 +1383,6 @@ construct_runtime! {
 
 		// Social recovery module.
 		Recovery: pallet_recovery::{Pallet, Call, Storage, Event<T>} = 27,
-
-		// Vesting. Usable initially, but removed once all vesting is finished.
-		Vesting: pallet_vesting::{Pallet, Call, Storage, Event<T>, Config<T>} = 28,
 
 		// System scheduler.
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 29,
@@ -1475,6 +1440,7 @@ construct_runtime! {
 
 		// Infra Related
 		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>} = 101,
+		SystemToken: pallet_system_token = 102,
 
 		// Rococo specific pallets (not included in Kusama). Start indices at 240
 		//

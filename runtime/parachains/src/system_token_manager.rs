@@ -15,38 +15,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! # Tokem manager Pallet
-//!
-//! - [`Config`]
-//! - [`Call`]
-//!
-//! ## Overview
-//!
-//! Token manager handles all infomration related with system tokens on the relay chain level.
-//!
-//! ### Functions
-//!
-//! * `set_name` - Set the associated name of an account; a small deposit is reserved if not already
-//!   taken.
-//! *
 pub use frame_support::{
 	pallet_prelude::{OptionQuery, *},
-	traits::{
-		UnixTime,
-		ibs_support::system_token::SystemTokenInterface,
-	},
+	traits::{ibs_support::system_token::SystemTokenInterface, UnixTime},
 	PalletId,
 };
 pub use pallet::*;
 use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
+use sp_core::H256;
 use sp_runtime::{
 	traits::{AccountIdConversion, StaticLookup},
-	types::{ParaId, SystemTokenId, VoteAssetId, VoteWeight},
+	types::{CallCommitment, ParaId, SystemTokenId, VoteAssetId, VoteWeight},
 	BoundedVec, RuntimeDebug,
 };
 use sp_std::prelude::*;
-use sp_core::H256;
 pub type ParaAssetId = VoteAssetId;
 pub type RelayAssetId = VoteAssetId;
 pub type PalletIndex = u32;
@@ -122,6 +105,7 @@ pub mod pallet {
 		+ dmp::Config
 		+ pallet_assets::Config
 		+ pallet_asset_link::Config
+		+ pallet_system_token::Config
 	{
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;

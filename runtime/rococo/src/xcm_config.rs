@@ -202,11 +202,6 @@ impl Contains<RuntimeCall> for SafeCallFilter {
 				pallet_membership::Call::clear_prime { .. },
 			) |
 			RuntimeCall::Treasury(..) |
-			RuntimeCall::Claims(
-				super::claims::Call::claim { .. } |
-				super::claims::Call::mint_claim { .. } |
-				super::claims::Call::move_claim { .. },
-			) |
 			RuntimeCall::Utility(pallet_utility::Call::as_derivative { .. }) |
 			RuntimeCall::Identity(
 				pallet_identity::Call::add_registrar { .. } |
@@ -238,7 +233,6 @@ impl Contains<RuntimeCall> for SafeCallFilter {
 				pallet_society::Call::set_max_members { .. },
 			) |
 			RuntimeCall::Recovery(..) |
-			RuntimeCall::Vesting(..) |
 			RuntimeCall::Bounties(
 				pallet_bounties::Call::propose_bounty { .. } |
 				pallet_bounties::Call::approve_bounty { .. } |

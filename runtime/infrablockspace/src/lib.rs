@@ -22,7 +22,7 @@
 
 use pallet_transaction_payment::CurrencyAdapter;
 use runtime_common::{
-	auctions, claims, crowdloan, impl_runtime_weights, impls::DealWithFees, paras_registrar,
+	auctions, crowdloan, impl_runtime_weights, impls::DealWithFees, paras_registrar,
 	paras_sudo_wrapper, pot as relay_pot, prod_or_fast, slots, BlockHashCount, BlockLength,
 	SlowAdjustingFeeUpdate,
 };
@@ -44,7 +44,7 @@ use frame_support::{
 	traits::{
 		tokens::fungibles::{Balanced, CreditOf},
 		AsEnsureOriginWithArg, ConstU128, ConstU32, EitherOfDiverse, InstanceFilter,
-		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp, WithdrawReasons,
+		KeyOwnerProofSystem, LockIdentifier, PrivilegeCmp,
 	},
 	weights::ConstantMultiplier,
 	PalletId, RuntimeDebug,
@@ -820,36 +820,6 @@ parameter_types! {
 	pub const MaxRetries: u32 = 3;
 }
 
-parameter_types! {
-	pub Prefix: &'static [u8] = b"Pay DOTs to the infrablockspace account:";
-}
-
-impl claims::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type VestingSchedule = Vesting;
-	type Prefix = Prefix;
-	/// At least 3/4 of the council must agree to a claim move before it can happen.
-	type MoveClaimOrigin =
-		pallet_collective::EnsureProportionAtLeast<AccountId, ValidatorCollective, 3, 4>;
-	type WeightInfo = weights::runtime_common_claims::WeightInfo<Runtime>;
-}
-
-parameter_types! {
-	pub const MinVestedTransfer: Balance = 1 * DOLLARS;
-	pub UnvestedFundsAllowedWithdrawReasons: WithdrawReasons =
-		WithdrawReasons::except(WithdrawReasons::TRANSFER | WithdrawReasons::RESERVE);
-}
-
-impl pallet_vesting::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type Currency = Balances;
-	type BlockNumberToBalance = ConvertInto;
-	type MinVestedTransfer = MinVestedTransfer;
-	type WeightInfo = weights::pallet_vesting::WeightInfo<Runtime>;
-	type UnvestedFundsAllowedWithdrawReasons = UnvestedFundsAllowedWithdrawReasons;
-	const MAX_VESTING_SCHEDULES: u32 = 28;
-}
-
 impl pallet_utility::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
@@ -971,9 +941,6 @@ impl InstanceFilter<RuntimeCall> for ProxyType {
 				RuntimeCall::Bounties(..) |
 				RuntimeCall::ChildBounties(..) |
 				RuntimeCall::Tips(..) |
-				RuntimeCall::Claims(..) |
-				RuntimeCall::Vesting(pallet_vesting::Call::vest{..}) |
-				RuntimeCall::Vesting(pallet_vesting::Call::vest_other{..}) |
 				// Specifically omitting Vesting `vested_transfer`, and `force_vested_transfer`
 				RuntimeCall::Utility(..) |
 				RuntimeCall::Identity(..) |
@@ -1099,6 +1066,11 @@ impl system_token_manager::Config for Runtime {
 	type StringLimit = ConstU32<128>;
 	type MaxWrappedSystemToken = ConstU32<10>;
 	type MaxSystemTokenOnParachain = ConstU32<10>;
+}
+
+impl pallet_system_token::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type AuthorizedOrigin = EnsureRoot<AccountId>;
 }
 
 impl validator_reward_manager::Config for Runtime {
@@ -1287,6 +1259,10 @@ construct_runtime! {
 		// IBS Support
 		SystemTokenManager: system_token_manager::{Pallet, Call, Storage, Event<T>} = 20,
 		ValidatorRewardManager: validator_reward_manager::{Pallet, Call, Storage, Event<T>} = 21,
+		SystemToken: pallet_system_token = 23,
+		AssetLink: pallet_asset_link = 24,
+		Pot: relay_pot::{Pallet, Storage, Event<T>} = 25,
+		SystemTokenAggregator: system_token_aggregator = 26,
 
 		// Babe must be before session.
 		Babe: pallet_babe::{Pallet, Call, Storage, Config, ValidateUnsigned} = 2,
@@ -1297,7 +1273,6 @@ construct_runtime! {
 		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 6,
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 31,
 		SystemTokenPayment: pallet_system_token_payment::{Pallet, Event<T>} = 32,
-		AssetLink: pallet_asset_link = 75,
 
 		// Consensus support.
 		// Authorship must be before session in order to note author in the correct session and era
@@ -1320,13 +1295,8 @@ construct_runtime! {
 		TechnicalMembership: pallet_membership::<Instance1>::{Pallet, Call, Storage, Event<T>, Config<T>} = 18,
 		Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 19,
 
-
-		// Claims. Usable initially.
-		Claims: claims::{Pallet, Call, Storage, Event<T>, Config<T>, ValidateUnsigned} = 24,
-		// Vesting. Usable initially, but removed once all vesting is finished.
-		Vesting: pallet_vesting::{Pallet, Call, Storage, Event<T>, Config<T>} = 25,
 		// Cunning utilities. Usable initially.
-		Utility: pallet_utility::{Pallet, Call, Event} = 26,
+		Utility: pallet_utility::{Pallet, Call, Event} = 27,
 
 		// Identity. Late addition.
 		Identity: pallet_identity::{Pallet, Call, Storage, Event<T>} = 28,
@@ -1365,13 +1335,8 @@ construct_runtime! {
 		Auctions: auctions::{Pallet, Call, Storage, Event<T>} = 72,
 		Crowdloan: crowdloan::{Pallet, Call, Storage, Event<T>} = 73,
 
-		// Pot for Relay Chain
-		Pot: relay_pot::{Pallet, Storage, Event<T>} = 80,
-
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 81,
 		ParasSudoWrapper: paras_sudo_wrapper::{Pallet, Call} = 82,
-		SystemTokenAggregator: system_token_aggregator = 83,
-
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config} = 99,

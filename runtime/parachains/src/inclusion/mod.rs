@@ -795,7 +795,7 @@ impl<T: Config> Pallet<T> {
 		let milli_block_time_weight: u128 = {
 			let exp: u32 = relay_parent_number.saturated_into();
 			let base: f32 = 2.0;
-			let block_time_weight = base.powf(exp as f32 / BLOCKS_PER_YEAR) ;
+			let block_time_weight = base.powf(exp as f32 / BLOCKS_PER_YEAR);
 			(block_time_weight * 1_000.0) as u128
 		};
 

@@ -17,11 +17,11 @@ use frame_support::{
 	pallet_prelude::Get,
 	traits::{Contains, ContainsPair},
 };
+use infrablockspace_primitives::Id as ParaId;
 use xcm::{
 	latest::prelude::{MultiAsset, MultiLocation},
 	prelude::*,
 };
-use infrablockspace_primitives::Id as ParaId;
 
 pub struct StartsWith<T>(sp_std::marker::PhantomData<T>);
 impl<Location: Get<MultiLocation>> Contains<MultiLocation> for StartsWith<Location> {
