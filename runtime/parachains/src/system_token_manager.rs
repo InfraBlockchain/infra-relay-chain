@@ -29,21 +29,14 @@ use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{AccountIdConversion, StaticLookup},
-	types::{ParaId as IbsParaId, PalletId as IbsPalletId, SystemTokenId, VoteAssetId, VoteWeight},
+	types::{ParaId as IbsParaId, PalletId as IbsPalletId, SystemTokenId, VoteWeight},
 	BoundedVec, RuntimeDebug,
 };
 use sp_std::prelude::*;
 
-pub type ParaAssetId = VoteAssetId;
-pub type RelayAssetId = VoteAssetId;
-pub type PalletIndex = u32;
-
 pub type SystemTokenWeight = u64;
-
-/// Data structure for Wrapped system tokens
 pub type WrappedSystemTokenId = SystemTokenId;
 pub type StringLimitOf<T> = <T as Config>::StringLimit;
-
 
 #[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
 pub enum SystemTokenType {
@@ -247,21 +240,6 @@ pub mod pallet {
 		Twox64Concat,
 		SystemTokenId,
 		BoundedVec<IbsParaId, T::MaxSystemTokenOnParachain>,
-		OptionQuery,
-	>;
-
-	#[pallet::storage]
-	#[pallet::getter(fn allowed_system_token)]
-	/// Wrapped System token list used in parachains.
-	/// Key: (PalletId, ParaAssetId) of Wrapped System token. ParaId is omitted.
-	/// Value: (SystemTokenId)
-	pub(super) type AllowedSystemToken<T: Config> = StorageDoubleMap<
-		_,
-		Twox64Concat,
-		PalletIndex,
-		Twox64Concat,
-		ParaAssetId,
-		SystemTokenId,
 		OptionQuery,
 	>;
 
@@ -476,40 +454,16 @@ pub mod pallet {
 			);
 			Self::insert_para_ids_by_system_token(system_token_id.clone(), wrapped_para_id);
 
-			let wrapped_asset_id = wrapped_system_token_id.clone().asset_id;
-
 			let property = SystemTokenProperties::<T>::get(&system_token_id)
-				.ok_or("property should be obtained")?;
+				.ok_or(Error::<T>::NotFound)?;
 			let system_token_weight = property.system_token_weight;
 
-			// Register wrapped system token in relay chain
-			if wrapped_system_token_id.clone().para_id == 0.into() {
-				pallet_assets::pallet::Pallet::<T>::set_sufficient_and_system_token_weight(
-					origin.clone(),
-					wrapped_asset_id.into(),
-					true,
-					Some(system_token_weight),
-				)?;
-
-				pallet_assets::pallet::Pallet::<T>::update_system_token_weight(
-					origin.clone(),
-					wrapped_asset_id.into(),
-					system_token_weight,
-				)?;
-
-				pallet_asset_link::pallet::Pallet::<T>::link_system_token(
-					origin,
-					0,
-					wrapped_asset_id.into(),
-					system_token_id,
-				)?;
-			} else {
-				Self::try_create_wsys_token(
-					system_token_id.clone(),
-					wrapped_system_token_id.clone(),
-					system_token_weight,
-				)?;
-			}
+			Self::try_create_wsys_token(
+				origin.clone(),
+				system_token_id.clone(),
+				wrapped_system_token_id.clone(),
+				system_token_weight,
+			)?;
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered {
 				system_token_id,
@@ -696,7 +650,7 @@ where
 	/// `SystemTokenOnParachain`, `SystemTokenList`, `SystemTokenProperties`, `SystemTokenOnParachain`
 	fn try_deregister_sys_token(sys_token_id: &SystemTokenId) -> DispatchResult {
 
-		Self::try_update_sys_token_on_para(sys_token_id)?;
+		Self::try_remove_sys_token_on_para(sys_token_id)?;
 		SystemTokenList::<T>::remove(sys_token_id);
 		SystemTokenProperties::<T>::remove(sys_token_id);
 		SystemTokenOnParachain::<T>::remove(sys_token_id);
@@ -713,8 +667,8 @@ where
 			..
 		} = wsys_token_id.clone();
 
-		Self::try_update_sys_token_on_para(wsys_token_id)?;
-		Self::try_update_para_ids(system_token_id, para_id)?;
+		Self::try_remove_sys_token_on_para(wsys_token_id)?;
+		Self::try_remove_para_ids(system_token_id, para_id)?;
 
 		SystemTokenOnParachain::<T>::remove(&wsys_token_id);
 		WrappedSystemTokenProperties::<T>::remove(&wsys_token_id);
@@ -734,8 +688,8 @@ where
 		Ok(())
 	}
 
-	/// Update `SystemTokenOnParachainByParaId` for given para id
-	fn try_update_sys_token_on_para(sys_token_id: &SystemTokenId) -> DispatchResult {
+	/// Remove `SystemTokenOnParachainByParaId` for given para id
+	fn try_remove_sys_token_on_para(sys_token_id: &SystemTokenId) -> DispatchResult {
 		let SystemTokenId {
 			para_id,
 			.. 
@@ -758,8 +712,8 @@ where
 		Ok(())
 	}
 
-	/// Update `ParaIdsBySystemToken` for system token id
-	fn try_update_para_ids(sys_token_id: SystemTokenId, para_id: IbsParaId) -> DispatchResult {
+	/// Remove `ParaIdsBySystemToken` for system token id
+	fn try_remove_para_ids(sys_token_id: SystemTokenId, para_id: IbsParaId) -> DispatchResult {
 		ParaIdsBySystemToken::<T>::try_mutate_exists(
 			sys_token_id,
 			|maybe_para_ids| -> Result<(), DispatchError> {
@@ -863,32 +817,60 @@ where
 	}
 
 	fn try_create_wsys_token(
+		origin: OriginFor<T>,
 		system_token_id: SystemTokenId,
 		wrapped_system_token_id: WrappedSystemTokenId,
 		system_token_weight: SystemTokenWeight,
 	) -> DispatchResult {
 		let (_, asset_metadata) =
 			SystemTokenList::<T>::get(&system_token_id).ok_or("metadata should be obtained")?;
-		let root: T::AccountId = PalletId(*b"infra/rt").into_account_truncating();
-		let encoded_call: Vec<u8> = pallet_assets::Call::<T>::force_create_with_metadata { 
-			id: wrapped_system_token_id.clone().asset_id.into(),
-			owner: T::Lookup::unlookup(root),
-			min_balance: asset_metadata.min_balance,
-			is_sufficient: true,
-			name: asset_metadata.name.to_vec(),
-			symbol: asset_metadata.symbol.to_vec(),
-			decimals: asset_metadata.decimals,
-			is_frozen: false,
-			system_token_id,
-			asset_link_parents: 1,
-			system_token_weight,
-		}.encode();
+		let WrappedSystemTokenId {
+			para_id,
+			pallet_id,
+			asset_id
+		} = wrapped_system_token_id;
+		if para_id == 0u32 {
+			pallet_assets::pallet::Pallet::<T>::set_sufficient_and_system_token_weight(
+				origin.clone(),
+				asset_id.into(),
+				true,
+				Some(system_token_weight),
+			)?;
 
-		system_token_xcm_handler::try_queue_dmp::<T>(
-			wrapped_system_token_id.para_id, 
-			wrapped_system_token_id.pallet_id, 
-			encoded_call
-		)?;
+			pallet_assets::pallet::Pallet::<T>::update_system_token_weight(
+				origin.clone(),
+				asset_id.into(),
+				system_token_weight,
+			)?;
+
+			pallet_asset_link::pallet::Pallet::<T>::link_system_token(
+				origin,
+				0,
+				asset_id.into(),
+				system_token_id,
+			)?;
+		} else {
+			let root: T::AccountId = PalletId(*b"infra/rt").into_account_truncating();
+			let encoded_call: Vec<u8> = pallet_assets::Call::<T>::force_create_with_metadata { 
+				id: asset_id.into(),
+				owner: T::Lookup::unlookup(root),
+				min_balance: asset_metadata.min_balance,
+				is_sufficient: true,
+				name: asset_metadata.name.to_vec(),
+				symbol: asset_metadata.symbol.to_vec(),
+				decimals: asset_metadata.decimals,
+				is_frozen: false,
+				system_token_id,
+				asset_link_parents: 1,
+				system_token_weight,
+			}.encode();
+	
+			system_token_xcm_handler::try_queue_dmp::<T>(
+				para_id, 
+				pallet_id, 
+				encoded_call
+			)?;
+		}
 
 		Ok(())
 	}
