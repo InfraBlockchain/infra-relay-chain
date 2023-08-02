@@ -743,7 +743,6 @@ impl<T: Config> Pallet<T> {
 		core_index: CoreIndex,
 		backing_group: GroupIndex,
 	) -> Weight {
-
 		let plain = receipt.to_plain();
 		let commitments = receipt.commitments;
 		let config = <configuration::Pallet<T>>::config();
