@@ -56,27 +56,27 @@ pub mod pallet {
 		/// The string limit for name and symbol of system token.
 		#[pallet::constant]
 		type StringLimit: Get<u32>;
-		/// Max number which can be used as system tokens on parachain.
+		/// Max number of system tokens that can be used on parachain.
 		#[pallet::constant]
 		type MaxSystemTokens: Get<u32>;
-		/// Maximum number of `para ids` that are using `original` system token
+		/// Max number of `para ids` that are using `original` system token
 		#[pallet::constant]
-		type MaxSystemTokenUsedParaIds: Get<u32>;
+		type MaxOriginalUsedParaIds: Get<u32>;
 	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// Register a new `original` system token.
-		SystemTokenRegistered { original: SystemTokenId },
+		OriginalSystemTokenRegistered { original: SystemTokenId },
 		/// Deregister the `original` system token.
-		SystemTokenDeregistered { original: SystemTokenId },
+		OriginalSystemTokenDeregistered { original: SystemTokenId },
 		/// Register a `wrapped` system token to an `original` system token.
 		WrappedSystemTokenRegistered { original: SystemTokenId, wrapped: SystemTokenId },
 		/// Deregister a `wrapped` system token to an `original` system token.
 		WrappedSystemTokenDeregistered { wrapped: SystemTokenId },
-		/// Convert a `wrapped` system token to an `original` system token.
-		SystemTokenConverted { wrapped: SystemTokenId, original: SystemTokenId },
+		/// Converting from `wrapped` to `original` has happened
+		SystemTokenConverted { from: SystemTokenId, to: SystemTokenId },
 		/// Update the weight for system token. The weight is calculated based on the exchange_rate and decimal.
 		SetSystemTokenWeight { original: SystemTokenId, property: SystemTokenProperty },
 		/// Update the fee rate of the parachain. The default value is 1_000.
@@ -87,16 +87,16 @@ pub mod pallet {
 
 	#[pallet::error]
 	pub enum Error<T> {
-		/// Requested system token is already registered.
-		SystemTokenAlreadyRegistered,
-		/// Failed to remove the system token as it is not registered.
-		SystemTokenNotRegistered,
+		/// Requested `original` system token is already registered.
+		OriginalAlreadyRegistered,
+		/// Failed to remove the `original` system token as it is not registered.
+		OriginalNotRegistered,
 		/// Requested `wrapped` sytem token has already registered
 		WrappedAlreadyRegistered,
 		/// `Wrapped` system token has not been registered on Relay Chain
 		WrappedNotRegistered,
 		/// Registered System Tokens are out of limit
-		TooManySystemTokensOnParachain,
+		TooManySystemTokensOnPara,
 		/// Number of para ids using `original` system tokens has reached `MaxSystemTokenUsedParaIds`
 		TooManyUsed,
 		/// String metadata is out of limit
@@ -198,7 +198,7 @@ pub mod pallet {
 		_,
 		Blake2_128Concat,
 		SystemTokenId,
-		BoundedVec<IbsParaId, T::MaxSystemTokenUsedParaIds>,
+		BoundedVec<IbsParaId, T::MaxOriginalUsedParaIds>,
 		OptionQuery,
 	>;
 
@@ -258,7 +258,7 @@ pub mod pallet {
 
 			Self::try_set_sufficient_and_weight(&original, true, Some(system_token_weight))?;
 
-			Self::deposit_event(Event::<T>::SystemTokenRegistered { original });
+			Self::deposit_event(Event::<T>::OriginalSystemTokenRegistered { original });
 
 			Ok(())
 		}
@@ -313,7 +313,7 @@ pub mod pallet {
 		) -> DispatchResult {
 			ensure_root(origin.clone())?;
 			Self::try_deregister_all(&origin, original)?;
-			Self::deposit_event(Event::<T>::SystemTokenDeregistered { original });
+			Self::deposit_event(Event::<T>::OriginalSystemTokenDeregistered { original });
 
 			Ok(())
 		}
@@ -488,7 +488,7 @@ where
 	fn try_get_wsys_token_list(original: &SystemTokenId) -> Result<Vec<SystemTokenId>, Error<T>> {
 		ensure!(
 			SystemTokenProperties::<T>::contains_key(&original),
-			Error::<T>::SystemTokenNotRegistered
+			Error::<T>::OriginalNotRegistered
 		);
 		let token_list = WrappedSystemTokenOnPara::<T>::iter_keys()
 			.filter(|wrapped| {
@@ -522,7 +522,7 @@ where
 	) -> DispatchResult {
 		ensure!(
 			!OrigingalSystemTokenMetadata::<T>::contains_key(&original),
-			Error::<T>::SystemTokenAlreadyRegistered
+			Error::<T>::OriginalAlreadyRegistered
 		);
 		let system_token_metadata = Self::system_token_metadata(&issuer, &description, &url)?;
 		let asset_metadata = Self::asset_metadata(&name, &symbol, decimals, min_balance)?;
@@ -569,7 +569,7 @@ where
 	) -> Result<SystemTokenWeight, DispatchError> {
 		ensure!(
 			OrigingalSystemTokenMetadata::<T>::contains_key(original),
-			Error::<T>::SystemTokenNotRegistered
+			Error::<T>::OriginalNotRegistered
 		);
 		ensure!(
 			!WrappedSystemTokenOnPara::<T>::contains_key(wrapped),
@@ -580,7 +580,7 @@ where
 
 		let para_ids =
 			SystemTokenUsedParaIds::<T>::get(original).map_or(Default::default(), |para_id| para_id);
-		ensure!(!para_ids.contains(&para_id), Error::<T>::SystemTokenAlreadyRegistered);
+		ensure!(!para_ids.contains(&para_id), Error::<T>::WrappedNotRegistered);
 
 		WrappedSystemTokenOnPara::<T>::insert(wrapped, original);
 		SystemTokenProperties::<T>::insert(
@@ -697,7 +697,7 @@ where
 	///
 	/// - `NotFound`: No value in storage(Maybe no key?).
 	///
-	/// - `TooManySystemTokensOnParachain`: Maximum number of elements has been reached for BoundedVec
+	/// - `TooManySystemTokensOnPara`: Maximum number of elements has been reached for BoundedVec
 	fn try_push_original_for_para_id(
 		para_id: IbsParaId,
 		system_token_id: &SystemTokenId,
@@ -709,7 +709,7 @@ where
 					maybe_used_system_tokens.take().ok_or(Error::<T>::NotFound)?;
 				system_tokens
 					.try_push(*system_token_id)
-					.map_err(|_| Error::<T>::TooManySystemTokensOnParachain)?;
+					.map_err(|_| Error::<T>::TooManySystemTokensOnPara)?;
 				*maybe_used_system_tokens = Some(system_tokens);
 				Ok(())
 			},
@@ -972,8 +972,8 @@ impl<T: Config> SystemTokenInterface for Pallet<T> {
 	fn convert_to_original_system_token(wrapped: SystemTokenId) -> Option<SystemTokenId> {
 		if let Some(original) = <WrappedSystemTokenOnPara<T>>::get(&wrapped) {
 			Self::deposit_event(Event::<T>::SystemTokenConverted {
-				wrapped,
-				original: original.clone(),
+				from: wrapped,
+				to: original.clone(),
 			});
 			return Some(original)
 		}
