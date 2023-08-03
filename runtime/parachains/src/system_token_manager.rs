@@ -15,18 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{configuration, dmp, paras};
-pub use frame_support::{
-	pallet_prelude::*,
-	traits::{ibs_support::system_token::SystemTokenInterface, UnixTime},
-	PalletId,
-};
-use frame_system::pallet_prelude::*;
-use pallet_asset_link::AssetIdOf;
-
-pub use pallet::*;
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
-use scale_info::TypeInfo;
+use parity_scale_codec::Encode;
 use sp_runtime::{
 	traits::{AccountIdConversion, StaticLookup},
 	types::{
@@ -36,63 +25,15 @@ use sp_runtime::{
 	BoundedVec, RuntimeDebug,
 };
 use sp_std::prelude::*;
-
-pub type StringLimitOf<T> = <T as Config>::StringLimit;
-pub type IbsMetadata<T> = (
-	SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
-	AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, <T as pallet_assets::Config>::Balance>,
-);
-
-#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
-pub enum SystemTokenType {
-	Original(SystemTokenId),
-	Wrapped(SystemTokenId),
-}
-
-#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo)]
-pub struct ParaCallMetadata {
-	para_id: IbsParaId,
-	pallet_id: IbsPalletId,
-	pallet_name: Vec<u8>,
-	call_name: Vec<u8>,
-}
-
-/// The base_system_token_weight. Assume that it SHOULD not be changed.
-const BASE_SYSTEM_TOKEN_WEIGHT: u128 = 100_000;
-
-#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
-
-/// Metadata of the `original` system token for Relay Chain
-pub struct SystemTokenMetadata<BoundedString> {
-	/// The user friendly name of issuer in real world
-	pub(crate) issuer: BoundedString,
-	/// The description of the token
-	pub(crate) description: BoundedString,
-	/// The url of related to the token or issuer
-	pub(crate) url: BoundedString,
-}
-
-#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
-/// Metadata of the `original` local asset based on parachain
-pub struct AssetMetadata<BoundedString, Balance> {
-	/// The user friendly name of this system token.
-	pub(crate) name: BoundedString,
-	/// The exchange symbol for this system token.
-	pub(crate) symbol: BoundedString,
-	/// The number of decimals this asset uses to represent one unit.
-	pub(crate) decimals: u8,
-	/// The minimum balance of this new asset that any single account must
-	/// have. If an account's balance is reduced below this, then it collapses to zero.
-	pub(crate) min_balance: Balance,
-}
-
-#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
-pub struct SystemTokenProperty {
-	// The weight of this system token. Only 'original` system token would have its weight
-	pub(crate) system_token_weight: Option<SystemTokenWeight>,
-	// The epoch time of this system token registered
-	pub(crate) created_at: u128,
-}
+pub use frame_support::{
+	pallet_prelude::*,
+	traits::{ibs_support::system_token::SystemTokenInterface, UnixTime},
+};
+use frame_system::pallet_prelude::*;
+use crate::{configuration, dmp, paras};
+use pallet_asset_link::AssetIdOf;
+pub use pallet::*;
+use types::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -117,30 +58,30 @@ pub mod pallet {
 		type StringLimit: Get<u32>;
 		/// Max number which can be used as system tokens on parachain.
 		#[pallet::constant]
-		type MaxWrappedSystemToken: Get<u32>;
-		/// Max number which can be used as system tokens on parachain.
+		type MaxSystemTokens: Get<u32>;
+		/// Maximum number of `para ids` that are using `original` system token
 		#[pallet::constant]
-		type MaxSystemTokenOnParachain: Get<u32>;
+		type MaxSystemTokenUsedParaIds: Get<u32>;
 	}
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-		/// Register a new system token.
+		/// Register a new `original` system token.
 		SystemTokenRegistered { original: SystemTokenId },
-		/// Deregister the system token.
+		/// Deregister the `original` system token.
 		SystemTokenDeregistered { original: SystemTokenId },
-		/// Register a wrapped system token id to an original system token id.
+		/// Register a `wrapped` system token to an `original` system token.
 		WrappedSystemTokenRegistered { original: SystemTokenId, wrapped: SystemTokenId },
-		/// Deregister a wrapped system token id to an original system token id.
+		/// Deregister a `wrapped` system token to an `original` system token.
 		WrappedSystemTokenDeregistered { wrapped: SystemTokenId },
-		/// Convert a wrapped system token id to an original system token id.
+		/// Convert a `wrapped` system token to an `original` system token.
 		SystemTokenConverted { wrapped: SystemTokenId, original: SystemTokenId },
-		/// Update the weight for system token. The weight is calculated with exchange_rate and decimal.
+		/// Update the weight for system token. The weight is calculated based on the exchange_rate and decimal.
 		SetSystemTokenWeight { original: SystemTokenId, property: SystemTokenProperty },
-		/// Update the fee rate of the parachain. The default value is 1_000(1).
+		/// Update the fee rate of the parachain. The default value is 1_000.
 		SetParaFeeRate { para_id: IbsParaId, para_fee_rate: u32 },
-		/// Update the fee rate of the parachain. The default value is 1_000(1).
+		/// Update the fee table of the parachain
 		SetFeeTable { para_call_metadata: ParaCallMetadata, fee: T::Balance },
 	}
 
@@ -150,19 +91,17 @@ pub mod pallet {
 		SystemTokenAlreadyRegistered,
 		/// Failed to remove the system token as it is not registered.
 		SystemTokenNotRegistered,
-		/// Requested sytem token has already registered
+		/// Requested `wrapped` sytem token has already registered
 		WrappedAlreadyRegistered,
-		/// WrappedSystemToken has not been set for Relay Chain
+		/// `Wrapped` system token has not been registered on Relay Chain
 		WrappedNotRegistered,
 		/// Registered System Tokens are out of limit
 		TooManySystemTokensOnParachain,
-		/// Reigstered WrappedSystemTokens are out of limit
-		TooManyWrapped,
-		/// Some TryMutate Error
-		Unknown,
+		/// Number of para ids using `original` system tokens has reached `MaxSystemTokenUsedParaIds`
+		TooManyUsed,
 		/// String metadata is out of limit
 		BadMetadata,
-		/// Some of the value are not exist
+		/// Some of the value are stored on runtime(e.g key missing)
 		NotFound,
 		/// Error occurred on sending XCM
 		DmpError,
@@ -174,51 +113,92 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_list)]
-	/// Metadata(`SystemTokenMetadata`, `AssetMetadata`) of `original` system token
+	/// **Description:**
+	/// 
+	/// Metadata(`SystemTokenMetadata`, `AssetMetadata`) of `original` system token.
+	/// Return `None` whene there is no value.
+	/// 
+	/// **Key:**
+	/// 
+	/// `original` system token id
+	/// 
+	/// **Value:**
+	/// 
+	/// Metadata(`SystemTokenMetadata`, `AssetMetadata`)
 	pub(super) type OrigingalSystemTokenMetadata<T: Config> =
 		StorageMap<_, Blake2_128Concat, SystemTokenId, IbsMetadata<T>, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_properties)]
-	/// List for original system token and metadata.
+	/// **Description:**
+	/// 
+	/// Properties of system token that stored useful data. Return `None` whene there is no value.
+	/// 
+	/// **Key:**
+	/// 
+	/// (`original` or `wrapped`) system token id
+	/// 
+	/// **Value:**
+	/// 
+	/// `SystemTokenProperty`
 	pub(super) type SystemTokenProperties<T: Config> =
 		StorageMap<_, Blake2_128Concat, SystemTokenId, SystemTokenProperty, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_on_parachain)]
-	/// Stored when `wrapped` system token is registered
+	/// **Description:**
+	/// Stored when `wrapped` system token is registered. Used for converting `wrapped` system token to `original` system token
 	/// 
-	/// Key
+	/// **Key:**
 	/// 
-	/// - `wrapped` system token id
+	/// `wrapped` system token id
 	/// 
-	/// Value
+	/// **Value:**
 	/// 
-	/// - `original` system token id
+	/// `original` system token id
 	/// 
-	/// Used for converting `wrapped` system token to `original` system token
-	pub(super) type SystemTokenOnParachain<T: Config> =
+	pub(super) type WrappedSystemTokenOnPara<T: Config> =
 		StorageMap<_, Blake2_128Concat, SystemTokenId, SystemTokenId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_on_parachain_by_para_id)]
-	/// System token list for specific parachain by ParaId.
-	pub(super) type SystemTokenOnParachainByParaId<T: Config> = StorageMap<
+	/// **Description:**
+	/// 
+	/// List of system tokens(either `original` or `wrapped`) that are used from a parachain, which is identified by `para_id`
+	/// 
+	/// **Key:**
+	/// 
+	/// para_id
+	/// 
+	/// **Value:**
+	/// 
+	/// BoundedVec of either `original` or `wrapped` system token with maximum `MaxSystemTokens`
+	pub(super) type ParaIdSystemTokens<T: Config> = StorageMap<
 		_,
 		Blake2_128Concat,
 		IbsParaId,
-		BoundedVec<SystemTokenId, T::MaxWrappedSystemToken>,
+		BoundedVec<SystemTokenId, T::MaxSystemTokens>,
 		OptionQuery,
 	>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn para_ids_by_system_token)]
-	/// List of parachain ids using system token
-	pub(super) type ParaIdsBySystemToken<T: Config> = StorageMap<
+	/// **Description:**
+	/// 
+	/// List of para_ids that are using a `original` system token, which is key
+	/// 
+	/// **Key:**
+	/// 
+	/// `original` system token id
+	/// 
+	/// **Value:**
+	/// 
+	/// BoundedVec of `para_id` with maximum `MaxSystemTokenUsedParaIds`
+	pub(super) type SystemTokenUsedParaIds<T: Config> = StorageMap<
 		_,
 		Blake2_128Concat,
 		SystemTokenId,
-		BoundedVec<IbsParaId, T::MaxSystemTokenOnParachain>,
+		BoundedVec<IbsParaId, T::MaxSystemTokenUsedParaIds>,
 		OptionQuery,
 	>;
 
@@ -298,7 +278,7 @@ pub mod pallet {
 		//
 		// Logic:
 		// Once it is accepted by governance,
-		// - 'try_register_wsys_token': Try register wrapped_system_token and return weight of system token
+		// - 'try_register_wrapped': Try register wrapped_system_token and return weight of system token
 		// - 'try_create_wrapped': Send DMP to create local asset based on `wrapped_system_token_id`
 		pub fn register_wrapped_system_token(
 			origin: OriginFor<T>,
@@ -341,13 +321,13 @@ pub mod pallet {
 		#[pallet::call_index(3)]
 		#[pallet::weight(1_000)]
 		// Description:
-		// Deregister a wrapped system token, which has been used to other parachain.
+		// Deregister a `wrapped` system token, which has been used to other parachain.
 		//
 		// Origin:
 		// ** Root(Authorized) privileged call **
 		//
 		// Params:
-		// - wsys_token_id: Wrapped system token id expected to be deregistered
+		// - wrapped: `Wrapped` system token id expected to be deregistered
 		//
 		// Logic:
 		// DMP
@@ -498,34 +478,37 @@ where
 
 		Ok(AssetMetadata { name, symbol, decimals, min_balance })
 	}
-
+	/// **Description:**
+	/// 
 	/// Try get list of `wrapped` system tokens which is mapped to `original`
 	///
-	/// Validity
+	/// **Validity**
 	///
-	/// - Ensure `original` system token is already registered
+	/// Ensure `original` system token is already registered
 	fn try_get_wsys_token_list(original: &SystemTokenId) -> Result<Vec<SystemTokenId>, Error<T>> {
 		ensure!(
 			SystemTokenProperties::<T>::contains_key(&original),
 			Error::<T>::SystemTokenNotRegistered
 		);
-		let token_list = SystemTokenOnParachain::<T>::iter_keys()
+		let token_list = WrappedSystemTokenOnPara::<T>::iter_keys()
 			.filter(|wrapped| {
-				SystemTokenOnParachain::<T>::get(wrapped).as_ref() == Some(original)
+				WrappedSystemTokenOnPara::<T>::get(wrapped).as_ref() == Some(original)
 			})
 			.collect::<Vec<SystemTokenId>>();
 		Ok(token_list)
 	}
-
+	
+	/// **Description:**
+	///
 	/// Try register `original` system token on runtime.
 	///
-	/// Validity
+	/// **Validity:**
 	///
 	/// - Ensure `original` system token is not registered in `OrigingalSystemTokenMetadata`
 	///
-	/// State changes
+	/// **Changes:**
 	///
-	/// `SystemTokenOnParachainByParaId`, `ParaIdsBySystemToken`, `SystemTokenProperties`, `SystemTokenOnParachain`, `OrigingalSystemTokenMetadata`
+	/// `ParaIdSystemTokens`, `SystemTokenUsedParaIds`, `SystemTokenProperties`, `WrappedSystemTokenOnPara`, `OrigingalSystemTokenMetadata`
 	fn try_register_original(
 		original: &SystemTokenId,
 		system_token_weight: SystemTokenWeight,
@@ -555,7 +538,7 @@ where
 			},
 		);
 		// Self registered as wrapped token, which would be used for knowing it is 'original system token'
-		SystemTokenOnParachain::<T>::insert(&original, &original);
+		WrappedSystemTokenOnPara::<T>::insert(&original, &original);
 
 		OrigingalSystemTokenMetadata::<T>::insert(
 			&original,
@@ -565,9 +548,11 @@ where
 		Ok(())
 	}
 
+	/// **Description:**
+	/// 
 	/// Try register `wrapped_system_token` and return `weight` of system token
 	///
-	/// Validity
+	/// **Validity:**
 	///
 	/// - `SystemTokenId` is already registered.
 	///
@@ -575,9 +560,9 @@ where
 	///
 	/// - `ParaId` is not registered yet.
 	///
-	/// State changes
+	/// **Changes:**
 	///
-	/// - `SystemTokenOnParachain`, `SystemTokenOnParachainByParaId`, `ParaIdsBySystemToken`
+	/// - `WrappedSystemTokenOnPara`, `ParaIdSystemTokens`, `SystemTokenUsedParaIds`
 	fn try_register_wrapped(
 		original: &SystemTokenId,
 		wrapped: &SystemTokenId,
@@ -587,17 +572,17 @@ where
 			Error::<T>::SystemTokenNotRegistered
 		);
 		ensure!(
-			!SystemTokenOnParachain::<T>::contains_key(wrapped),
+			!WrappedSystemTokenOnPara::<T>::contains_key(wrapped),
 			Error::<T>::WrappedAlreadyRegistered
 		);
 
 		let SystemTokenId { para_id, .. } = wrapped.clone();
 
 		let para_ids =
-			ParaIdsBySystemToken::<T>::get(original).map_or(Default::default(), |para_id| para_id);
+			SystemTokenUsedParaIds::<T>::get(original).map_or(Default::default(), |para_id| para_id);
 		ensure!(!para_ids.contains(&para_id), Error::<T>::SystemTokenAlreadyRegistered);
 
-		SystemTokenOnParachain::<T>::insert(wrapped, original);
+		WrappedSystemTokenOnPara::<T>::insert(wrapped, original);
 		SystemTokenProperties::<T>::insert(
 			wrapped,
 			&SystemTokenProperty { system_token_weight: None, created_at: Self::unix_time() },
@@ -611,7 +596,13 @@ where
 		Ok(weight)
 	}
 
-	/// Try deregister for all `original` and `wrapped` system tokens
+	/// **Description:**
+	/// 
+	/// Try deregister for all `original` and `wrapped` system tokens registered on runtime.
+	/// 
+	/// **Changes:**
+	/// 
+	/// 
 	fn try_deregister_all(origin: &OriginFor<T>, original: SystemTokenId) -> DispatchResult {
 		// Wrapped related
 		let wsys_tokens = Self::try_get_wsys_token_list(&original)?;
@@ -627,6 +618,8 @@ where
 		Ok(())
 	}
 
+	/// **Description:**
+	/// 
 	/// Try deregister either 'original' or 'wrapped' system token.
 	///
 	/// Case - Original: `try_deregister_original` will be called.
@@ -639,36 +632,46 @@ where
 		}
 	}
 
+	/// **Description:**
+	/// 
 	/// Remove value for given `original` system token id.
 	///
-	/// - Changes
+	/// **Changes:**
 	///
-	/// `SystemTokenOnParachain`, `OrigingalSystemTokenMetadata`, `SystemTokenProperties`, `SystemTokenOnParachain`
+	/// `WrappedSystemTokenOnPara`, `OrigingalSystemTokenMetadata`, `SystemTokenProperties`
 	fn try_deregister_original(original: &SystemTokenId) -> DispatchResult {
 		Self::try_remove_sys_token_for_para(original)?;
 		OrigingalSystemTokenMetadata::<T>::remove(original);
 		SystemTokenProperties::<T>::remove(original);
-		SystemTokenOnParachain::<T>::remove(original);
+		WrappedSystemTokenOnPara::<T>::remove(original);
 		Ok(())
 	}
 
-	/// Remove value for given `wrapped` system token id.
+	/// **Description:**
+	/// 
+	/// Remove value for given `wrapped` system token.
+	/// 
+	/// **Changes:**
+	/// 
+	/// `ParaIdSystemTokens`, `SystemTokenUsedParaIds`, `WrappedSystemTokenOnPara`
 	fn try_deregister_wrapped(wrapped: &SystemTokenId) -> DispatchResult {
 		let original =
-			SystemTokenOnParachain::<T>::get(&wrapped).ok_or(Error::<T>::WrappedNotRegistered)?;
+			WrappedSystemTokenOnPara::<T>::get(&wrapped).ok_or(Error::<T>::WrappedNotRegistered)?;
 
 		let SystemTokenId { para_id, .. } = wrapped.clone();
 
 		Self::try_remove_sys_token_for_para(wrapped)?;
 		Self::try_remove_para_id(original, para_id)?;
 
-		SystemTokenOnParachain::<T>::remove(&wrapped);
+		WrappedSystemTokenOnPara::<T>::remove(&wrapped);
 		Ok(())
 	}
 
+	/// **Description:**
+	/// 
 	/// Try update `weight` property of `original` system token
 	///
-	/// State changes
+	/// **Changes:**
 	///
 	/// - `SystemTokenProperties`
 	fn try_update_weight_property_of_original(
@@ -686,24 +689,26 @@ where
 		Ok(())
 	}
 
-	/// Try push `system_token_id` for given `para_id` to `SystemTokenOnParachainByParaId`.
+	/// **Description:**
+	/// 
+	/// Try push `system_token_id` for given `para_id` to `ParaIdSystemTokens`.
 	///
-	/// Errors
+	/// **Errors:**
 	///
 	/// - `NotFound`: No value in storage(Maybe no key?).
 	///
 	/// - `TooManySystemTokensOnParachain`: Maximum number of elements has been reached for BoundedVec
 	fn try_push_original_for_para_id(
 		para_id: IbsParaId,
-		orginal: &SystemTokenId,
+		system_token_id: &SystemTokenId,
 	) -> DispatchResult {
-		SystemTokenOnParachainByParaId::<T>::try_mutate_exists(
+		ParaIdSystemTokens::<T>::try_mutate_exists(
 			para_id.clone(),
 			|maybe_used_system_tokens| -> Result<(), DispatchError> {
 				let mut system_tokens =
 					maybe_used_system_tokens.take().ok_or(Error::<T>::NotFound)?;
 				system_tokens
-					.try_push(*orginal)
+					.try_push(*system_token_id)
 					.map_err(|_| Error::<T>::TooManySystemTokensOnParachain)?;
 				*maybe_used_system_tokens = Some(system_tokens);
 				Ok(())
@@ -713,19 +718,21 @@ where
 		Ok(())
 	}
 
-	/// Try push `para_id` for given `original` system token to `ParaIdsBySystemToken`
+	/// **Description:**
+	/// 
+	/// Try push `para_id` for given `original` system token to `SystemTokenUsedParaIds`
 	///
-	/// Errors
+	/// **Errors:**
 	///
-	/// - `NotFound`: No value in storage(Maybe no key)?
+	/// - `NotFound`: No value in storage(e.g key missing)?
 	///
-	/// - `TooManyWrapped`: Requested wrapped has reached max for the system token
+	/// - `TooManyUsed`: Number of para ids using `original` system tokens has reached `MaxSystemTokenUsedParaIds`
 	fn try_push_para_id(para_id: IbsParaId, original: &SystemTokenId) -> DispatchResult {
-		ParaIdsBySystemToken::<T>::try_mutate_exists(
+		SystemTokenUsedParaIds::<T>::try_mutate_exists(
 			original,
 			|maybe_para_id_list| -> Result<(), DispatchError> {
 				let mut para_ids = maybe_para_id_list.take().ok_or(Error::<T>::NotFound)?;
-				para_ids.try_push(para_id).map_err(|_| Error::<T>::TooManyWrapped)?;
+				para_ids.try_push(para_id).map_err(|_| Error::<T>::TooManyUsed)?;
 				*maybe_para_id_list = Some(para_ids);
 				Ok(())
 			},
@@ -734,11 +741,13 @@ where
 		Ok(())
 	}
 
-	/// Try remove `SystemTokenOnParachainByParaId` for any(`original` or `wrapped`) system token id
+	/// **Description:**
+	/// 
+	/// Try remove `ParaIdSystemTokens` for any(`original` or `wrapped`) system token id
 	fn try_remove_sys_token_for_para(sys_token_id: &SystemTokenId) -> DispatchResult {
 		let SystemTokenId { para_id, .. } = sys_token_id.clone();
 		// ToDo: Should we check 'len of registered system token'?
-		SystemTokenOnParachainByParaId::<T>::try_mutate_exists(
+		ParaIdSystemTokens::<T>::try_mutate_exists(
 			para_id,
 			|maybe_system_tokens| -> Result<(), DispatchError> {
 				let mut system_tokens = maybe_system_tokens.take().ok_or(Error::<T>::NotFound)?;
@@ -755,10 +764,12 @@ where
 		Ok(())
 	}
 
-	/// Try remove `ParaIdsBySystemToken` for system token id
-	fn try_remove_para_id(sys_token_id: SystemTokenId, para_id: IbsParaId) -> DispatchResult {
-		ParaIdsBySystemToken::<T>::try_mutate_exists(
-			sys_token_id,
+	/// **Description:**
+	/// 
+	/// Try remove `SystemTokenUsedParaIds` for system token id
+	fn try_remove_para_id(original: SystemTokenId, para_id: IbsParaId) -> DispatchResult {
+		SystemTokenUsedParaIds::<T>::try_mutate_exists(
+			original,
 			|maybe_para_ids| -> Result<(), DispatchError> {
 				let mut para_ids = maybe_para_ids.take().ok_or(Error::<T>::NotFound)?;
 				para_ids.retain(|x| *x != para_id);
@@ -776,13 +787,27 @@ impl<T: Config> Pallet<T>
 where
 	<T as pallet_assets::Config>::AssetIdParameter: From<IbsAssetId>,
 	AssetIdOf<T>: From<IbsAssetId>,
-{
+{	
+	/// **Description:**
+	/// 
+	/// Try change state of `wrapped` system token, which is `sufficient` and unlink the system token with local asset
+	/// 
+	/// **Params:**
+	/// 
+	/// - wrapped: Wrapped system token expected to be changed
+	/// 
+	/// - is_sufficient: State of 'sufficient' to be changed
+	/// 
+	/// **Logic:**
+	/// 
+	/// If `para_id == 0`, which means Relay Chain, call internal `Assets` pallet method.
+	/// Otherwise, send DMP of `set_sufficient_with_unlink_system_token` to expected `para_id` destination
 	fn try_set_sufficient_and_unlink(
 		origin: &OriginFor<T>,
-		system_token_id: SystemTokenId,
+		wrapped: SystemTokenId,
 		is_sufficient: bool,
 	) -> DispatchResult {
-		let SystemTokenId { para_id, pallet_id, asset_id } = system_token_id;
+		let SystemTokenId { para_id, pallet_id, asset_id } = wrapped;
 		if para_id == 0u32 {
 			// ToDo: Change to internal method due to 'origin'
 			// Relay Chain
@@ -804,6 +829,8 @@ where
 		Ok(())
 	}
 
+	/// **Description:**
+	/// 
 	/// Try sending DMP of call `set_sufficient_and_system_token_weight` to specific parachain.
 	/// If success, destination parachain's local asset's `sufficient` state to `is_sufficient`, and set its weight
 	fn try_set_sufficient_and_weight(
@@ -823,6 +850,20 @@ where
 		Ok(())
 	}
 
+	/// **Description:**
+	/// 
+	/// Try update weight of `wrapped` system token. 
+	/// 
+	/// **Params:**
+	/// 
+	/// - wrapped: `wrapped` system token expected to be updated
+	/// 
+	/// - system_token_weight: Weight expected to be updated
+	/// 
+	/// **Logic:**
+	/// 
+	/// If `para_id == 0`, call internal `Assets` pallet method.
+	/// Otherwise, send DMP of `update_system_token_weight` to expected `para_id` destination
 	fn try_update_weight_of_wrapped(
 		origin: OriginFor<T>,
 		wrapped: &SystemTokenId,
@@ -851,20 +892,33 @@ where
 		Ok(())
 	}
 
+	/// **Description:**
+	/// 
+	/// Try create `wrapped` system token to local
+	/// 
+	/// **Params:**
+	/// 
+	/// - wrapped: `wrapped` system token expected to be created
+	/// 
+	/// - system_token_weight: Weight of system token to store on local asset
+	/// 
+	/// **Logic:**
+	/// 
+	/// If `para_id == 0`, call internal `Assets` pallet method.
+	/// Otherwise, send DMP of `force_create_with_metadata` to expected `para_id` destination
 	fn try_create_wrapped(
 		origin: OriginFor<T>,
 		wrapped: SystemTokenId,
 		system_token_weight: SystemTokenWeight,
 	) -> DispatchResult {
-		let original = <SystemTokenOnParachain<T>>::get(&wrapped).ok_or(Error::<T>::NotFound)?;
+		let original = <WrappedSystemTokenOnPara<T>>::get(&wrapped).ok_or(Error::<T>::NotFound)?;
 		let (_, asset_metadata) =
 			OrigingalSystemTokenMetadata::<T>::get(&original).ok_or(Error::<T>::NotFound)?;
 		let SystemTokenId { para_id, pallet_id, asset_id } = wrapped;
-		let root: T::AccountId = PalletId(*b"infra/rt").into_account_truncating();
+		let root: T::AccountId = frame_support::PalletId(*b"infra/rt").into_account_truncating();
 		if para_id == 0u32 {
 			// Relay Chain
 			// ToDo: Change to internal method, we don't need 'origin' here
-			// ToDo: 'system_token_weight' type u64 -> u128
 			pallet_assets::pallet::Pallet::<T>::force_create_with_metadata(
 				origin.clone(),
 				asset_id.into(),
@@ -916,7 +970,7 @@ impl<T: Config> SystemTokenInterface for Pallet<T> {
 		<OrigingalSystemTokenMetadata<T>>::get(original).is_some()
 	}
 	fn convert_to_original_system_token(wrapped: SystemTokenId) -> Option<SystemTokenId> {
-		if let Some(original) = <SystemTokenOnParachain<T>>::get(&wrapped) {
+		if let Some(original) = <WrappedSystemTokenOnPara<T>>::get(&wrapped) {
 			Self::deposit_event(Event::<T>::SystemTokenConverted {
 				wrapped,
 				original: original.clone(),
@@ -998,5 +1052,70 @@ pub mod system_token_xcm_handler {
 			return Err(Error::<T>::DmpError.into())
 		};
 		Ok(())
+	}
+}
+
+pub mod types {
+
+	use super::*;
+	use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
+	use scale_info::TypeInfo;
+
+	pub type StringLimitOf<T> = <T as Config>::StringLimit;
+	pub type IbsMetadata<T> = (
+		SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
+		AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, <T as pallet_assets::Config>::Balance>,
+	);
+
+	/// The base_system_token_weight. Assume that it SHOULD not be changed.
+	pub const BASE_SYSTEM_TOKEN_WEIGHT: u128 = 100_000;
+
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
+	pub enum SystemTokenType {
+		Original(SystemTokenId),
+		Wrapped(SystemTokenId),
+	}
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo)]
+	pub struct ParaCallMetadata {
+		pub(crate) para_id: IbsParaId,
+		pub(crate) pallet_id: IbsPalletId,
+		pub(crate) pallet_name: Vec<u8>,
+		pub(crate) call_name: Vec<u8>,
+	}
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
+
+	/// Metadata of the `original` system token for Relay Chain
+	pub struct SystemTokenMetadata<BoundedString> {
+		/// The user friendly name of issuer in real world
+		pub(crate) issuer: BoundedString,
+		/// The description of the token
+		pub(crate) description: BoundedString,
+		/// The url of related to the token or issuer
+		pub(crate) url: BoundedString,
+	}
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
+	/// Metadata of the `original` local asset based on parachain
+	pub struct AssetMetadata<BoundedString, Balance> {
+		/// The user friendly name of this system token.
+		pub(crate) name: BoundedString,
+		/// The exchange symbol for this system token.
+		pub(crate) symbol: BoundedString,
+		/// The number of decimals this asset uses to represent one unit.
+		pub(crate) decimals: u8,
+		/// The minimum balance of this new asset that any single account must
+		/// have. If an account's balance is reduced below this, then it collapses to zero.
+		pub(crate) min_balance: Balance,
+	}
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen)]
+	pub struct SystemTokenProperty {
+		// The weight of this system token. Only 'original` system token would have its weight
+		pub(crate) system_token_weight: Option<SystemTokenWeight>,
+		// The epoch time of this system token registered
+		pub(crate) created_at: u128,
 	}
 }
