@@ -31,16 +31,13 @@
 //! *
 //!
 
-use frame_support::{
-	pallet_prelude::*,
-	traits::{fungibles::roles::Inspect, OriginTrait},
-	PalletId,
-};
+pub use crate::system_token_helper;
+use frame_support::{pallet_prelude::*, traits::OriginTrait};
 pub use pallet::*;
 use sp_runtime::{
 	self,
-	traits::AccountIdConversion,
-	types::{AssetId, SystemTokenId, SystemTokenLocalAssetProvider},
+	traits::Zero,
+	types::{AssetId, SystemTokenLocalAssetProvider},
 };
 use sp_std::prelude::*;
 use xcm::opaque::lts::{
@@ -63,8 +60,8 @@ pub mod pallet {
 	{
 		/// The overarching event type.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-		/// The fungibles instance used to pay for transactions in assets.
-		type Assets: Inspect<Self::AccountId> + SystemTokenLocalAssetProvider;
+		#[pallet::constant]
+		type Period: Get<Self::BlockNumber>;
 		type AssetMultiLocationGetter: AssetMultiLocationGetter<AssetId>;
 	}
 
@@ -91,22 +88,15 @@ pub mod pallet {
 		[u8; 32]: From<<T as frame_system::Config>::AccountId>,
 		u128: From<<T as pallet_assets::Config>::Balance>,
 	{
-		fn on_initialize(block_num: T::BlockNumber) -> Weight {
-			let block_num: u32 = block_num.into();
-			if block_num % 10 == 0 {
-				let sovereign = PalletId(*b"infrapid");
-				let who: AccountIdOf<T> = sovereign.into_account_truncating();
+		fn on_initialize(n: T::BlockNumber) -> Weight {
+			if n % T::Period::get() == Zero::zero() {
+				let fee_account = system_token_helper::sovereign_account::<T>();
 
 				let system_token_asset_list =
-					pallet_assets::Pallet::<T>::token_list().unwrap_or_default();
-				let balances = pallet_assets::Pallet::<T>::account_balances(who.clone());
+					pallet_assets::Pallet::<T>::token_list().map_or(Default::default(), |l| l);
+				let balances = pallet_assets::Pallet::<T>::account_balances(fee_account.clone());
 
-				let root = PalletId(*b"infra/rt");
-				let root_account: AccountIdOf<T> = root.into_account_truncating();
-
-				for balance in balances.iter() {
-					let asset_id = balance.0;
-					let amount = balance.1;
+				for (asset_id, amount) in balances.iter() {
 					if system_token_asset_list.contains(&asset_id.clone().into()) {
 						if let Some(asset_multilocation) =
 							T::AssetMultiLocationGetter::get_asset_multi_location(
@@ -117,36 +107,27 @@ pub mod pallet {
 								_ => 1000,
 							};
 
-							let owner = pallet_assets::Pallet::<T>::owner(asset_id.clone())
-								.unwrap_or(who.clone());
-							let issuer = pallet_assets::Pallet::<T>::issuer(asset_id.clone())
-								.unwrap_or(who.clone());
-							let admin = pallet_assets::Pallet::<T>::admin(asset_id.clone())
-								.unwrap_or(who.clone());
-							let freezer = pallet_assets::Pallet::<T>::freezer(asset_id.clone())
-								.unwrap_or(who.clone());
-
-							// Check original system token or not
-							if owner != root_account &&
-								issuer != root_account && admin != root_account &&
-								freezer != root_account
-							{
-								// if original system token, then skip the teleport
+							if !system_token_helper::inspect_account_and_check_is_owner::<T>(
+								*asset_id,
+							) {
 								continue
 							}
 
-							let _result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
+							let _ = pallet_xcm::Pallet::<T>::limited_teleport_assets(
 								<T as frame_system::Config>::RuntimeOrigin::signed(
-									who.clone().into(),
+									fee_account.clone().into(),
 								),
 								Box::new(xcm::VersionedMultiLocation::V3(MultiLocation {
 									parents: 1,
 									interior: X1(Junction::Parachain(dest_para_id.clone())),
 								})),
 								Box::new(
-									Junction::AccountId32 { network: None, id: who.clone().into() }
-										.into_location()
-										.into(),
+									Junction::AccountId32 {
+										network: None,
+										id: fee_account.clone().into(),
+									}
+									.into_location()
+									.into(),
 								),
 								Box::new(
 									MultiAsset {
@@ -171,50 +152,6 @@ pub mod pallet {
 			} else {
 				T::DbWeight::get().reads(0)
 			}
-		}
-	}
-
-	impl<T: Config> Pallet<T>
-	where
-		<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId:
-			From<AccountIdOf<T>>,
-		[u8; 32]: From<<T as frame_system::Config>::AccountId>,
-	{
-		pub fn teleport_system_token(system_token_id: SystemTokenId, amount: u128) {
-			let sovereign = PalletId(*b"infrapid");
-			let owner: AccountIdOf<T> = sovereign.into_account_truncating();
-			let dest_para_id = system_token_id.para_id;
-			let dest_pallet_id = system_token_id.pallet_id;
-			let dest_asset_id = system_token_id.asset_id;
-
-			let _result = pallet_xcm::Pallet::<T>::limited_teleport_assets(
-				<T as frame_system::Config>::RuntimeOrigin::signed(owner.clone().into()),
-				Box::new(xcm::VersionedMultiLocation::V3(MultiLocation {
-					parents: 1,
-					interior: X1(Junction::Parachain(dest_para_id.clone())),
-				})),
-				Box::new(
-					Junction::AccountId32 { network: None, id: owner.clone().into() }
-						.into_location()
-						.into(),
-				),
-				Box::new(
-					MultiAsset {
-						id: Concrete(MultiLocation {
-							parents: 1,
-							interior: X3(
-								Junction::Parachain(dest_para_id.clone()),
-								Junction::PalletInstance(dest_pallet_id as u8),
-								Junction::GeneralIndex(dest_asset_id as u128),
-							),
-						}),
-						fun: Fungible(amount.clone()),
-					}
-					.into(),
-				),
-				0,
-				xcm::v3::WeightLimit::Unlimited,
-			);
 		}
 	}
 }

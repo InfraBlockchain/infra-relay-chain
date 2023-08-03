@@ -1239,9 +1239,13 @@ impl pallet_assets::Config for Runtime {
 	type RemoveItemsLimit = ConstU32<1000>;
 }
 
+parameter_types! {
+	pub const Period: BlockNumber = 10;
+}
+
 impl system_token_aggregator::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type Assets = Assets;
+	type Period = Period;
 	type AssetMultiLocationGetter = AssetLink;
 }
 
