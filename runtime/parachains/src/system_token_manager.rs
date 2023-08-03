@@ -25,7 +25,7 @@ pub use pallet::*;
 use pallet_asset_link::AssetIdOf;
 use parity_scale_codec::Encode;
 use sp_runtime::{
-	traits::{AccountIdConversion, StaticLookup},
+	traits::StaticLookup,
 	types::{
 		AssetId as IbsAssetId, PalletId as IbsPalletId, ParaId as IbsParaId, SystemTokenId,
 		SystemTokenWeight, VoteWeight,

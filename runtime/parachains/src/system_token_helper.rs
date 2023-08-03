@@ -1,6 +1,6 @@
 use crate::{
 	configuration,
-	dmp::{self, Config},
+	dmp::{self, Config}
 };
 use frame_support::{
 	pallet_prelude::{DispatchResult, Weight},

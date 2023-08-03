@@ -95,23 +95,21 @@ pub mod pallet {
 				let system_token_asset_list =
 					pallet_assets::Pallet::<T>::token_list().map_or(Default::default(), |l| l);
 				let balances = pallet_assets::Pallet::<T>::account_balances(fee_account.clone());
-
 				for (asset_id, amount) in balances.iter() {
 					if system_token_asset_list.contains(&asset_id.clone().into()) {
 						if let Some(asset_multilocation) =
 							T::AssetMultiLocationGetter::get_asset_multi_location(
 								asset_id.clone().into(),
 							) {
-							let dest_para_id = match asset_multilocation.clone().interior() {
-								X3(Junction::Parachain(para_id), _, _) => *para_id,
-								_ => 1000,
-							};
-
 							if !system_token_helper::inspect_account_and_check_is_owner::<T>(
 								*asset_id,
 							) {
 								continue
 							}
+							let dest_para_id = match asset_multilocation.clone().interior() {
+								X3(Junction::Parachain(para_id), _, _) => *para_id,
+								_ => 1000,
+							};
 
 							let _ = pallet_xcm::Pallet::<T>::limited_teleport_assets(
 								<T as frame_system::Config>::RuntimeOrigin::signed(
