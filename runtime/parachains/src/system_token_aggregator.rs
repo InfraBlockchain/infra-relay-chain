@@ -40,9 +40,7 @@ use sp_runtime::{
 	types::{AssetId, SystemTokenLocalAssetProvider},
 };
 use sp_std::prelude::*;
-use xcm::opaque::lts::{
-	AssetId::Concrete, Fungibility::Fungible, Junction, Junctions::*, MultiAsset, MultiLocation,
-};
+use xcm::opaque::lts::MultiLocation;
 use xcm_primitives::AssetMultiLocationGetter;
 type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 
@@ -80,7 +78,7 @@ pub mod pallet {
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T>
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> 
 	where
 		u32: From<<T as frame_system::Config>::BlockNumber>,
 		<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId:
@@ -89,67 +87,52 @@ pub mod pallet {
 		u128: From<<T as pallet_assets::Config>::Balance>,
 	{
 		fn on_initialize(n: T::BlockNumber) -> Weight {
-			if n % T::Period::get() == Zero::zero() {
-				let fee_account = system_token_helper::sovereign_account::<T>();
-
-				let system_token_asset_list =
-					pallet_assets::Pallet::<T>::token_list().map_or(Default::default(), |l| l);
-				let balances = pallet_assets::Pallet::<T>::account_balances(fee_account.clone());
-				for (asset_id, amount) in balances.iter() {
-					if system_token_asset_list.contains(&asset_id.clone().into()) {
-						if let Some(asset_multilocation) =
-							T::AssetMultiLocationGetter::get_asset_multi_location(
-								asset_id.clone().into(),
-							) {
-							if !system_token_helper::inspect_account_and_check_is_owner::<T>(
-								*asset_id,
-							) {
-								continue
-							}
-							let dest_para_id = match asset_multilocation.clone().interior() {
-								X3(Junction::Parachain(para_id), _, _) => *para_id,
-								_ => 1000,
-							};
-
-							let _ = pallet_xcm::Pallet::<T>::limited_teleport_assets(
-								<T as frame_system::Config>::RuntimeOrigin::signed(
-									fee_account.clone().into(),
-								),
-								Box::new(xcm::VersionedMultiLocation::V3(MultiLocation {
-									parents: 1,
-									interior: X1(Junction::Parachain(dest_para_id.clone())),
-								})),
-								Box::new(
-									Junction::AccountId32 {
-										network: None,
-										id: fee_account.clone().into(),
-									}
-									.into_location()
-									.into(),
-								),
-								Box::new(
-									MultiAsset {
-										id: Concrete(asset_multilocation),
-										fun: Fungible(amount.clone().into()),
-									}
-									.into(),
-								),
-								0,
-								xcm::v3::WeightLimit::Unlimited,
-							);
-							Self::deposit_event(Event::<T>::SystemTokenAggregated {
-								multilocation: asset_multilocation.clone(),
-								amount: amount.clone().into(),
-							});
-						} else {
-							continue
-						}
-					}
-				}
-				T::DbWeight::get().reads(2 + balances.len() as u64)
-			} else {
-				T::DbWeight::get().reads(0)
-			}
+			Self::do_aggregate_system_token(n)
 		}
+	}
+}
+
+impl<T: Config> Pallet<T> {
+	pub(crate) fn do_aggregate_system_token(n: T::BlockNumber) -> Weight 
+	where
+		u32: From<<T as frame_system::Config>::BlockNumber>,
+		<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId:
+			From<AccountIdOf<T>>,
+		[u8; 32]: From<<T as frame_system::Config>::AccountId>,
+		u128: From<<T as pallet_assets::Config>::Balance>,
+	{
+		if n % T::Period::get() == Zero::zero() {
+			let fee_account = system_token_helper::sovereign_account::<T>();
+
+			let system_token_asset_list =
+				pallet_assets::Pallet::<T>::token_list().map_or(Default::default(), |l| l);
+			let balances = pallet_assets::Pallet::<T>::account_balances(fee_account.clone());
+			for (asset_id, amount) in balances.iter() {
+				if !system_token_helper::inspect_account_and_check_is_owner::<T>(*asset_id) ||
+					!system_token_asset_list.contains(&asset_id.clone().into())
+				{
+					continue
+				}
+
+				if let Some(asset_multilocation) =
+					T::AssetMultiLocationGetter::get_asset_multi_location(
+						asset_id.clone().into(),
+					) {
+					system_token_helper::do_teleport_asset::<T>(
+						fee_account.clone(),
+						amount,
+						asset_multilocation.clone(),
+					);
+
+					Self::deposit_event(Event::<T>::SystemTokenAggregated {
+						multilocation: asset_multilocation.clone(),
+						amount: amount.clone().into(),
+					});
+				}
+			}
+			return T::DbWeight::get().reads(2 + balances.len() as u64)
+		} 
+		
+		T::DbWeight::get().reads(0)
 	}
 }

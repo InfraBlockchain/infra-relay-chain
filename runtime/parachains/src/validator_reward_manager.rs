@@ -167,17 +167,14 @@ pub mod pallet {
 			if let Some(reward) =
 				rewards.iter_mut().find(|ar| ar.system_token_id == system_token_id)
 			{
-				let SystemTokenId {
-					para_id,
-					pallet_id,
-					asset_id,
-				} = system_token_id;
+				let SystemTokenId { para_id, pallet_id, asset_id } = system_token_id;
 				let encoded_call: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
 					id: asset_id.into(),
 					source: T::Lookup::unlookup(sovereign.clone()),
 					dest: T::Lookup::unlookup(validator.clone()),
 					amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
-				}.encode();
+				}
+				.encode();
 				system_token_helper::try_queue_dmp::<T>(para_id, pallet_id, encoded_call)?;
 				Self::deposit_event(Event::ValidatorRewarded {
 					stash: who.clone().into(),
@@ -194,7 +191,6 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-
 	fn aggregate_reward(
 		session_index: SessionIndex,
 		para_id: ParaId,

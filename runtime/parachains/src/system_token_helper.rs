@@ -1,23 +1,28 @@
 use crate::{
 	configuration,
-	dmp::{self, Config}
+	dmp::{self, Config},
 };
 use frame_support::{
 	pallet_prelude::{DispatchResult, Weight},
-	traits::fungibles::roles::Inspect,
+	traits::{fungibles::roles::Inspect, OriginTrait},
 };
 use parity_scale_codec::Encode;
 use sp_runtime::{
 	traits::AccountIdConversion,
 	types::{PalletId, ParaId},
 };
-use sp_std::{vec, vec::Vec};
+use sp_std::{vec, vec::Vec, boxed::Box};
 
 use xcm::{
-	opaque::{latest::prelude::*, VersionedXcm},
+	opaque::{
+		latest::prelude::*,
+		lts::{AssetId::Concrete, Fungibility::Fungible, Junction, MultiAsset, MultiLocation},
+		VersionedXcm,
+	},
 	v2::OriginKind,
-	v3::MultiAsset,
 };
+
+type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 
 const REF_WEIGHT: u64 = 500_000_000;
 const PROOF_WEIGHT: u64 = 20_000;
@@ -89,4 +94,39 @@ pub fn try_queue_dmp<T: Config>(
 		);
 	};
 	Ok(())
+}
+
+pub fn do_teleport_asset<T>(
+	beneficiary: T::AccountId,
+	amount: &T::Balance,
+	asset_multi_loc: MultiLocation,
+) where
+	T: pallet_xcm::Config + pallet_assets::Config,
+	u32: From<<T as frame_system::Config>::BlockNumber>,
+	<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId: From<AccountIdOf<T>>,
+	[u8; 32]: From<<T as frame_system::Config>::AccountId>,
+	u128: From<<T as pallet_assets::Config>::Balance>,
+{
+	let dest_para_id = match asset_multi_loc.clone().interior() {
+		X3(Junction::Parachain(para_id), _, _) => *para_id,
+		_ => 1000,
+	};
+	let _ = pallet_xcm::Pallet::<T>::limited_teleport_assets(
+		<T as frame_system::Config>::RuntimeOrigin::signed(beneficiary.clone().into()),
+		Box::new(xcm::VersionedMultiLocation::V3(MultiLocation {
+			parents: 1,
+			interior: X1(Junction::Parachain(dest_para_id)),
+		})),
+		Box::new(
+			Junction::AccountId32 { network: None, id: beneficiary.clone().into() }
+				.into_location()
+				.into(),
+		),
+		Box::new(
+			MultiAsset { id: Concrete(asset_multi_loc), fun: Fungible(amount.clone().into()) }
+				.into(),
+		),
+		0,
+		xcm::v3::WeightLimit::Unlimited,
+	);
 }
