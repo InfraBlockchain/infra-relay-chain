@@ -88,7 +88,8 @@ pub mod pallet {
 	{
 		fn on_initialize(n: T::BlockNumber) -> Weight {
 			if n % T::Period::get() == Zero::zero() {
-				Self::do_aggregate_system_token()
+				Self::do_aggregate_system_token();
+				T::DbWeight::get().reads(3)
 			} else {
 				T::DbWeight::get().reads(0)
 			}
@@ -97,7 +98,7 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-	pub(crate) fn do_aggregate_system_token() -> Weight
+	pub(crate) fn do_aggregate_system_token()
 	where
 		u32: From<<T as frame_system::Config>::BlockNumber>,
 		<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId:
@@ -132,6 +133,5 @@ impl<T: Config> Pallet<T> {
 				});
 			}
 		}
-		T::DbWeight::get().reads(2 + balances.len() as u64)
 	}
 }
