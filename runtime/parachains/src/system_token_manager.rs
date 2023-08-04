@@ -34,7 +34,7 @@ pub type ParaAssetId = VoteAssetId;
 pub type RelayAssetId = VoteAssetId;
 pub type PalletIndex = u32;
 
-pub type SystemTokenWeight = u64;
+pub type SystemTokenWeight = u128;
 
 /// Data structure for Wrapped system tokens
 pub type WrappedSystemTokenId = SystemTokenId;
