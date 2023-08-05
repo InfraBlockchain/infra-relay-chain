@@ -125,7 +125,7 @@ pub mod pallet {
 	/// **Value:**
 	///
 	/// Metadata(`SystemTokenMetadata`, `AssetMetadata`)
-	pub(super) type OrigingalSystemTokenMetadata<T: Config> =
+	pub type OrigingalSystemTokenMetadata<T: Config> =
 		StorageMap<_, Blake2_128Concat, SystemTokenId, IbsMetadata<T>, OptionQuery>;
 
 	#[pallet::storage]
@@ -141,7 +141,7 @@ pub mod pallet {
 	/// **Value:**
 	///
 	/// `SystemTokenProperty`
-	pub(super) type SystemTokenProperties<T: Config> =
+	pub type SystemTokenProperties<T: Config> =
 		StorageMap<_, Blake2_128Concat, SystemTokenId, SystemTokenProperty, OptionQuery>;
 
 	#[pallet::storage]
@@ -157,7 +157,7 @@ pub mod pallet {
 	///
 	/// `original` system token id
 	///
-	pub(super) type WrappedSystemTokenOnPara<T: Config> =
+	pub type WrappedSystemTokenOnPara<T: Config> =
 		StorageMap<_, Blake2_128Concat, SystemTokenId, SystemTokenId, OptionQuery>;
 
 	#[pallet::storage]
@@ -194,7 +194,7 @@ pub mod pallet {
 	/// **Value:**
 	///
 	/// BoundedVec of `para_id` with maximum `MaxSystemTokenUsedParaIds`
-	pub(super) type SystemTokenUsedParaIds<T: Config> = StorageMap<
+	pub type SystemTokenUsedParaIds<T: Config> = StorageMap<
 		_,
 		Blake2_128Concat,
 		SystemTokenId,
@@ -527,7 +527,7 @@ where
 		let system_token_metadata = Self::system_token_metadata(&issuer, &description, &url)?;
 		let asset_metadata = Self::asset_metadata(&name, &symbol, decimals, min_balance)?;
 		let SystemTokenId { para_id, .. } = original.clone();
-		Self::try_push_original_for_para_id(para_id, &original)?;
+		Self::try_push_sys_token_for_para_id(para_id, &original)?;
 		Self::try_push_para_id(para_id, &original)?;
 
 		SystemTokenProperties::<T>::insert(
@@ -588,7 +588,7 @@ where
 			&SystemTokenProperty { system_token_weight: None, created_at: Self::unix_time() },
 		);
 
-		Self::try_push_original_for_para_id(para_id, wrapped)?;
+		Self::try_push_sys_token_for_para_id(para_id, wrapped)?;
 		Self::try_push_para_id(para_id, original)?;
 
 		let property = SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::NotFound)?;
@@ -696,7 +696,7 @@ where
 	/// **Errors:**
 	///
 	/// - `TooManySystemTokensOnPara`: Maximum number of elements has been reached for BoundedVec
-	fn try_push_original_for_para_id(
+	fn try_push_sys_token_for_para_id(
 		para_id: IbsParaId,
 		system_token_id: &SystemTokenId,
 	) -> DispatchResult {

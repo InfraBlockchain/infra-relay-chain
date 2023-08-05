@@ -20,15 +20,21 @@ use crate::{
 	configuration, disputes, dmp, hrmp, inclusion, initializer, origin, paras, paras_inherent,
 	scheduler, session_info, shared,
 	ump::{self, MessageId, UmpSink},
-	validator_reward_manager, ParaId,
+	validator_reward_manager, system_token_manager, ParaId,
 };
-
+use frame_system::EnsureRoot;
 use frame_support::{
+	construct_runtime,
 	parameter_types,
-	traits::{GenesisBuild, KeyOwnerProofSystem, ValidatorSet, ValidatorSetWithIdentification},
+	pallet_prelude::*,
+	traits::{
+		GenesisBuild, KeyOwnerProofSystem, ValidatorSet, 
+		ValidatorSetWithIdentification, AsEnsureOriginWithArg
+	},
 	weights::Weight,
 };
 use frame_support_test::TestRandomness;
+pub use pallet_validator_election::VotingInterface;
 use parity_scale_codec::Decode;
 use primitives::{
 	AuthorityDiscoveryId, Balance, BlockNumber, CandidateHash, Header, Moment, SessionIndex,
@@ -37,9 +43,9 @@ use primitives::{
 use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
-	traits::{BlakeTwo256, IdentityLookup},
+	traits::{BlakeTwo256, IdentityLookup, ConstU128},
 	transaction_validity::TransactionPriority,
-	types::{VoteAccountId, VoteAssetId, VoteWeight},
+	types::{VoteAccountId, VoteWeight},
 	KeyTypeId, Permill,
 };
 use std::{cell::RefCell, collections::HashMap};
@@ -47,7 +53,7 @@ use std::{cell::RefCell, collections::HashMap};
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
-frame_support::construct_runtime!(
+construct_runtime!(
 	pub enum Test where
 		Block = Block,
 		NodeBlock = Block,
@@ -55,6 +61,9 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system,
 		Balances: pallet_balances,
+		Assets: pallet_assets,
+		AssetLink: pallet_asset_link,
+		Timestamp: pallet_timestamp,
 		Paras: paras,
 		Configuration: configuration,
 		ParasShared: shared,
@@ -70,9 +79,8 @@ frame_support::construct_runtime!(
 		Disputes: disputes,
 		Babe: pallet_babe,
 		ValidatorRewardManager: validator_reward_manager,
-		ValidatorElection: pallet_validator_election,
-		SystemTokenManager: pallet_system_token_manager,
-
+		SystemTokenManager: system_token_manager,
+		SystemToken: pallet_system_token,
 	}
 );
 
@@ -308,39 +316,77 @@ impl crate::disputes::SlashingHandler<BlockNumber> for Test {
 
 impl crate::scheduler::Config for Test {}
 
+impl VotingInterface<Test> for () {
+	fn update_vote_status(_who: VoteAccountId, _weight: VoteWeight) {}
+}
+
 impl crate::inclusion::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type DisputesHandler = Disputes;
 	type RewardValidators = TestRewardValidators;
-	type VotingManager = VotingManager;
+	type VotingManager = ();
 	type SystemTokenManager = SystemTokenManager;
-	type RewardAggregateHandler = ValidatorRewardManager;
+	type RewardInterface = ValidatorRewardManager;
 }
 
-parameter_types! {
-	pub const MaxValidators: u32 = 3;
-	pub const MaxSeedTrustValidators: u32 = 3;
-	pub const MaxPotValidators: u32 = 0;
-	pub const SessionsPerEra: u32 = 1;
-}
+// parameter_types! {
+// 	pub const MaxValidators: u32 = 3;
+// 	pub const MaxSeedTrustValidators: u32 = 3;
+// 	pub const MaxPotValidators: u32 = 0;
+// 	pub const SessionsPerEra: u32 = 1;
+// }
 
-impl pallet_validator_election::Config for Test {
+// impl pallet_validator_election::Config for Test {
+// 	type RuntimeEvent = RuntimeEvent;
+// 	type InfraVoteAccountId = AccountId;
+// 	type InfraVotePoints = VoteWeight;
+// 	type NextNewSession = ();
+// 	type SessionInterface = ();
+// 	type CollectiveInterface = ();
+// 	type RewardInterface = ValidatorRewardManager;
+// }
+
+type AssetId = u32;
+impl pallet_assets::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
-	type MaxValidators = MaxValidators;
-	type MaxSeedTrustValidators = MaxSeedTrustValidators;
-	type MaxPotValidators = MaxPotValidators;
-	type InfraVoteId = VoteAccountId;
-	type InfraVotePoints = VoteWeight;
-	type NextNewSession = ();
-	type SessionInterface = ();
-	type SessionsPerEra = SessionsPerEra;
+	type Balance = Balance;
+	type AssetId = AssetId;
+	type AssetLink = AssetLink;
+	type AssetIdParameter = parity_scale_codec::Compact<AssetId>;
+	type Currency = Balances;
+	type CreateOrigin = AsEnsureOriginWithArg<frame_system::EnsureSigned<AccountId>>;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type AssetDeposit = ConstU128<2>;
+	type AssetAccountDeposit = ConstU128<2>;
+	type MetadataDepositBase = ConstU128<0>;
+	type MetadataDepositPerByte = ConstU128<0>;
+	type ApprovalDeposit = ConstU128<0>;
+	type StringLimit = ConstU32<20>;
+	type Freezer = ();
+	type Extra = ();
+	type CallbackHandle = ();
+	type WeightInfo = ();
+	type RemoveItemsLimit = ConstU32<1000>;
 }
 
-impl pallet_system_token_manager::Config for Test {
+impl pallet_asset_link::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
-	type StringLimit = ConstU32<50>;
-	type MaxWrappedSystemToken = ConstU32<10>;
-	type MaxSystemTokenOnParachain = ConstU32<10>;
+	type ReserveAssetModifierOrigin = EnsureRoot<AccountId>;
+	type Assets = Assets;
+	type WeightInfo = ();
+}
+
+impl system_token_manager::Config for Test {
+	type RuntimeEvent = RuntimeEvent;
+	type UnixTime = Timestamp;
+	type StringLimit = ConstU32<128>;
+	type MaxSystemTokens = ConstU32<10>;
+	type MaxOriginalUsedParaIds = ConstU32<10>;
+}
+
+impl pallet_system_token::Config for Test {
+	type RuntimeEvent = RuntimeEvent;
+	type AuthorizedOrigin = EnsureRoot<AccountId>;
 }
 
 impl crate::paras_inherent::Config for Test {
