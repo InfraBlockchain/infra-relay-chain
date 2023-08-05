@@ -173,7 +173,7 @@ pub mod pallet {
 	/// **Value:**
 	///
 	/// BoundedVec of either `original` or `wrapped` system token with maximum `MaxSystemTokens`
-	pub(super) type ParaIdSystemTokens<T: Config> = StorageMap<
+	pub type ParaIdSystemTokens<T: Config> = StorageMap<
 		_,
 		Blake2_128Concat,
 		IbsParaId,
@@ -695,8 +695,6 @@ where
 	///
 	/// **Errors:**
 	///
-	/// - `NotFound`: No value in storage(Maybe no key?).
-	///
 	/// - `TooManySystemTokensOnPara`: Maximum number of elements has been reached for BoundedVec
 	fn try_push_original_for_para_id(
 		para_id: IbsParaId,
@@ -706,7 +704,7 @@ where
 			para_id.clone(),
 			|maybe_used_system_tokens| -> Result<(), DispatchError> {
 				let mut system_tokens =
-					maybe_used_system_tokens.take().ok_or(Error::<T>::NotFound)?;
+					maybe_used_system_tokens.take().map_or(Default::default(), |sys_tokens| sys_tokens);
 				system_tokens
 					.try_push(*system_token_id)
 					.map_err(|_| Error::<T>::TooManySystemTokensOnPara)?;
@@ -731,7 +729,7 @@ where
 		SystemTokenUsedParaIds::<T>::try_mutate_exists(
 			original,
 			|maybe_para_id_list| -> Result<(), DispatchError> {
-				let mut para_ids = maybe_para_id_list.take().ok_or(Error::<T>::NotFound)?;
+				let mut para_ids = maybe_para_id_list.take().map_or(Default::default(), |ids| ids);
 				para_ids.try_push(para_id).map_err(|_| Error::<T>::TooManyUsed)?;
 				*maybe_para_id_list = Some(para_ids);
 				Ok(())
