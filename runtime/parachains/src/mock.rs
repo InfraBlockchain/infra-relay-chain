@@ -380,8 +380,8 @@ impl system_token_manager::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
 	type UnixTime = Timestamp;
 	type StringLimit = ConstU32<128>;
-	type MaxSystemTokens = ConstU32<10>;
-	type MaxOriginalUsedParaIds = ConstU32<10>;
+	type MaxSystemTokens = ConstU32<5>;
+	type MaxOriginalUsedParaIds = ConstU32<5>;
 }
 
 impl pallet_system_token::Config for Test {

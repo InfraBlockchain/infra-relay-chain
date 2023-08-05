@@ -749,11 +749,11 @@ where
 			para_id,
 			|maybe_system_tokens| -> Result<(), DispatchError> {
 				let mut system_tokens = maybe_system_tokens.take().ok_or(Error::<T>::NotFound)?;
-				if system_tokens.len() <= 1 {
+				system_tokens.retain(|&x| x != *sys_token_id);
+				if system_tokens.is_empty() {
 					*maybe_system_tokens = None;
 					return Ok(())
 				}
-				system_tokens.retain(|&x| x != *sys_token_id);
 				*maybe_system_tokens = Some(system_tokens);
 				Ok(())
 			},
@@ -771,6 +771,10 @@ where
 			|maybe_para_ids| -> Result<(), DispatchError> {
 				let mut para_ids = maybe_para_ids.take().ok_or(Error::<T>::NotFound)?;
 				para_ids.retain(|x| *x != para_id);
+				if para_ids.is_empty() {
+					*maybe_para_ids = None;
+					return Ok(())
+				} 
 				*maybe_para_ids = Some(para_ids);
 				Ok(())
 			},

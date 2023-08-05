@@ -22,6 +22,18 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     ext
 }
 
+fn sys_token(
+    para_id: sp_runtime::types::ParaId,
+    pallet_id: sp_runtime::types::PalletId,
+    asset_id: sp_runtime::types::AssetId,
+) -> SystemTokenId {
+    SystemTokenId {
+        para_id,
+        pallet_id,
+        asset_id,
+    }
+}
+
 pub fn mock_system_token(system_token_id: SystemTokenId) -> (
     SystemTokenId, 
     SystemTokenWeight, 
@@ -141,15 +153,19 @@ fn register_system_token_works() {
 fn register_wrapped_system_token_works() {
     new_test_ext().execute_with(|| {
         
-        let original_1000_50_1 = SystemTokenId::new(1000, 50, 1);
-        let wrapped_1000_50_1 = SystemTokenId::new(2000, 50, 99);
+        let original_1000_50_1 = sys_token(1000, 50, 1);
+        let wrapped_2000_50_1 = sys_token(2000, 50, 99);
+        let wrapped_3000_50_1 = sys_token(3000, 50, 99);
+        let wrapped_4000_50_1 = sys_token(4000, 50, 99);
+        let wrapped_5000_50_1 = sys_token(5000, 50, 99);
+        let wrapped_6000_50_1 = sys_token(6000, 50, 99);
 
         // Error case: Try register wrapped token before registering original tokenc
         assert_noop!(
             SystemTokenManager::register_wrapped_system_token(
                 RuntimeOrigin::root(), 
                 original_1000_50_1, 
-                wrapped_1000_50_1
+                wrapped_2000_50_1
             ),
             SystemTokenManagerError::<Test>::OriginalNotRegistered
         );
@@ -157,7 +173,7 @@ fn register_wrapped_system_token_works() {
         assert_ok!(
             SystemTokenManager::register_system_token(
                 RuntimeOrigin::root(),
-                SystemTokenId::new(1000, 50, 1),
+                original_1000_50_1,
                 1_000,
                 "BCLABS".into(),
                 "BCLABS".into(),
@@ -179,14 +195,14 @@ fn register_wrapped_system_token_works() {
             SystemTokenManager::register_wrapped_system_token(
                 RuntimeOrigin::root(), 
                 original_1000_50_1, 
-                wrapped_1000_50_1
+                wrapped_2000_50_1
             )
         );
 
         assert_eq!(
             ParaIdSystemTokens::<Test>::get(&2000).unwrap().to_vec(),
             vec![
-                wrapped_1000_50_1,
+                wrapped_2000_50_1,
             ]
         );
 
@@ -203,7 +219,7 @@ fn register_wrapped_system_token_works() {
             SystemTokenManager::register_wrapped_system_token(
                 RuntimeOrigin::root(), 
                 original_1000_50_1, 
-                wrapped_1000_50_1
+                wrapped_2000_50_1
             ),
             SystemTokenManagerError::<Test>::WrappedAlreadyRegistered
         );
@@ -211,8 +227,26 @@ fn register_wrapped_system_token_works() {
         System::assert_has_event(
             SystemTokenManagerEvent::WrappedSystemTokenRegistered {
                 original: original_1000_50_1,
-                wrapped: wrapped_1000_50_1
+                wrapped: wrapped_2000_50_1
             }.into()
+        );
+
+        for wrapped in vec![wrapped_3000_50_1, wrapped_4000_50_1, wrapped_5000_50_1] {
+            assert_ok!(
+                SystemTokenManager::register_wrapped_system_token(
+                    RuntimeOrigin::root(), 
+                    original_1000_50_1, 
+                    wrapped
+                )
+            );
+        }
+        assert_noop!(
+            SystemTokenManager::register_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1, 
+                wrapped_6000_50_1
+            ),
+            SystemTokenManagerError::<Test>::TooManyUsed
         );
     })
 }
@@ -220,8 +254,8 @@ fn register_wrapped_system_token_works() {
 #[test]
 fn register_relay_wrapped_works() {
     new_test_ext().execute_with(|| {
-        let original_1000_50_1 = SystemTokenId::new(1000, 50, 1);
-        let relay_wrapped_1000_50_1 = SystemTokenId::new(0, 50, 99);
+        let original_1000_50_1 = sys_token(1000, 50, 1);
+        let relay_wrapped_0_50_1 = sys_token(0, 50, 99);
         
         assert_ok!(
             SystemTokenManager::register_system_token(
@@ -242,7 +276,7 @@ fn register_relay_wrapped_works() {
             SystemTokenManager::register_wrapped_system_token(
                 RuntimeOrigin::root(), 
                 original_1000_50_1, 
-                relay_wrapped_1000_50_1
+                relay_wrapped_0_50_1
             )
         );
 
@@ -251,6 +285,117 @@ fn register_relay_wrapped_works() {
             vec![
                 99
             ]
+        );
+    })
+}
+
+#[test]
+fn deregister_wrapped_works() {
+    new_test_ext().execute_with(|| {
+        let original_1000_50_1 = sys_token(1000, 50, 1);
+        let wrapped_2000_50_1 = sys_token(2000, 50, 1);
+        let wrapped_2001_50_1 = sys_token(2001, 50, 99);
+
+        assert_noop!(
+            SystemTokenManager::deregister_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                wrapped_2000_50_1
+            ),
+            SystemTokenManagerError::<Test>::WrappedNotRegistered
+        );
+
+        // Register 'original' & 'wrapped'
+        assert_ok!(
+            SystemTokenManager::register_system_token(
+                RuntimeOrigin::root(),
+                original_1000_50_1,
+                1_000,
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "IUSD".into(),
+                4,
+                1_000
+            )
+        );
+        assert_ok!(
+            SystemTokenManager::register_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1, 
+                wrapped_2000_50_1
+            )
+        );
+        assert_ok!(
+            SystemTokenManager::register_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1, 
+                wrapped_2001_50_1
+            )
+        );
+
+        assert_eq!(
+            ParaIdSystemTokens::<Test>::get(2000).unwrap().to_vec(),
+            vec![
+                wrapped_2000_50_1
+            ]
+        );
+
+        assert_eq!(
+            SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).unwrap().to_vec(),
+            vec![
+                1000u32,
+                2000u32,
+                2001u32
+            ]
+        );
+
+        // Try Deregister 'wrapped(2000)' system token
+        assert_ok!(
+            SystemTokenManager::deregister_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                wrapped_2000_50_1
+            )
+        );
+        assert_eq!(
+            SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).unwrap().to_vec(),
+            vec![
+                1000u32,
+                2001u32
+            ]
+        );
+        assert_eq!(
+            ParaIdSystemTokens::<Test>::get(2000),
+            None
+        ); 
+
+        // Let's try to remove all 'wrapped'
+        assert_ok!(
+            SystemTokenManager::deregister_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                wrapped_2001_50_1
+            )
+        );
+        assert_ok!(
+            SystemTokenManager::deregister_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1
+            )
+        );
+        assert_eq!(
+            SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).is_some(),
+            false
+        );
+        assert_ok!(
+            SystemTokenManager::register_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1, 
+                wrapped_2000_50_1
+            )
+        );
+        assert_eq!(
+            SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).unwrap().to_vec(),
+            vec![2000]
         );
     })
 }
