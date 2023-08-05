@@ -931,14 +931,6 @@ where
 				0,
 				system_token_weight,
 			)?;
-
-			// ToDo: Change to internal method, we don't need 'origin' here
-			pallet_asset_link::pallet::Pallet::<T>::link_system_token(
-				origin,
-				0,
-				asset_id.into(),
-				original,
-			)?;
 		} else {
 			// Parachain
 			let encoded_call: Vec<u8> = pallet_assets::Call::<T>::force_create_with_metadata {

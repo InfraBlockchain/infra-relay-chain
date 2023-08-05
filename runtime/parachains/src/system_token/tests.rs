@@ -1,11 +1,13 @@
 
+use sp_runtime::types::SystemTokenLocalAssetProvider;
+
 use super::*;
 use crate::{
     mock::*,
     system_token_manager::{
         *,
         Error as SystemTokenManagerError,
-        Event as SystemTokenEvent,
+        Event as SystemTokenManagerEvent,
     },
 };
 
@@ -128,7 +130,7 @@ fn register_system_token_works() {
         );
 
         System::assert_has_event(
-            SystemTokenEvent::OriginalSystemTokenRegistered {
+            SystemTokenManagerEvent::OriginalSystemTokenRegistered {
                 original: original_1000_50_1
             }.into()
         )
@@ -168,7 +170,7 @@ fn register_wrapped_system_token_works() {
         );
 
         System::assert_has_event(
-            SystemTokenEvent::OriginalSystemTokenRegistered {
+            SystemTokenManagerEvent::OriginalSystemTokenRegistered {
                 original: original_1000_50_1
             }.into()
         );
@@ -204,6 +206,51 @@ fn register_wrapped_system_token_works() {
                 wrapped_1000_50_1
             ),
             SystemTokenManagerError::<Test>::WrappedAlreadyRegistered
+        );
+
+        System::assert_has_event(
+            SystemTokenManagerEvent::WrappedSystemTokenRegistered {
+                original: original_1000_50_1,
+                wrapped: wrapped_1000_50_1
+            }.into()
+        );
+    })
+}
+
+#[test]
+fn register_relay_wrapped_works() {
+    new_test_ext().execute_with(|| {
+        let original_1000_50_1 = SystemTokenId::new(1000, 50, 1);
+        let relay_wrapped_1000_50_1 = SystemTokenId::new(0, 50, 99);
+        
+        assert_ok!(
+            SystemTokenManager::register_system_token(
+                RuntimeOrigin::root(),
+                SystemTokenId::new(1000, 50, 1),
+                1_000,
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "IUSD".into(),
+                4,
+                1_000
+            )
+        );
+
+        assert_ok!(
+            SystemTokenManager::register_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1, 
+                relay_wrapped_1000_50_1
+            )
+        );
+
+        assert_eq!(
+            Assets::token_list().unwrap(),
+            vec![
+                99
+            ]
         );
     })
 }
