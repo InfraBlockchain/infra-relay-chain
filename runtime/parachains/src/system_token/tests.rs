@@ -376,26 +376,21 @@ fn deregister_wrapped_works() {
                 wrapped_2001_50_1
             )
         );
-        assert_ok!(
+        // Check: Is it possible to deregister 'original's wrapped?
+        // Should be fail if try to deregiter original's wrapped inside this extrinsic
+        // Maybe it should be removed when `deregister_system_token` is called
+        assert_noop!(
             SystemTokenManager::deregister_wrapped_system_token(
                 RuntimeOrigin::root(), 
-                original_1000_50_1
-            )
-        );
-        assert_eq!(
-            SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).is_some(),
-            false
-        );
-        assert_ok!(
-            SystemTokenManager::register_wrapped_system_token(
-                RuntimeOrigin::root(), 
-                original_1000_50_1, 
-                wrapped_2000_50_1
-            )
+                original_1000_50_1 
+            ),
+            SystemTokenManagerError::<Test>::BadAccess
         );
         assert_eq!(
             SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).unwrap().to_vec(),
-            vec![2000]
+            vec![
+                1000
+            ]
         );
     })
 }

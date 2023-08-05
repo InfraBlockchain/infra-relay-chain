@@ -101,6 +101,8 @@ pub mod pallet {
 		TooManyUsed,
 		/// String metadata is out of limit
 		BadMetadata,
+		/// Deregister original's own wrapped token is not allowed
+		BadAccess,
 		/// Some of the value are stored on runtime(e.g key missing)
 		NotFound,
 		/// Error occurred on sending XCM
@@ -338,7 +340,7 @@ pub mod pallet {
 			wrapped: SystemTokenId,
 		) -> DispatchResult {
 			ensure_root(origin.clone())?;
-			Self::try_deregister(SystemTokenType::Wrapped(wrapped))?;
+			Self::try_deregister(SystemTokenType::Wrapped(wrapped, false))?;
 			Self::try_set_sufficient_and_unlink(&origin, wrapped.clone(), false)?;
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered { wrapped });
@@ -608,7 +610,7 @@ where
 		let wsys_tokens = Self::try_get_wsys_token_list(&original)?;
 		for wsys_token_id in wsys_tokens {
 			Self::try_set_sufficient_and_unlink(origin, wsys_token_id, false)?;
-			Self::try_deregister(SystemTokenType::Wrapped(wsys_token_id))?;
+			Self::try_deregister(SystemTokenType::Wrapped(wsys_token_id, true))?;
 		}
 
 		// Original related
@@ -628,7 +630,7 @@ where
 	fn try_deregister(system_token_type: SystemTokenType) -> DispatchResult {
 		match system_token_type {
 			SystemTokenType::Original(original) => Self::try_deregister_original(&original),
-			SystemTokenType::Wrapped(wrapped) => Self::try_deregister_wrapped(&wrapped),
+			SystemTokenType::Wrapped(wrapped, is_allowed) => Self::try_deregister_wrapped(&wrapped, is_allowed),
 		}
 	}
 
@@ -654,12 +656,14 @@ where
 	/// **Changes:**
 	///
 	/// `ParaIdSystemTokens`, `SystemTokenUsedParaIds`, `WrappedSystemTokenOnPara`
-	fn try_deregister_wrapped(wrapped: &SystemTokenId) -> DispatchResult {
+	fn try_deregister_wrapped(wrapped: &SystemTokenId, is_allowed: bool) -> DispatchResult {
 		let original =
 			WrappedSystemTokenOnPara::<T>::get(&wrapped).ok_or(Error::<T>::WrappedNotRegistered)?;
 
 		let SystemTokenId { para_id, .. } = wrapped.clone();
-
+		if original.para_id == para_id && !is_allowed {
+			return Err(Error::<T>::BadAccess.into())
+		}
 		Self::try_remove_sys_token_for_para(wrapped)?;
 		Self::try_remove_para_id(original, para_id)?;
 
@@ -1001,7 +1005,7 @@ pub mod types {
 	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
 	pub enum SystemTokenType {
 		Original(SystemTokenId),
-		Wrapped(SystemTokenId),
+		Wrapped(SystemTokenId, bool),
 	}
 
 	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo)]
