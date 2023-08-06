@@ -34,30 +34,6 @@ fn sys_token(
     }
 }
 
-pub fn mock_system_token(system_token_id: SystemTokenId) -> (
-    SystemTokenId, 
-    SystemTokenWeight, 
-    Vec<u8>, // issuer
-    Vec<u8>, // description
-    Vec<u8>, // url
-    Vec<u8>, // name
-    Vec<u8>, // symbol
-    u8,
-    u128
-) {
-    (
-        system_token_id,
-        1_000,
-        "BCLABS".into(),
-        "BCLABS".into(),
-        "BCLABS".into(),
-        "BCLABS".into(),
-        "IUSD".into(),
-        4,
-        1_000
-    )
-}
-
 #[test]
 fn genesis_works() {
     new_test_ext().execute_with(|| {
@@ -391,6 +367,50 @@ fn deregister_wrapped_works() {
             vec![
                 1000
             ]
+        );
+    })
+}
+
+#[test]
+fn deregister_system_token_works() {
+    new_test_ext().execute_with(|| {
+        let original_1000_50_1 = sys_token(1000, 50, 1);
+        let wrapped_2000_50_1 = sys_token(2000, 50, 1);
+        let wrapped_2001_50_1 = sys_token(2001, 50, 99);
+
+        // Register 'original' & 'wrapped'
+        assert_ok!(
+            SystemTokenManager::register_system_token(
+                RuntimeOrigin::root(),
+                original_1000_50_1,
+                1_000,
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "BCLABS".into(),
+                "IUSD".into(),
+                4,
+                1_000
+            )
+        );
+        assert_ok!(
+            SystemTokenManager::register_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1, 
+                wrapped_2000_50_1
+            )
+        );
+        assert_ok!(
+            SystemTokenManager::register_wrapped_system_token(
+                RuntimeOrigin::root(), 
+                original_1000_50_1, 
+                wrapped_2001_50_1
+            )
+        );
+
+        // Try deregister 'original' system token
+        assert_ok!(
+            SystemTokenManager::deregister_system_token(RuntimeOrigin::root(), original_1000_50_1)
         );
     })
 }

@@ -105,6 +105,14 @@ pub mod pallet {
 		BadAccess,
 		/// Some of the value are stored on runtime(e.g key missing)
 		NotFound,
+		/// Property of system token is not found 
+		PropertyNotFound,
+		/// System tokens used by para id are not found
+		ParaIdSystemTokensNotFound,
+		/// A specific system token used para ids are not found
+		ParaIdsNotFound,
+		/// Metadata of `original` system token is not found
+		MetadataNotFound,
 		/// Error occurred on sending XCM
 		DmpError,
 	}
@@ -149,6 +157,7 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_on_parachain)]
 	/// **Description:**
+	/// 
 	/// Stored when `wrapped` system token is registered. Used for converting `wrapped` system token to `original` system token
 	///
 	/// **Key:**
@@ -593,7 +602,7 @@ where
 		Self::try_push_sys_token_for_para_id(para_id, wrapped)?;
 		Self::try_push_para_id(para_id, original)?;
 
-		let property = SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::NotFound)?;
+		let property = SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
 		let weight = property.system_token_weight.map_or(BASE_SYSTEM_TOKEN_WEIGHT, |w| w);
 		Ok(weight)
 	}
@@ -606,16 +615,15 @@ where
 	///
 	///
 	fn try_deregister_all(origin: &OriginFor<T>, original: SystemTokenId) -> DispatchResult {
-		// Wrapped related
+
 		let wsys_tokens = Self::try_get_wsys_token_list(&original)?;
 		for wsys_token_id in wsys_tokens {
 			Self::try_set_sufficient_and_unlink(origin, wsys_token_id, false)?;
 			Self::try_deregister(SystemTokenType::Wrapped(wsys_token_id, true))?;
 		}
 
-		// Original related
-		Self::try_deregister(SystemTokenType::Original(original))?;
 		Self::try_set_sufficient_and_weight(&original, false, None)?;
+		Self::try_deregister(SystemTokenType::Original(original))?;
 
 		Ok(())
 	}
@@ -642,7 +650,6 @@ where
 	///
 	/// `WrappedSystemTokenOnPara`, `OrigingalSystemTokenMetadata`, `SystemTokenProperties`
 	fn try_deregister_original(original: &SystemTokenId) -> DispatchResult {
-		Self::try_remove_sys_token_for_para(original)?;
 		OrigingalSystemTokenMetadata::<T>::remove(original);
 		SystemTokenProperties::<T>::remove(original);
 		WrappedSystemTokenOnPara::<T>::remove(original);
@@ -683,7 +690,7 @@ where
 		system_token_weight: SystemTokenWeight,
 	) -> DispatchResult {
 		SystemTokenProperties::<T>::try_mutate_exists(&original, |p| -> DispatchResult {
-			let mut property = p.take().ok_or(Error::<T>::NotFound)?;
+			let mut property = p.take().ok_or(Error::<T>::PropertyNotFound)?;
 			property.system_token_weight = Some(system_token_weight);
 			*p = Some(property.clone());
 			Self::deposit_event(Event::<T>::SetSystemTokenWeight { original, property });
@@ -752,7 +759,7 @@ where
 		ParaIdSystemTokens::<T>::try_mutate_exists(
 			para_id,
 			|maybe_system_tokens| -> Result<(), DispatchError> {
-				let mut system_tokens = maybe_system_tokens.take().ok_or(Error::<T>::NotFound)?;
+				let mut system_tokens = maybe_system_tokens.take().ok_or(Error::<T>::ParaIdSystemTokensNotFound)?;
 				system_tokens.retain(|&x| x != *sys_token_id);
 				if system_tokens.is_empty() {
 					*maybe_system_tokens = None;
@@ -773,7 +780,7 @@ where
 		SystemTokenUsedParaIds::<T>::try_mutate_exists(
 			original,
 			|maybe_para_ids| -> Result<(), DispatchError> {
-				let mut para_ids = maybe_para_ids.take().ok_or(Error::<T>::NotFound)?;
+				let mut para_ids = maybe_para_ids.take().ok_or(Error::<T>::ParaIdsNotFound)?;
 				para_ids.retain(|x| *x != para_id);
 				if para_ids.is_empty() {
 					*maybe_para_ids = None;
@@ -917,9 +924,9 @@ where
 		wrapped: SystemTokenId,
 		system_token_weight: SystemTokenWeight,
 	) -> DispatchResult {
-		let original = <WrappedSystemTokenOnPara<T>>::get(&wrapped).ok_or(Error::<T>::NotFound)?;
+		let original = <WrappedSystemTokenOnPara<T>>::get(&wrapped).ok_or(Error::<T>::WrappedNotRegistered)?;
 		let (_, asset_metadata) =
-			OrigingalSystemTokenMetadata::<T>::get(&original).ok_or(Error::<T>::NotFound)?;
+			OrigingalSystemTokenMetadata::<T>::get(&original).ok_or(Error::<T>::MetadataNotFound)?;
 		let SystemTokenId { para_id, pallet_id, asset_id } = wrapped;
 		let root = system_token_helper::root_account::<T>();
 		if para_id == 0u32 {
