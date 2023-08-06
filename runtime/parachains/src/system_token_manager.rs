@@ -310,8 +310,9 @@ pub mod pallet {
 			Self::try_create_wrapped(wrapped_for_relay_chain, system_token_weight)?;
 
 			Self::deposit_event(Event::<T>::OriginalSystemTokenRegistered { original });
-
-			Ok(())
+			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered { original, wrapped });
+			
+			Ok(())	
 		}
 
 		#[pallet::call_index(1)]
