@@ -1,16 +1,21 @@
-
 use super::*;
 use crate::{
 	mock::*,
-	system_token_manager::{Error as SystemTokenManagerError, Event as SystemTokenManagerEvent, *, self},
+	system_token_manager::{
+		self, Error as SystemTokenManagerError, Event as SystemTokenManagerEvent, *,
+	},
 };
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
 	let mut storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-	let _ =
-		pallet_balances::GenesisConfig::<Test> { balances: vec![(0, 100), (1, 98), (2, 1)] }.assimilate_storage(&mut storage);
-	
-	GenesisBuild::<Test>::assimilate_storage(&system_token_manager::GenesisConfig { base_system_token_weight: 100_000u128 }, &mut storage).unwrap();
+	let _ = pallet_balances::GenesisConfig::<Test> { balances: vec![(0, 100), (1, 98), (2, 1)] }
+		.assimilate_storage(&mut storage);
+
+	GenesisBuild::<Test>::assimilate_storage(
+		&system_token_manager::GenesisConfig { base_system_token_weight: 100_000u128 },
+		&mut storage,
+	)
+	.unwrap();
 
 	let mut ext: sp_io::TestExternalities = storage.into();
 	ext.execute_with(|| System::set_block_number(1)); // For 'Event'

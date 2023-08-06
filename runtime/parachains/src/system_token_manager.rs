@@ -309,14 +309,12 @@ pub mod pallet {
 			Self::try_create_wrapped(wrapped_for_relay_chain, system_token_weight)?;
 
 			Self::deposit_event(Event::<T>::OriginalSystemTokenRegistered { original });
-			Self::deposit_event(
-				Event::<T>::WrappedSystemTokenRegistered { 
-					original, 
-					wrapped: wrapped_for_relay_chain 
-				}
-			);
-			
-			Ok(())	
+			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered {
+				original,
+				wrapped: wrapped_for_relay_chain,
+			});
+
+			Ok(())
 		}
 
 		#[pallet::call_index(1)]
@@ -674,7 +672,10 @@ where
 	/// **Changes:**
 	///
 	/// `ParaIdSystemTokens`, `SystemTokenUsedParaIds`, `OriginalSystemTokenConverter`, `SystemTokenProperties`
-	fn try_deregister(wrapped: &SystemTokenId, is_allowed_to_remove_original: bool) -> DispatchResult {
+	fn try_deregister(
+		wrapped: &SystemTokenId,
+		is_allowed_to_remove_original: bool,
+	) -> DispatchResult {
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
 
@@ -683,7 +684,7 @@ where
 			return Err(Error::<T>::BadAccess.into())
 		}
 
-		// Case: Original's self-wrapped 
+		// Case: Original's self-wrapped
 		if original.para_id == para_id {
 			OriginalSystemTokenMetadata::<T>::remove(original);
 			Self::try_set_sufficient_and_weight(&original, false, None)?;
