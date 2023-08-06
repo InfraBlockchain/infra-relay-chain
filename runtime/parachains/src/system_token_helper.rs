@@ -11,7 +11,7 @@ use sp_runtime::{
 	traits::AccountIdConversion,
 	types::{PalletId, ParaId},
 };
-use sp_std::{vec, vec::Vec, boxed::Box};
+use sp_std::{boxed::Box, vec, vec::Vec};
 
 use xcm::{
 	opaque::{

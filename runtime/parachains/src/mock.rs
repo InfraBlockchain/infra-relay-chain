@@ -18,22 +18,22 @@
 
 use crate::{
 	configuration, disputes, dmp, hrmp, inclusion, initializer, origin, paras, paras_inherent,
-	scheduler, session_info, shared,
+	scheduler, session_info, shared, system_token_manager,
 	ump::{self, MessageId, UmpSink},
-	validator_reward_manager, system_token_manager, ParaId,
+	validator_reward_manager, ParaId,
 };
-use frame_system::EnsureRoot;
 use frame_support::{
 	construct_runtime,
-	parameter_types,
 	pallet_prelude::*,
+	parameter_types,
 	traits::{
-		GenesisBuild, KeyOwnerProofSystem, ValidatorSet, 
-		ValidatorSetWithIdentification, AsEnsureOriginWithArg
+		AsEnsureOriginWithArg, GenesisBuild, KeyOwnerProofSystem, ValidatorSet,
+		ValidatorSetWithIdentification,
 	},
 	weights::Weight,
 };
 use frame_support_test::TestRandomness;
+use frame_system::EnsureRoot;
 pub use pallet_validator_election::VotingInterface;
 use parity_scale_codec::Decode;
 use primitives::{
@@ -43,7 +43,7 @@ use primitives::{
 use sp_core::H256;
 use sp_io::TestExternalities;
 use sp_runtime::{
-	traits::{BlakeTwo256, IdentityLookup, ConstU128},
+	traits::{BlakeTwo256, ConstU128, IdentityLookup},
 	transaction_validity::TransactionPriority,
 	types::{VoteAccountId, VoteWeight},
 	KeyTypeId, Permill,

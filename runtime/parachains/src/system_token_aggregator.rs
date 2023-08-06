@@ -78,7 +78,7 @@ pub mod pallet {
 	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> 
+	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T>
 	where
 		u32: From<<T as frame_system::Config>::BlockNumber>,
 		<<T as frame_system::Config>::RuntimeOrigin as OriginTrait>::AccountId:
@@ -118,9 +118,8 @@ impl<T: Config> Pallet<T> {
 			}
 
 			if let Some(asset_multilocation) =
-				T::AssetMultiLocationGetter::get_asset_multi_location(
-					asset_id.clone().into(),
-				) {
+				T::AssetMultiLocationGetter::get_asset_multi_location(asset_id.clone().into())
+			{
 				system_token_helper::do_teleport_asset::<T>(
 					fee_account.clone(),
 					amount,

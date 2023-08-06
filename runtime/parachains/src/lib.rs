@@ -43,7 +43,6 @@ pub mod system_token_manager;
 pub mod ump;
 pub mod validator_reward_manager;
 
-
 pub mod runtime_api_impl;
 
 mod util;
