@@ -329,23 +329,6 @@ impl crate::inclusion::Config for Test {
 	type RewardInterface = ValidatorRewardManager;
 }
 
-// parameter_types! {
-// 	pub const MaxValidators: u32 = 3;
-// 	pub const MaxSeedTrustValidators: u32 = 3;
-// 	pub const MaxPotValidators: u32 = 0;
-// 	pub const SessionsPerEra: u32 = 1;
-// }
-
-// impl pallet_validator_election::Config for Test {
-// 	type RuntimeEvent = RuntimeEvent;
-// 	type InfraVoteAccountId = AccountId;
-// 	type InfraVotePoints = VoteWeight;
-// 	type NextNewSession = ();
-// 	type SessionInterface = ();
-// 	type CollectiveInterface = ();
-// 	type RewardInterface = ValidatorRewardManager;
-// }
-
 type AssetId = u32;
 impl pallet_assets::Config for Test {
 	type RuntimeEvent = RuntimeEvent;

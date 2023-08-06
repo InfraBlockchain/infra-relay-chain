@@ -136,7 +136,7 @@ pub mod pallet {
 	///
 	/// Metadata(`SystemTokenMetadata`, `AssetMetadata`)
 	pub type OrigingalSystemTokenMetadata<T: Config> =
-		StorageMap<_, Blake2_128Concat, SystemTokenId, IbsMetadata<T>, OptionQuery>;
+		StorageMap<_, Blake2_128Concat, SystemTokenId, IbsSystemTokenMetadata<T>, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn system_token_properties)]
@@ -296,11 +296,11 @@ pub mod pallet {
 			original: SystemTokenId,
 			wrapped: SystemTokenId,
 		) -> DispatchResult {
-			ensure_root(origin.clone())?;
+			ensure_root(origin)?;
 
 			let system_token_weight = Self::try_register_wrapped(&original, &wrapped)?;
 
-			Self::try_create_wrapped(origin.clone(), wrapped, system_token_weight)?;
+			Self::try_create_wrapped(wrapped, system_token_weight)?;
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered { original, wrapped });
 
@@ -323,7 +323,7 @@ pub mod pallet {
 			original: SystemTokenId,
 		) -> DispatchResult {
 			ensure_root(origin.clone())?;
-			Self::try_deregister_all(&origin, original)?;
+			Self::try_deregister_all(original)?;
 			Self::deposit_event(Event::<T>::OriginalSystemTokenDeregistered { original });
 
 			Ok(())
@@ -348,9 +348,9 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			wrapped: SystemTokenId,
 		) -> DispatchResult {
-			ensure_root(origin.clone())?;
+			ensure_root(origin)?;
 			Self::try_deregister(SystemTokenType::Wrapped(wrapped, false))?;
-			Self::try_set_sufficient_and_unlink(&origin, wrapped.clone(), false)?;
+			Self::try_set_sufficient_and_unlink(wrapped.clone(), false)?;
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered { wrapped });
 
@@ -373,13 +373,12 @@ pub mod pallet {
 			original: SystemTokenId,
 			system_token_weight: SystemTokenWeight,
 		) -> DispatchResult {
-			ensure_root(origin.clone())?;
+			ensure_root(origin)?;
 
-			let wsys_tokens = Self::try_get_wsys_token_list(&original)?;
-			for wsys_token_id in wsys_tokens.iter() {
+			let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
+			for wrapped_system_token_id in wrapped_system_tokens.iter() {
 				Self::try_update_weight_of_wrapped(
-					origin.clone(),
-					wsys_token_id,
+					wrapped_system_token_id,
 					system_token_weight,
 				)?;
 			}
@@ -496,7 +495,7 @@ where
 	/// **Validity**
 	///
 	/// Ensure `original` system token is already registered
-	fn try_get_wsys_token_list(original: &SystemTokenId) -> Result<Vec<SystemTokenId>, Error<T>> {
+	fn try_get_wrapped_system_token_list(original: &SystemTokenId) -> Result<Vec<SystemTokenId>, Error<T>> {
 		ensure!(
 			SystemTokenProperties::<T>::contains_key(&original),
 			Error::<T>::OriginalNotRegistered
@@ -615,11 +614,11 @@ where
 	/// **Changes:**
 	///
 	///
-	fn try_deregister_all(origin: &OriginFor<T>, original: SystemTokenId) -> DispatchResult {
-		let wsys_tokens = Self::try_get_wsys_token_list(&original)?;
-		for wsys_token_id in wsys_tokens {
-			Self::try_set_sufficient_and_unlink(origin, wsys_token_id, false)?;
-			Self::try_deregister(SystemTokenType::Wrapped(wsys_token_id, true))?;
+	fn try_deregister_all(original: SystemTokenId) -> DispatchResult {
+		let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
+		for wrapped_system_token_id in wrapped_system_tokens {
+			Self::try_set_sufficient_and_unlink(wrapped_system_token_id, false)?;
+			Self::try_deregister(SystemTokenType::Wrapped(wrapped_system_token_id, true))?;
 		}
 
 		Self::try_set_sufficient_and_weight(&original, false, None)?;
@@ -757,7 +756,6 @@ where
 	/// Try remove `ParaIdSystemTokens` for any(`original` or `wrapped`) system token id
 	fn try_remove_sys_token_for_para(sys_token_id: &SystemTokenId) -> DispatchResult {
 		let SystemTokenId { para_id, .. } = sys_token_id.clone();
-		// ToDo: Should we check 'len of registered system token'?
 		ParaIdSystemTokens::<T>::try_mutate_exists(
 			para_id,
 			|maybe_system_tokens| -> Result<(), DispatchError> {
@@ -819,16 +817,13 @@ where
 	/// If `para_id == 0`, which means Relay Chain, call internal `Assets` pallet method.
 	/// Otherwise, send DMP of `set_sufficient_with_unlink_system_token` to expected `para_id` destination
 	fn try_set_sufficient_and_unlink(
-		origin: &OriginFor<T>,
 		wrapped: SystemTokenId,
 		is_sufficient: bool,
 	) -> DispatchResult {
 		let SystemTokenId { para_id, pallet_id, asset_id } = wrapped;
 		if para_id == 0u32 {
-			// ToDo: Change to internal method due to 'origin'
 			// Relay Chain
-			pallet_assets::pallet::Pallet::<T>::set_sufficient_with_unlink_system_token(
-				origin.clone(),
+			pallet_assets::pallet::Pallet::<T>::do_set_sufficient_and_unlink(
 				asset_id.into(),
 				false,
 			)?;
@@ -881,7 +876,6 @@ where
 	/// If `para_id == 0`, call internal `Assets` pallet method.
 	/// Otherwise, send DMP of `update_system_token_weight` to expected `para_id` destination
 	fn try_update_weight_of_wrapped(
-		origin: OriginFor<T>,
 		wrapped: &SystemTokenId,
 		system_token_weight: SystemTokenWeight,
 	) -> DispatchResult {
@@ -889,9 +883,7 @@ where
 
 		if para_id == 0u32 {
 			// Relay Chain
-			// ToDo: Change to internal call
-			pallet_assets::pallet::Pallet::<T>::update_system_token_weight(
-				origin.clone(),
+			pallet_assets::pallet::Pallet::<T>::do_update_system_token_weight(
 				asset_id.into(),
 				system_token_weight,
 			)?
@@ -923,7 +915,6 @@ where
 	/// If `para_id == 0`, call internal `Assets` pallet method.
 	/// Otherwise, send DMP of `force_create_with_metadata` to expected `para_id` destination
 	fn try_create_wrapped(
-		origin: OriginFor<T>,
 		wrapped: SystemTokenId,
 		system_token_weight: SystemTokenWeight,
 	) -> DispatchResult {
@@ -935,9 +926,7 @@ where
 		let root = system_token_helper::root_account::<T>();
 		if para_id == 0u32 {
 			// Relay Chain
-			// ToDo: Change to internal method, we don't need 'origin' here
-			pallet_assets::pallet::Pallet::<T>::force_create_with_metadata(
-				origin.clone(),
+			pallet_assets::pallet::Pallet::<T>::do_create_asset_with_metadata(
 				asset_id.into(),
 				T::Lookup::unlookup(root),
 				true,
@@ -1005,7 +994,7 @@ pub mod types {
 	use scale_info::TypeInfo;
 
 	pub type StringLimitOf<T> = <T as Config>::StringLimit;
-	pub type IbsMetadata<T> = (
+	pub type IbsSystemTokenMetadata<T> = (
 		SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
 		AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, <T as pallet_assets::Config>::Balance>,
 	);
