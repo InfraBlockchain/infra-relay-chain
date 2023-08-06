@@ -227,7 +227,7 @@ pub mod pallet {
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig {
-		pub base_system_token_weight: SystemTokenWeight
+		pub base_system_token_weight: SystemTokenWeight,
 	}
 
 	#[cfg(feature = "std")]
@@ -240,7 +240,10 @@ pub mod pallet {
 	#[pallet::genesis_build]
 	impl<T: Config> GenesisBuild<T> for GenesisConfig {
 		fn build(&self) {
-			assert!(self.base_system_token_weight > 0u128, "Base weight should be greater than zero");
+			assert!(
+				self.base_system_token_weight > 0u128,
+				"Base weight should be greater than zero"
+			);
 			BaseSystemTokenWeight::<T>::put(self.base_system_token_weight);
 		}
 	}
@@ -259,7 +262,7 @@ pub mod pallet {
 		//
 		// Params:
 		// - original: `Original` system token id expected to be registered
-		// - wrapped_fore_relay_chain: Original's `Wrapped` system token for relay chain 
+		// - wrapped_fore_relay_chain: Original's `Wrapped` system token for relay chain
 		// - issuer: Human-readable issuer of system token which is metadata for Relay Chain
 		// - description: Human-readable description of system token which is metadata for Relay Chain
 		// - url: Human-readable url of system token which is metadata for Relay Chain
@@ -302,7 +305,8 @@ pub mod pallet {
 			)?;
 			Self::try_set_sufficient_and_weight(&original, true, Some(system_token_weight))?;
 			// Create wrapped for Relay Chain
-			let system_token_weight = Self::try_register_wrapped(&original, &wrapped_for_relay_chain)?;
+			let system_token_weight =
+				Self::try_register_wrapped(&original, &wrapped_for_relay_chain)?;
 			Self::try_create_wrapped(wrapped_for_relay_chain, system_token_weight)?;
 
 			Self::deposit_event(Event::<T>::OriginalSystemTokenRegistered { original });
@@ -413,10 +417,7 @@ pub mod pallet {
 
 			let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
 			for wrapped_system_token_id in wrapped_system_tokens.iter() {
-				Self::try_update_weight_of_wrapped(
-					wrapped_system_token_id,
-					system_token_weight,
-				)?;
+				Self::try_update_weight_of_wrapped(wrapped_system_token_id, system_token_weight)?;
 			}
 			Self::try_update_weight_property_of_original(original, system_token_weight)?;
 
@@ -531,7 +532,9 @@ where
 	/// **Validity**
 	///
 	/// Ensure `original` system token is already registered
-	fn try_get_wrapped_system_token_list(original: &SystemTokenId) -> Result<Vec<SystemTokenId>, Error<T>> {
+	fn try_get_wrapped_system_token_list(
+		original: &SystemTokenId,
+	) -> Result<Vec<SystemTokenId>, Error<T>> {
 		ensure!(
 			SystemTokenProperties::<T>::contains_key(&original),
 			Error::<T>::OriginalNotRegistered
@@ -701,8 +704,8 @@ where
 	///
 	/// `ParaIdSystemTokens`, `SystemTokenUsedParaIds`, `OriginalSystemTokenConverter`, `SystemTokenProperties`
 	fn try_deregister_wrapped(wrapped: &SystemTokenId, is_allowed: bool) -> DispatchResult {
-		let original =
-			OriginalSystemTokenConverter::<T>::get(&wrapped).ok_or(Error::<T>::WrappedNotRegistered)?;
+		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
+			.ok_or(Error::<T>::WrappedNotRegistered)?;
 
 		let SystemTokenId { para_id, .. } = wrapped.clone();
 		if original.para_id == para_id && !is_allowed {
@@ -955,10 +958,10 @@ where
 		wrapped: SystemTokenId,
 		system_token_weight: SystemTokenWeight,
 	) -> DispatchResult {
-		let original =
-			<OriginalSystemTokenConverter<T>>::get(&wrapped).ok_or(Error::<T>::WrappedNotRegistered)?;
-		let (_, asset_metadata) = OriginalSystemTokenMetadata::<T>::get(&original)
-			.ok_or(Error::<T>::MetadataNotFound)?;
+		let original = <OriginalSystemTokenConverter<T>>::get(&wrapped)
+			.ok_or(Error::<T>::WrappedNotRegistered)?;
+		let (_, asset_metadata) =
+			OriginalSystemTokenMetadata::<T>::get(&original).ok_or(Error::<T>::MetadataNotFound)?;
 		let SystemTokenId { para_id, pallet_id, asset_id } = wrapped;
 		let root = system_token_helper::root_account::<T>();
 		if para_id == 0u32 {
