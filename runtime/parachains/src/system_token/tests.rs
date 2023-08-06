@@ -1,16 +1,17 @@
-use sp_runtime::types::SystemTokenLocalAssetProvider;
 
 use super::*;
 use crate::{
 	mock::*,
-	system_token_manager::{Error as SystemTokenManagerError, Event as SystemTokenManagerEvent, *},
+	system_token_manager::{Error as SystemTokenManagerError, Event as SystemTokenManagerEvent, *, self},
 };
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
 	let mut storage = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
-	let config: pallet_balances::GenesisConfig<Test> =
-		pallet_balances::GenesisConfig::<Test> { balances: vec![(0, 100), (1, 98), (2, 1)] };
-	config.assimilate_storage(&mut storage).unwrap();
+	let _ =
+		pallet_balances::GenesisConfig::<Test> { balances: vec![(0, 100), (1, 98), (2, 1)] }.assimilate_storage(&mut storage);
+	
+	GenesisBuild::<Test>::assimilate_storage(&system_token_manager::GenesisConfig { base_system_token_weight: 100_000u128 }, &mut storage).unwrap();
+
 	let mut ext: sp_io::TestExternalities = storage.into();
 	ext.execute_with(|| System::set_block_number(1)); // For 'Event'
 	ext
@@ -41,6 +42,7 @@ fn only_root_can_call_works() {
 			SystemTokenManager::register_system_token(
 				RuntimeOrigin::signed(1u64),
 				SystemTokenId::new(1000, 50, 1),
+				SystemTokenId::new(0, 50, 1),
 				1_000,
 				"BCLABS".into(),
 				"BCLABS".into(),
@@ -61,6 +63,7 @@ fn register_system_token_works() {
 		assert_ok!(SystemTokenManager::register_system_token(
 			RuntimeOrigin::root(),
 			SystemTokenId::new(1000, 50, 1),
+			SystemTokenId::new(0, 50, 1),
 			1_000,
 			"BCLABS".into(),
 			"BCLABS".into(),
@@ -80,7 +83,7 @@ fn register_system_token_works() {
 
 		assert_eq!(
 			SystemTokenUsedParaIds::<Test>::get(&original_1000_50_1).unwrap().to_vec(),
-			vec![1000u32]
+			vec![1000u32, 0u32]
 		);
 
 		// Scenario 2: Try register 'same' system token id. Should be failed
@@ -88,6 +91,7 @@ fn register_system_token_works() {
 			SystemTokenManager::register_system_token(
 				RuntimeOrigin::root(),
 				SystemTokenId::new(1000, 50, 1),
+				SystemTokenId::new(0, 50, 1),
 				1_000,
 				"BCLABS".into(),
 				"BCLABS".into(),
@@ -115,8 +119,7 @@ fn register_wrapped_system_token_works() {
 		let wrapped_3000_50_1 = sys_token(3000, 50, 99);
 		let wrapped_4000_50_1 = sys_token(4000, 50, 99);
 		let wrapped_5000_50_1 = sys_token(5000, 50, 99);
-		let wrapped_6000_50_1 = sys_token(6000, 50, 99);
-
+		let wrapped_0_50_1 = sys_token(0, 50, 99);
 		// Error case: Try register wrapped token before registering original tokenc
 		assert_noop!(
 			SystemTokenManager::register_wrapped_system_token(
@@ -130,6 +133,7 @@ fn register_wrapped_system_token_works() {
 		assert_ok!(SystemTokenManager::register_system_token(
 			RuntimeOrigin::root(),
 			original_1000_50_1,
+			wrapped_0_50_1,
 			1_000,
 			"BCLABS".into(),
 			"BCLABS".into(),
@@ -158,7 +162,7 @@ fn register_wrapped_system_token_works() {
 
 		assert_eq!(
 			SystemTokenUsedParaIds::<Test>::get(&original_1000_50_1).unwrap().to_vec(),
-			vec![1000u32, 2000u32,]
+			vec![1000u32, 0u32, 2000u32]
 		);
 
 		// Error case: Try register 'same' wrapped token
@@ -179,7 +183,7 @@ fn register_wrapped_system_token_works() {
 			.into(),
 		);
 
-		for wrapped in vec![wrapped_3000_50_1, wrapped_4000_50_1, wrapped_5000_50_1] {
+		for wrapped in vec![wrapped_3000_50_1, wrapped_4000_50_1] {
 			assert_ok!(SystemTokenManager::register_wrapped_system_token(
 				RuntimeOrigin::root(),
 				original_1000_50_1,
@@ -190,39 +194,10 @@ fn register_wrapped_system_token_works() {
 			SystemTokenManager::register_wrapped_system_token(
 				RuntimeOrigin::root(),
 				original_1000_50_1,
-				wrapped_6000_50_1
+				wrapped_5000_50_1
 			),
 			SystemTokenManagerError::<Test>::TooManyUsed
 		);
-	})
-}
-
-#[test]
-fn register_relay_wrapped_works() {
-	new_test_ext().execute_with(|| {
-		let original_1000_50_1 = sys_token(1000, 50, 1);
-		let relay_wrapped_0_50_1 = sys_token(0, 50, 99);
-
-		assert_ok!(SystemTokenManager::register_system_token(
-			RuntimeOrigin::root(),
-			SystemTokenId::new(1000, 50, 1),
-			1_000,
-			"BCLABS".into(),
-			"BCLABS".into(),
-			"BCLABS".into(),
-			"BCLABS".into(),
-			"IUSD".into(),
-			4,
-			1_000
-		));
-
-		assert_ok!(SystemTokenManager::register_wrapped_system_token(
-			RuntimeOrigin::root(),
-			original_1000_50_1,
-			relay_wrapped_0_50_1
-		));
-
-		assert_eq!(Assets::token_list().unwrap(), vec![99]);
 	})
 }
 
@@ -232,6 +207,7 @@ fn deregister_wrapped_works() {
 		let original_1000_50_1 = sys_token(1000, 50, 1);
 		let wrapped_2000_50_1 = sys_token(2000, 50, 1);
 		let wrapped_2001_50_1 = sys_token(2001, 50, 99);
+		let wrapped_0_50_1 = sys_token(0, 50, 99);
 
 		assert_noop!(
 			SystemTokenManager::deregister_wrapped_system_token(
@@ -245,6 +221,7 @@ fn deregister_wrapped_works() {
 		assert_ok!(SystemTokenManager::register_system_token(
 			RuntimeOrigin::root(),
 			original_1000_50_1,
+			wrapped_0_50_1,
 			1_000,
 			"BCLABS".into(),
 			"BCLABS".into(),
@@ -272,7 +249,7 @@ fn deregister_wrapped_works() {
 
 		assert_eq!(
 			SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).unwrap().to_vec(),
-			vec![1000u32, 2000u32, 2001u32]
+			vec![1000u32, 0u32, 2000u32, 2001u32]
 		);
 
 		// Try Deregister 'wrapped(2000)' system token
@@ -282,7 +259,7 @@ fn deregister_wrapped_works() {
 		));
 		assert_eq!(
 			SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).unwrap().to_vec(),
-			vec![1000u32, 2001u32]
+			vec![1000u32, 0u32, 2001u32]
 		);
 		assert_eq!(ParaIdSystemTokens::<Test>::get(2000), None);
 
@@ -303,7 +280,7 @@ fn deregister_wrapped_works() {
 		);
 		assert_eq!(
 			SystemTokenUsedParaIds::<Test>::get(original_1000_50_1).unwrap().to_vec(),
-			vec![1000]
+			vec![1000u32, 0u32]
 		);
 	})
 }
@@ -314,11 +291,13 @@ fn deregister_system_token_works() {
 		let original_1000_50_1 = sys_token(1000, 50, 1);
 		let wrapped_2000_50_1 = sys_token(2000, 50, 1);
 		let wrapped_2001_50_1 = sys_token(2001, 50, 99);
+		let wrapped_0_50_1 = sys_token(0, 50, 99);
 
 		// Register 'original' & 'wrapped'
 		assert_ok!(SystemTokenManager::register_system_token(
 			RuntimeOrigin::root(),
 			original_1000_50_1,
+			wrapped_0_50_1,
 			1_000,
 			"BCLABS".into(),
 			"BCLABS".into(),

@@ -303,7 +303,6 @@ pub mod pallet {
 				decimals,
 				min_balance,
 			)?;
-			Self::try_set_sufficient_and_weight(&original, true, Some(system_token_weight))?;
 			// Create wrapped for Relay Chain
 			let system_token_weight =
 				Self::try_register_wrapped(&original, &wrapped_for_relay_chain)?;
@@ -395,8 +394,7 @@ pub mod pallet {
 			wrapped: SystemTokenId,
 		) -> DispatchResult {
 			ensure_root(origin)?;
-			Self::try_deregister(SystemTokenType::Wrapped(wrapped, false))?;
-			Self::try_set_sufficient_and_unlink(wrapped.clone(), false)?;
+			Self::try_deregister(&wrapped, false)?;
 
 			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered { wrapped });
 
@@ -584,7 +582,7 @@ where
 		let SystemTokenId { para_id, .. } = original.clone();
 		Self::try_push_sys_token_for_para_id(para_id, &original)?;
 		Self::try_push_para_id(para_id, &original)?;
-
+		Self::try_set_sufficient_and_weight(&original, true, Some(system_token_weight))?;
 		SystemTokenProperties::<T>::insert(
 			&original,
 			SystemTokenProperty {
@@ -663,42 +661,9 @@ where
 	fn try_deregister_all(original: SystemTokenId) -> DispatchResult {
 		let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
 		for wrapped_system_token_id in wrapped_system_tokens {
-			Self::try_set_sufficient_and_unlink(wrapped_system_token_id, false)?;
-			Self::try_deregister(SystemTokenType::Wrapped(wrapped_system_token_id, true))?;
+			Self::try_deregister(&wrapped_system_token_id, true)?;
 		}
 
-		Self::try_set_sufficient_and_weight(&original, false, None)?;
-		Self::try_deregister(SystemTokenType::Original(original))?;
-
-		Ok(())
-	}
-
-	/// **Description:**
-	///
-	/// Try deregister either 'original' or 'wrapped' system token.
-	///
-	/// Case - Original: `try_deregister_original` will be called.
-	///
-	/// Case - Wrapped: `try_deregister_wrapped` will be called.
-	fn try_deregister(system_token_type: SystemTokenType) -> DispatchResult {
-		match system_token_type {
-			SystemTokenType::Original(original) => Self::try_deregister_original(&original),
-			SystemTokenType::Wrapped(wrapped, is_allowed) =>
-				Self::try_deregister_wrapped(&wrapped, is_allowed),
-		}
-	}
-
-	/// **Description:**
-	///
-	/// Remove value for given `original` system token id.
-	///
-	/// **Changes:**
-	///
-	/// `OriginalSystemTokenConverter`, `OriginalSystemTokenMetadata`, `SystemTokenProperties`
-	fn try_deregister_original(original: &SystemTokenId) -> DispatchResult {
-		OriginalSystemTokenMetadata::<T>::remove(original);
-		SystemTokenProperties::<T>::remove(original);
-		OriginalSystemTokenConverter::<T>::remove(original);
 		Ok(())
 	}
 
@@ -709,14 +674,23 @@ where
 	/// **Changes:**
 	///
 	/// `ParaIdSystemTokens`, `SystemTokenUsedParaIds`, `OriginalSystemTokenConverter`, `SystemTokenProperties`
-	fn try_deregister_wrapped(wrapped: &SystemTokenId, is_allowed: bool) -> DispatchResult {
+	fn try_deregister(wrapped: &SystemTokenId, is_allowed_to_remove_original: bool) -> DispatchResult {
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
 
 		let SystemTokenId { para_id, .. } = wrapped.clone();
-		if original.para_id == para_id && !is_allowed {
+		if original.para_id == para_id && !is_allowed_to_remove_original {
 			return Err(Error::<T>::BadAccess.into())
 		}
+
+		// Case: Original's self-wrapped 
+		if original.para_id == para_id {
+			OriginalSystemTokenMetadata::<T>::remove(original);
+			Self::try_set_sufficient_and_weight(&original, false, None)?;
+		} else {
+			Self::try_set_sufficient_and_unlink(wrapped.clone(), false)?;
+		}
+
 		Self::try_remove_sys_token_for_para(wrapped)?;
 		Self::try_remove_para_id(original, para_id)?;
 
@@ -1045,12 +1019,6 @@ pub mod types {
 		SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
 		AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, <T as pallet_assets::Config>::Balance>,
 	);
-
-	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
-	pub enum SystemTokenType {
-		Original(SystemTokenId),
-		Wrapped(SystemTokenId, bool),
-	}
 
 	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo)]
 	pub struct ParaCallMetadata {
