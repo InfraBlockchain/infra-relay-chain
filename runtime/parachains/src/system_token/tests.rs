@@ -412,5 +412,16 @@ fn deregister_system_token_works() {
         assert_ok!(
             SystemTokenManager::deregister_system_token(RuntimeOrigin::root(), original_1000_50_1)
         );
+
+        assert_eq!(
+            SystemTokenUsedParaIds::<Test>::get(original_1000_50_1),
+            None
+        );
+
+        System::assert_has_event(
+            SystemTokenManagerEvent::<Test>::OriginalSystemTokenDeregistered { 
+                original: original_1000_50_1 
+            }.into()
+        );
     })
 }
