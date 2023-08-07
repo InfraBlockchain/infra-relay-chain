@@ -864,8 +864,8 @@ pub fn infrablockspace_testnet_genesis(
 		xcm_pallet: Default::default(),
 		validator_election: infrablockspace::ValidatorElectionConfig {
 			seed_trust_validators: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
-			total_number_of_validators: 2,
-			number_of_seed_trust_validators: 2,
+			total_number_of_validators: 4,
+			number_of_seed_trust_validators: 4,
 			..Default::default()
 		},
 	}
