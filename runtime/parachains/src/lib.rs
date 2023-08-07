@@ -38,6 +38,7 @@ pub mod scheduler;
 pub mod session_info;
 pub mod shared;
 pub mod system_token_aggregator;
+pub mod system_token_helper;
 pub mod system_token_manager;
 pub mod ump;
 pub mod validator_reward_manager;
@@ -49,7 +50,10 @@ mod util;
 #[cfg(any(feature = "runtime-benchmarks", test))]
 mod builder;
 #[cfg(test)]
-mod mock;
+pub mod mock;
+
+#[cfg(test)]
+pub mod system_token;
 
 pub use origin::{ensure_parachain, Origin};
 pub use paras::ParaLifecycle;

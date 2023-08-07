@@ -30,14 +30,13 @@ use frame_support::{
 	dispatch::DispatchResult,
 	pallet_prelude::*,
 	traits::{IsType, ValidatorSet},
-	PalletId,
 };
 use frame_system::pallet_prelude::*;
 pub use pallet::*;
 use pallet_validator_election::{RewardInterface, SessionIndex};
 use scale_info::TypeInfo;
 use sp_runtime::{
-	traits::{AccountIdConversion, Convert, StaticLookup},
+	traits::{Convert, StaticLookup},
 	types::{ParaId, SystemTokenId, VoteWeight},
 };
 use sp_std::prelude::*;
@@ -63,7 +62,7 @@ impl ValidatorReward {
 
 #[frame_support::pallet]
 pub mod pallet {
-	use crate::{configuration, dmp, paras};
+	use crate::{configuration, dmp, paras, system_token_helper};
 
 	use super::*;
 
@@ -164,53 +163,19 @@ pub mod pallet {
 				ValidatorRewards::<T>::get(who.clone()).unwrap_or_default();
 			ensure!(rewards.len() != 0, Error::<T>::NothingToClaim);
 
-			let sovereign = Self::account_id();
+			let sovereign = system_token_helper::sovereign_account::<T>();
 			if let Some(reward) =
 				rewards.iter_mut().find(|ar| ar.system_token_id == system_token_id)
 			{
-				let config = <configuration::Pallet<T>>::config();
-				let xcm = {
-					use parity_scale_codec::Encode as _;
-					use xcm::opaque::{latest::prelude::*, VersionedXcm};
-
-					let mut encoded: Vec<u8> = [system_token_id.clone().pallet_id as u8].into(); // asset pallet number
-					let mut call_encode: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
-						id: system_token_id.clone().asset_id.into(),
-						source: T::Lookup::unlookup(sovereign.clone()),
-						dest: T::Lookup::unlookup(validator.clone()),
-						amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
-					}
-					.encode();
-
-					encoded.append(&mut call_encode);
-
-					let fee_multilocation =
-						MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
-
-					VersionedXcm::from(Xcm(vec![
-						BuyExecution {
-							fees: fee_multilocation.clone().into(),
-							weight_limit: WeightLimit::Unlimited,
-						},
-						Transact {
-							origin_kind: OriginKind::Superuser,
-							require_weight_at_most: Weight::from_parts(10_000_000_000, 1_100_000),
-							call: encoded.into(),
-						},
-					]))
-					.encode()
-				};
-				if let Err(dmp::QueueDownwardMessageError::ExceedsMaxMessageSize) =
-					<dmp::Pallet<T>>::queue_downward_message(
-						&config,
-						ParaId::from(system_token_id.clone().para_id).into(),
-						xcm,
-					) {
-					log::error!(
-						target: "runtime::infra_reward",
-						"sending 'dmp' failed."
-					);
-				};
+				let SystemTokenId { para_id, pallet_id, asset_id } = system_token_id;
+				let encoded_call: Vec<u8> = pallet_assets::Call::<T>::force_transfer2 {
+					id: asset_id.into(),
+					source: T::Lookup::unlookup(sovereign.clone()),
+					dest: T::Lookup::unlookup(validator.clone()),
+					amount: <T as pallet_assets::Config>::Balance::from(reward.amount),
+				}
+				.encode();
+				system_token_helper::try_queue_dmp::<T>(para_id, pallet_id, encoded_call)?;
 				Self::deposit_event(Event::ValidatorRewarded {
 					stash: who.clone().into(),
 					system_token_id,
@@ -226,11 +191,6 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-	pub fn account_id() -> T::AccountId {
-		let pallet_id = PalletId(*b"infrapid");
-		pallet_id.into_account_truncating()
-	}
-
 	fn aggregate_reward(
 		session_index: SessionIndex,
 		para_id: ParaId,

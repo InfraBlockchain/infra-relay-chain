@@ -1064,8 +1064,8 @@ impl system_token_manager::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type UnixTime = Timestamp;
 	type StringLimit = ConstU32<128>;
-	type MaxWrappedSystemToken = ConstU32<10>;
-	type MaxSystemTokenOnParachain = ConstU32<10>;
+	type MaxSystemTokens = ConstU32<10>;
+	type MaxOriginalUsedParaIds = ConstU32<10>;
 }
 
 impl pallet_system_token::Config for Runtime {
@@ -1239,9 +1239,13 @@ impl pallet_assets::Config for Runtime {
 	type RemoveItemsLimit = ConstU32<1000>;
 }
 
+parameter_types! {
+	pub const Period: BlockNumber = 10;
+}
+
 impl system_token_aggregator::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type Assets = Assets;
+	type Period = Period;
 	type AssetMultiLocationGetter = AssetLink;
 }
 

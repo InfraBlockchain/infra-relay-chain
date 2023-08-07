@@ -26,7 +26,6 @@ use crate::{
 };
 use bitvec::{order::Lsb0 as BitOrderLsb0, vec::BitVec};
 use frame_support::pallet_prelude::*;
-use micromath::F32Ext;
 use pallet_validator_election::{RewardInterface, VotingInterface};
 use parity_scale_codec::{Decode, Encode};
 use primitives::{
@@ -38,6 +37,8 @@ use primitives::{
 use scale_info::TypeInfo;
 use sp_runtime::{traits::One, types::PotVotesResult, DispatchError, SaturatedConversion};
 use sp_std::{collections::btree_set::BTreeSet, prelude::*};
+
+pub use micromath::F32Ext;
 
 pub use pallet::*;
 
