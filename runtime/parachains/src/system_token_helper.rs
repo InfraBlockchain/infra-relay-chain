@@ -72,6 +72,7 @@ fn transact_xcm(
 
 fn build_xcm(pallet_id: PalletId, call: Vec<u8>) -> Vec<u8> {
 	let encoded_call = encode_pallet_call(pallet_id, call);
+	// ToDo: Need to change to Asset
 	let fees = MultiAsset { id: Concrete(Here.into()), fun: Fungible(10000) };
 	let xcm = transact_xcm(fees, None, None, encoded_call);
 

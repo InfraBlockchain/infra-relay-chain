@@ -114,7 +114,7 @@ pub mod pallet {
 		/// Metadata of `original` system token is not found
 		MetadataNotFound,
 		/// Missing value of base system token weight
-		BaseWeightMissing,
+		WeightMissing,
 		/// Error occurred on sending XCM
 		DmpError,
 	}
@@ -122,16 +122,6 @@ pub mod pallet {
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
-
-	#[pallet::storage]
-	/// **Description:**
-	///
-	/// Weight of base system token weight
-	///
-	/// **Value:**
-	///
-	/// SystemTokenWeight
-	pub type BaseSystemTokenWeight<T: Config> = StorageValue<_, SystemTokenWeight>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn original_system_token_metadata)]
@@ -224,29 +214,6 @@ pub mod pallet {
 		BoundedVec<IbsParaId, T::MaxOriginalUsedParaIds>,
 		OptionQuery,
 	>;
-
-	#[pallet::genesis_config]
-	pub struct GenesisConfig {
-		pub base_system_token_weight: SystemTokenWeight,
-	}
-
-	#[cfg(feature = "std")]
-	impl Default for GenesisConfig {
-		fn default() -> Self {
-			GenesisConfig { base_system_token_weight: 100_000u128 }
-		}
-	}
-
-	#[pallet::genesis_build]
-	impl<T: Config> GenesisBuild<T> for GenesisConfig {
-		fn build(&self) {
-			assert!(
-				self.base_system_token_weight > 0u128,
-				"Base weight should be greater than zero"
-			);
-			BaseSystemTokenWeight::<T>::put(self.base_system_token_weight);
-		}
-	}
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T>
@@ -644,8 +611,7 @@ where
 
 		let property =
 			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
-		let base_weight = <BaseSystemTokenWeight<T>>::get().expect("Base weight is expected");
-		let weight = property.system_token_weight.map_or(base_weight, |w| w);
+		let weight = property.system_token_weight.ok_or(Error::<T>::WeightMissing)?;
 		Ok(weight)
 	}
 
@@ -1001,9 +967,8 @@ impl<T: Config> SystemTokenInterface for Pallet<T> {
 	fn adjusted_weight(original: SystemTokenId, vote_weight: VoteWeight) -> VoteWeight {
 		// updated_vote_weight = vote_weight * system_token_weight / base_system_token_weight
 		if let Some(p) = <SystemTokenProperties<T>>::get(original) {
-			let base_weight = <BaseSystemTokenWeight<T>>::get().expect("Base weight is expected");
-			let system_token_weight = p.system_token_weight.map_or(base_weight, |w| w);
-			return vote_weight.saturating_mul(system_token_weight) / base_weight
+			let system_token_weight = p.system_token_weight.map_or(BASE_WEIGHT, |w| w);
+			return vote_weight.saturating_mul(system_token_weight) / BASE_WEIGHT
 		}
 		vote_weight
 	}
@@ -1020,6 +985,8 @@ pub mod types {
 		SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
 		AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, <T as pallet_assets::Config>::Balance>,
 	);
+
+	pub const BASE_WEIGHT: u128 = 100_000;
 
 	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo)]
 	pub struct ParaCallMetadata {
