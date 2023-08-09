@@ -125,6 +125,10 @@ pub mod pallet {
 		WeightMissing,
 		/// Error occurred on sending XCM
 		DmpError,
+		/// System token is already suspended
+		AlreadySuspended,
+		/// System token is not suspended
+		NotSuspended,
 	}
 
 	#[pallet::pallet]
@@ -648,6 +652,7 @@ where
 			&original,
 			SystemTokenProperty {
 				system_token_weight: Some(system_token_weight),
+				status: SystemTokenStatus::Active,
 				created_at: Self::unix_time(),
 			},
 		);
@@ -699,7 +704,11 @@ where
 		OriginalSystemTokenConverter::<T>::insert(wrapped, original);
 		SystemTokenProperties::<T>::insert(
 			wrapped,
-			&SystemTokenProperty { system_token_weight: None, created_at: Self::unix_time() },
+			&SystemTokenProperty {
+				system_token_weight: None,
+				status: SystemTokenStatus::Active,
+				created_at: Self::unix_time(),
+			},
 		);
 
 		Self::try_push_sys_token_for_para_id(para_id, wrapped)?;
@@ -793,6 +802,15 @@ where
 		let property =
 			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
 
+		ensure!(property.status != SystemTokenStatus::Suspended, Error::<T>::AlreadySuspended);
+
+		SystemTokenProperties::<T>::try_mutate_exists(&wrapped, |p| -> DispatchResult {
+			let mut property = p.take().ok_or(Error::<T>::PropertyNotFound)?;
+			property.status = SystemTokenStatus::Suspended;
+			*p = Some(property.clone());
+			Ok(())
+		})?;
+
 		Self::try_set_sufficient_and_weight(&original, false, property.system_token_weight)?;
 
 		Ok(())
@@ -827,6 +845,15 @@ where
 
 		let property =
 			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
+
+		ensure!(property.status == SystemTokenStatus::Suspended, Error::<T>::NotSuspended);
+
+		SystemTokenProperties::<T>::try_mutate_exists(&wrapped, |p| -> DispatchResult {
+			let mut property = p.take().ok_or(Error::<T>::PropertyNotFound)?;
+			property.status = SystemTokenStatus::Active;
+			*p = Some(property.clone());
+			Ok(())
+		})?;
 
 		Self::try_set_sufficient_and_weight(&original, true, property.system_token_weight)?;
 
@@ -1152,6 +1179,16 @@ pub mod types {
 		AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, <T as pallet_assets::Config>::Balance>,
 	);
 
+	#[derive(
+		Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen,
+	)]
+	pub enum SystemTokenStatus {
+		Active,
+		Suspended,
+		#[default]
+		Pending,
+	}
+
 	pub const BASE_WEIGHT: u128 = 100_000;
 
 	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo)]
@@ -1198,6 +1235,8 @@ pub mod types {
 	pub struct SystemTokenProperty {
 		// The weight of this system token. Only 'original` system token would have its weight
 		pub(crate) system_token_weight: Option<SystemTokenWeight>,
+		// The status of this systen token
+		pub(crate) status: SystemTokenStatus,
 		// The epoch time of this system token registered
 		pub(crate) created_at: u128,
 	}
