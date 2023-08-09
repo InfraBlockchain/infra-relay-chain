@@ -742,16 +742,10 @@ where
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
 
-		let SystemTokenId { para_id, .. } = wrapped.clone();
 		let property =
 			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
 
-		// Case: Original's self-wrapped
-		if original.para_id == para_id {
-			Self::try_set_sufficient_and_weight(&original, false, property.system_token_weight)?;
-		} else {
-			Self::try_set_sufficient_and_weight(&original, false, None)?;
-		}
+		Self::try_set_sufficient_and_weight(&original, false, property.system_token_weight)?;
 
 		Ok(())
 	}
@@ -783,16 +777,10 @@ where
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
 
-		let SystemTokenId { para_id, .. } = wrapped.clone();
 		let property =
 			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
 
-		// Case: Original's self-wrapped
-		if original.para_id == para_id {
-			Self::try_set_sufficient_and_weight(&original, true, property.system_token_weight)?;
-		} else {
-			Self::try_set_sufficient_and_weight(&original, true, None)?;
-		}
+		Self::try_set_sufficient_and_weight(&original, true, property.system_token_weight)?;
 
 		Ok(())
 	}
