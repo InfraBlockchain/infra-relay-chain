@@ -83,10 +83,14 @@ pub mod pallet {
 		SetParaFeeRate { para_id: IbsParaId, para_fee_rate: u32 },
 		/// Update the fee table of the parachain
 		SetFeeTable { para_call_metadata: ParaCallMetadata, fee: T::Balance },
-		/// Suspend a new `original` system token.
+		/// Suspend a `original` system token.
 		OriginalSystemTokenSuspended { original: SystemTokenId },
 		/// Unsuspend the `original` system token.
 		OriginalSystemTokenUnsuspended { original: SystemTokenId },
+		/// Suspend a `wrapped` system token.
+		WrappedSystemTokenSuspended { wrapped: SystemTokenId },
+		/// Unsuspend the `wrapped` system token.
+		WrappedSystemTokenUnsuspended { wrapped: SystemTokenId },
 	}
 
 	#[pallet::error]
@@ -488,6 +492,28 @@ pub mod pallet {
 		#[pallet::call_index(8)]
 		#[pallet::weight(1_000)]
 		// Description:
+		// Suspend all `original` and `wrapped` system token registered on runtime.
+		// Suspended system token is no longer used as `transaction fee`
+		//
+		// Origin:
+		// ** Root(Authorized) privileged call **
+		//
+		// Params:
+		// - wrapped: Wrapped system token id expected to be suspended
+		pub fn suspend_wrapped_system_token(
+			origin: OriginFor<T>,
+			wrapped: SystemTokenId,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+			Self::try_suspend(&wrapped)?;
+			Self::deposit_event(Event::<T>::WrappedSystemTokenSuspended { wrapped });
+
+			Ok(())
+		}
+
+		#[pallet::call_index(9)]
+		#[pallet::weight(1_000)]
+		// Description:
 		// Unsuspend all `original` and `wrapped` system token registered on runtime.
 		// Unsuspended system token is no longer used as `transaction fee`
 		//
@@ -503,6 +529,28 @@ pub mod pallet {
 			ensure_root(origin)?;
 			Self::try_unsuspend_all(original)?;
 			Self::deposit_event(Event::<T>::OriginalSystemTokenUnsuspended { original });
+
+			Ok(())
+		}
+
+		#[pallet::call_index(10)]
+		#[pallet::weight(1_000)]
+		// Description:
+		// Unsuspend all `original` and `wrapped` system token registered on runtime.
+		// Unsuspended system token is no longer used as `transaction fee`
+		//
+		// Origin:
+		// ** Root(Authorized) privileged call **
+		//
+		// Params:
+		// - wrapped: Wrapped system token id expected to be unsuspended
+		pub fn unsuspend_wrapped_system_token(
+			origin: OriginFor<T>,
+			wrapped: SystemTokenId,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+			Self::try_unsuspend(&wrapped)?;
+			Self::deposit_event(Event::<T>::WrappedSystemTokenUnsuspended { wrapped });
 
 			Ok(())
 		}
