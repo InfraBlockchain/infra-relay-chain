@@ -83,6 +83,10 @@ pub mod pallet {
 		SetParaFeeRate { para_id: IbsParaId, para_fee_rate: u32 },
 		/// Update the fee table of the parachain
 		SetFeeTable { para_call_metadata: ParaCallMetadata, fee: T::Balance },
+		/// Suspend a new `original` system token.
+		OriginalSystemTokenSuspended { original: SystemTokenId },
+		/// Unsuspend the `original` system token.
+		OriginalSystemTokenUnsuspended { original: SystemTokenId },
 	}
 
 	#[pallet::error]
@@ -458,6 +462,50 @@ pub mod pallet {
 
 			Ok(())
 		}
+
+		#[pallet::call_index(7)]
+		#[pallet::weight(1_000)]
+		// Description:
+		// Suspend all `original` and `wrapped` system token registered on runtime.
+		// Suspended system token is no longer used as `transaction fee`
+		//
+		// Origin:
+		// ** Root(Authorized) privileged call **
+		//
+		// Params:
+		// - original: Original system token id expected to be suspended
+		pub fn suspend_system_token(
+			origin: OriginFor<T>,
+			original: SystemTokenId,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+			Self::try_suspend_all(original)?;
+			Self::deposit_event(Event::<T>::OriginalSystemTokenSuspended { original });
+
+			Ok(())
+		}
+
+		#[pallet::call_index(8)]
+		#[pallet::weight(1_000)]
+		// Description:
+		// Unsuspend all `original` and `wrapped` system token registered on runtime.
+		// Unsuspended system token is no longer used as `transaction fee`
+		//
+		// Origin:
+		// ** Root(Authorized) privileged call **
+		//
+		// Params:
+		// - original: Original system token id expected to be unsuspended
+		pub fn unsuspend_system_token(
+			origin: OriginFor<T>,
+			original: SystemTokenId,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+			Self::try_unsuspend_all(original)?;
+			Self::deposit_event(Event::<T>::OriginalSystemTokenUnsuspended { original });
+
+			Ok(())
+		}
 	}
 }
 
@@ -663,6 +711,88 @@ where
 
 		OriginalSystemTokenConverter::<T>::remove(&wrapped);
 		SystemTokenProperties::<T>::remove(&wrapped);
+
+		Ok(())
+	}
+
+	/// **Description:**
+	///
+	/// Try suspend for all `original` and `wrapped` system tokens registered on runtime.
+	///
+	/// **Changes:**
+	///
+	///
+	fn try_suspend_all(original: SystemTokenId) -> DispatchResult {
+		let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
+		for wrapped_system_token_id in wrapped_system_tokens {
+			Self::try_suspend(&wrapped_system_token_id)?;
+		}
+
+		Ok(())
+	}
+
+	/// **Description:**
+	///
+	/// Suspend for given `wrapped` system token.
+	///
+	/// **Changes:**
+	///
+	///
+	fn try_suspend(wrapped: &SystemTokenId) -> DispatchResult {
+		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
+			.ok_or(Error::<T>::WrappedNotRegistered)?;
+
+		let SystemTokenId { para_id, .. } = wrapped.clone();
+		let property =
+			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
+
+		// Case: Original's self-wrapped
+		if original.para_id == para_id {
+			Self::try_set_sufficient_and_weight(&original, false, property.system_token_weight)?;
+		} else {
+			Self::try_set_sufficient_and_weight(&original, false, None)?;
+		}
+
+		Ok(())
+	}
+
+	/// **Description:**
+	///
+	/// Try unsuspend for all `original` and `wrapped` system tokens registered on runtime.
+	///
+	/// **Changes:**
+	///
+	///
+	fn try_unsuspend_all(original: SystemTokenId) -> DispatchResult {
+		let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
+		for wrapped_system_token_id in wrapped_system_tokens {
+			Self::try_unsuspend(&wrapped_system_token_id)?;
+		}
+
+		Ok(())
+	}
+
+	/// **Description:**
+	///
+	/// Unsuspend for given `wrapped` system token.
+	///
+	/// **Changes:**
+	///
+	///
+	fn try_unsuspend(wrapped: &SystemTokenId) -> DispatchResult {
+		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
+			.ok_or(Error::<T>::WrappedNotRegistered)?;
+
+		let SystemTokenId { para_id, .. } = wrapped.clone();
+		let property =
+			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
+
+		// Case: Original's self-wrapped
+		if original.para_id == para_id {
+			Self::try_set_sufficient_and_weight(&original, true, property.system_token_weight)?;
+		} else {
+			Self::try_set_sufficient_and_weight(&original, true, None)?;
+		}
 
 		Ok(())
 	}
