@@ -509,7 +509,7 @@ pub mod pallet {
 			wrapped: SystemTokenId,
 		) -> DispatchResult {
 			ensure_root(origin)?;
-			Self::try_suspend(&wrapped)?;
+			Self::try_suspend(&wrapped, false)?;
 			Self::deposit_event(Event::<T>::WrappedSystemTokenSuspended { wrapped });
 
 			Ok(())
@@ -553,7 +553,7 @@ pub mod pallet {
 			wrapped: SystemTokenId,
 		) -> DispatchResult {
 			ensure_root(origin)?;
-			Self::try_unsuspend(&wrapped)?;
+			Self::try_unsuspend(&wrapped, false)?;
 			Self::deposit_event(Event::<T>::WrappedSystemTokenUnsuspended { wrapped });
 
 			Ok(())
@@ -782,7 +782,7 @@ where
 	fn try_suspend_all(original: SystemTokenId) -> DispatchResult {
 		let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
 		for wrapped_system_token_id in wrapped_system_tokens {
-			Self::try_suspend(&wrapped_system_token_id)?;
+			Self::try_suspend(&wrapped_system_token_id, true)?;
 		}
 
 		Ok(())
@@ -795,9 +795,17 @@ where
 	/// **Changes:**
 	///
 	/// `SystemTokenProperties`
-	fn try_suspend(wrapped: &SystemTokenId) -> DispatchResult {
+	fn try_suspend(
+		wrapped: &SystemTokenId,
+		is_allowed_to_suspend_original: bool,
+	) -> DispatchResult {
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
+
+		let SystemTokenId { para_id, .. } = wrapped.clone();
+		if original.para_id == para_id && !is_allowed_to_suspend_original {
+			return Err(Error::<T>::BadAccess.into())
+		}
 
 		let property =
 			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
@@ -826,7 +834,7 @@ where
 	fn try_unsuspend_all(original: SystemTokenId) -> DispatchResult {
 		let wrapped_system_tokens = Self::try_get_wrapped_system_token_list(&original)?;
 		for wrapped_system_token_id in wrapped_system_tokens {
-			Self::try_unsuspend(&wrapped_system_token_id)?;
+			Self::try_unsuspend(&wrapped_system_token_id, true)?;
 		}
 
 		Ok(())
@@ -839,10 +847,17 @@ where
 	/// **Changes:**
 	///
 	/// `SystemTokenProperties`
-	fn try_unsuspend(wrapped: &SystemTokenId) -> DispatchResult {
+	fn try_unsuspend(
+		wrapped: &SystemTokenId,
+		is_allowed_to_unsuspend_original: bool,
+	) -> DispatchResult {
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
 
+		let SystemTokenId { para_id, .. } = wrapped.clone();
+		if original.para_id == para_id && !is_allowed_to_unsuspend_original {
+			return Err(Error::<T>::BadAccess.into())
+		}
 		let property =
 			SystemTokenProperties::<T>::get(original).ok_or(Error::<T>::PropertyNotFound)?;
 
