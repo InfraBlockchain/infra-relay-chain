@@ -794,7 +794,7 @@ where
 	///
 	/// **Changes:**
 	///
-	///
+	/// `SystemTokenProperties`
 	fn try_suspend(wrapped: &SystemTokenId) -> DispatchResult {
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
@@ -838,7 +838,7 @@ where
 	///
 	/// **Changes:**
 	///
-	///
+	/// `SystemTokenProperties`
 	fn try_unsuspend(wrapped: &SystemTokenId) -> DispatchResult {
 		let original = OriginalSystemTokenConverter::<T>::get(&wrapped)
 			.ok_or(Error::<T>::WrappedNotRegistered)?;
