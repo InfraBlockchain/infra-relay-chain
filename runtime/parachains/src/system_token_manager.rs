@@ -815,7 +815,7 @@ where
 		SystemTokenProperties::<T>::try_mutate_exists(&wrapped, |p| -> DispatchResult {
 			let mut property = p.take().ok_or(Error::<T>::PropertyNotFound)?;
 			property.status = SystemTokenStatus::Suspended;
-			*p = Some(property.clone());
+			*p = Some(property);
 			Ok(())
 		})?;
 
@@ -866,7 +866,7 @@ where
 		SystemTokenProperties::<T>::try_mutate_exists(&wrapped, |p| -> DispatchResult {
 			let mut property = p.take().ok_or(Error::<T>::PropertyNotFound)?;
 			property.status = SystemTokenStatus::Active;
-			*p = Some(property.clone());
+			*p = Some(property);
 			Ok(())
 		})?;
 
