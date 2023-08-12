@@ -24,8 +24,8 @@ use xcm::{
 
 type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
 
-const REF_WEIGHT: u64 = 500_000_000;
-const PROOF_WEIGHT: u64 = 20_000;
+const REF_WEIGHT: u64 = 1_000_000_000;
+const PROOF_WEIGHT: u64 = 50_000;
 
 pub fn root_account<T: frame_system::Config>() -> T::AccountId {
 	frame_support::PalletId(*b"infra/rt").into_account_truncating()
