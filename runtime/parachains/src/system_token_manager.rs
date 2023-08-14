@@ -819,7 +819,7 @@ where
 			Ok(())
 		})?;
 
-		Self::try_set_sufficient_and_weight(&original, false, property.system_token_weight)?;
+		Self::try_set_sufficient_and_weight(&wrapped, false, property.system_token_weight)?;
 
 		Ok(())
 	}
@@ -870,7 +870,7 @@ where
 			Ok(())
 		})?;
 
-		Self::try_set_sufficient_and_weight(&original, true, property.system_token_weight)?;
+		Self::try_set_sufficient_and_weight(&wrapped, true, property.system_token_weight)?;
 
 		Ok(())
 	}
