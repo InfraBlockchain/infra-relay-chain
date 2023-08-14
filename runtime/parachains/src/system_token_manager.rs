@@ -103,6 +103,8 @@ pub mod pallet {
 		WrappedAlreadyRegistered,
 		/// `Wrapped` system token has not been registered on Relay Chain
 		WrappedNotRegistered,
+		/// `Wrapped` system token id is not provided when register `orinal` system token
+		WrappedForRelayNotProvided,
 		/// Registered System Tokens are out of limit
 		TooManySystemTokensOnPara,
 		/// Number of para ids using `original` system tokens has reached `MaxSystemTokenUsedParaIds`
@@ -129,6 +131,10 @@ pub mod pallet {
 		AlreadySuspended,
 		/// System token is not suspended
 		NotSuspended,
+		/// System token metadata is not provided when registered `original` system token
+		SystemTokenMetadataNotProvided,
+		/// Asset metadata is not provided when registered `original` system token
+		AssetMetadataNotProvided,
 	}
 
 	#[pallet::pallet]
@@ -259,77 +265,51 @@ pub mod pallet {
 		#[pallet::weight(1_000)]
 		pub fn register_system_token(
 			origin: OriginFor<T>,
-			original: SystemTokenId,
-			wrapped_for_relay_chain: SystemTokenId,
+			system_token_type: SystemTokenType,
 			system_token_weight: SystemTokenWeight,
-			issuer: Vec<u8>,
-			description: Vec<u8>,
-			url: Vec<u8>,
-			name: Vec<u8>,
-			symbol: Vec<u8>,
-			decimals: u8,
-			min_balance: T::Balance,
+			wrapped_for_relay_chain: Option<SystemTokenId>,
+			system_token_metadata: Option<SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>>,
+			asset_metadata: Option<AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, T::Balance>>,
 		) -> DispatchResult {
 			ensure_root(origin)?;
-			Self::try_register_original(
-				&original,
-				system_token_weight,
-				&issuer,
-				&description,
-				&url,
-				&name,
-				&symbol,
-				decimals,
-				min_balance,
-			)?;
+			let (original, wrapped) = match system_token_type {
+				SystemTokenType::Original(original) => {
+					let system_token_metadata =
+						system_token_metadata.ok_or(Error::<T>::SystemTokenMetadataNotProvided)?;
+					let asset_metadata =
+						asset_metadata.ok_or(Error::<T>::AssetMetadataNotProvided)?;
+					Self::try_register_original(
+						&original,
+						system_token_weight,
+						system_token_metadata,
+						asset_metadata,
+					)?;
+					let wrapped =
+						wrapped_for_relay_chain.ok_or(Error::<T>::WrappedForRelayNotProvided)?;
+					(original, wrapped)
+				},
+				SystemTokenType::Wrapped { original, wrapped } => {
+					ensure!(
+						!wrapped_for_relay_chain.is_some() &&
+							!system_token_metadata.is_some() &&
+							!asset_metadata.is_some(),
+						Error::<T>::BadAccess
+					);
+
+					(original, wrapped)
+				},
+			};
 			// Create wrapped for Relay Chain
-			let system_token_weight =
-				Self::try_register_wrapped(&original, &wrapped_for_relay_chain)?;
-			Self::try_create_wrapped(wrapped_for_relay_chain, system_token_weight)?;
-
-			Self::deposit_event(Event::<T>::OriginalSystemTokenRegistered { original });
-			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered {
-				original,
-				wrapped: wrapped_for_relay_chain,
-			});
-
-			Ok(())
-		}
-
-		#[pallet::call_index(1)]
-		#[pallet::weight(1_000)]
-		// Description
-		// Register wrapped system token which has wrapped the original system token
-		// One parachain will request its needs to use system token as their utility token(e.g transaction fee).
-		//
-		// Origin:
-		// ** Root(Authorized) privileged call **
-		//
-		// Params:
-		// - original: Original system token id expected to be registered
-		// - wrapped: System token id which wrapped the original system token
-		//
-		// Logic:
-		// Once it is accepted by governance,
-		// - 'try_register_wrapped': Try register wrapped_system_token and return weight of system token
-		// - 'try_create_wrapped': Send DMP to create local asset based on `wrapped_system_token_id`
-		pub fn register_wrapped_system_token(
-			origin: OriginFor<T>,
-			original: SystemTokenId,
-			wrapped: SystemTokenId,
-		) -> DispatchResult {
-			ensure_root(origin)?;
-
 			let system_token_weight = Self::try_register_wrapped(&original, &wrapped)?;
-
 			Self::try_create_wrapped(wrapped, system_token_weight)?;
 
+			Self::deposit_event(Event::<T>::OriginalSystemTokenRegistered { original });
 			Self::deposit_event(Event::<T>::WrappedSystemTokenRegistered { original, wrapped });
 
 			Ok(())
 		}
 
-		#[pallet::call_index(2)]
+		#[pallet::call_index(1)]
 		#[pallet::weight(1_000)]
 		// Description:
 		// Deregister all `original` and `wrapped` system token registered on runtime.
@@ -342,11 +322,50 @@ pub mod pallet {
 		// - original: Original system token id expected to be deregistered
 		pub fn deregister_system_token(
 			origin: OriginFor<T>,
-			original: SystemTokenId,
+			system_token_type: SystemTokenType,
 		) -> DispatchResult {
 			ensure_root(origin)?;
-			Self::try_deregister_all(original)?;
-			Self::deposit_event(Event::<T>::OriginalSystemTokenDeregistered { original });
+			match system_token_type {
+				SystemTokenType::Original(original) => {
+					Self::try_deregister_all(original)?;
+					Self::deposit_event(Event::<T>::OriginalSystemTokenDeregistered { original });
+				},
+				SystemTokenType::Wrapped { wrapped, .. } => {
+					Self::try_deregister(&wrapped, false)?;
+					Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered { wrapped });
+				},
+			}
+
+			Ok(())
+		}
+
+		#[pallet::call_index(2)]
+		#[pallet::weight(1_000)]
+		// Description:
+		// Suspend all `original` and `wrapped` system token registered on runtime.
+		// Suspended system token is no longer used as `transaction fee`
+		//
+		// Origin:
+		// ** Root(Authorized) privileged call **
+		//
+		// Params:
+		// - original: Original system token id expected to be suspended
+		pub fn suspend_system_token(
+			origin: OriginFor<T>,
+			system_token_type: SystemTokenType,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+
+			match system_token_type {
+				SystemTokenType::Original(original) => {
+					Self::try_suspend_all(original)?;
+					Self::deposit_event(Event::<T>::OriginalSystemTokenSuspended { original });
+				},
+				SystemTokenType::Wrapped { wrapped, .. } => {
+					Self::try_suspend(&wrapped, false)?;
+					Self::deposit_event(Event::<T>::WrappedSystemTokenSuspended { wrapped });
+				},
+			}
 
 			Ok(())
 		}
@@ -354,26 +373,29 @@ pub mod pallet {
 		#[pallet::call_index(3)]
 		#[pallet::weight(1_000)]
 		// Description:
-		// Deregister a `wrapped` system token, which has been used to other parachain.
+		// Unsuspend all `original` and `wrapped` system token registered on runtime.
+		// Unsuspended system token is no longer used as `transaction fee`
 		//
 		// Origin:
 		// ** Root(Authorized) privileged call **
 		//
 		// Params:
-		// - wrapped: `Wrapped` system token id expected to be deregistered
-		//
-		// Logic:
-		// DMP
-		// - Set`sufficient` to `false`
-		// - 'unlink' the system token with local asset
-		pub fn deregister_wrapped_system_token(
+		// - original: Original system token id expected to be unsuspended
+		pub fn unsuspend_system_token(
 			origin: OriginFor<T>,
-			wrapped: SystemTokenId,
+			system_token_type: SystemTokenType,
 		) -> DispatchResult {
 			ensure_root(origin)?;
-			Self::try_deregister(&wrapped, false)?;
-
-			Self::deposit_event(Event::<T>::WrappedSystemTokenDeregistered { wrapped });
+			match system_token_type {
+				SystemTokenType::Original(original) => {
+					Self::try_unsuspend_all(original)?;
+					Self::deposit_event(Event::<T>::OriginalSystemTokenUnsuspended { original });
+				},
+				SystemTokenType::Wrapped { wrapped, .. } => {
+					Self::try_unsuspend(&wrapped, false)?;
+					Self::deposit_event(Event::<T>::WrappedSystemTokenUnsuspended { wrapped });
+				},
+			}
 
 			Ok(())
 		}
@@ -470,94 +492,6 @@ pub mod pallet {
 
 			Ok(())
 		}
-
-		#[pallet::call_index(7)]
-		#[pallet::weight(1_000)]
-		// Description:
-		// Suspend all `original` and `wrapped` system token registered on runtime.
-		// Suspended system token is no longer used as `transaction fee`
-		//
-		// Origin:
-		// ** Root(Authorized) privileged call **
-		//
-		// Params:
-		// - original: Original system token id expected to be suspended
-		pub fn suspend_system_token(
-			origin: OriginFor<T>,
-			original: SystemTokenId,
-		) -> DispatchResult {
-			ensure_root(origin)?;
-			Self::try_suspend_all(original)?;
-			Self::deposit_event(Event::<T>::OriginalSystemTokenSuspended { original });
-
-			Ok(())
-		}
-
-		#[pallet::call_index(8)]
-		#[pallet::weight(1_000)]
-		// Description:
-		// Suspend all `original` and `wrapped` system token registered on runtime.
-		// Suspended system token is no longer used as `transaction fee`
-		//
-		// Origin:
-		// ** Root(Authorized) privileged call **
-		//
-		// Params:
-		// - wrapped: Wrapped system token id expected to be suspended
-		pub fn suspend_wrapped_system_token(
-			origin: OriginFor<T>,
-			wrapped: SystemTokenId,
-		) -> DispatchResult {
-			ensure_root(origin)?;
-			Self::try_suspend(&wrapped, false)?;
-			Self::deposit_event(Event::<T>::WrappedSystemTokenSuspended { wrapped });
-
-			Ok(())
-		}
-
-		#[pallet::call_index(9)]
-		#[pallet::weight(1_000)]
-		// Description:
-		// Unsuspend all `original` and `wrapped` system token registered on runtime.
-		// Unsuspended system token is no longer used as `transaction fee`
-		//
-		// Origin:
-		// ** Root(Authorized) privileged call **
-		//
-		// Params:
-		// - original: Original system token id expected to be unsuspended
-		pub fn unsuspend_system_token(
-			origin: OriginFor<T>,
-			original: SystemTokenId,
-		) -> DispatchResult {
-			ensure_root(origin)?;
-			Self::try_unsuspend_all(original)?;
-			Self::deposit_event(Event::<T>::OriginalSystemTokenUnsuspended { original });
-
-			Ok(())
-		}
-
-		#[pallet::call_index(10)]
-		#[pallet::weight(1_000)]
-		// Description:
-		// Unsuspend all `original` and `wrapped` system token registered on runtime.
-		// Unsuspended system token is no longer used as `transaction fee`
-		//
-		// Origin:
-		// ** Root(Authorized) privileged call **
-		//
-		// Params:
-		// - wrapped: Wrapped system token id expected to be unsuspended
-		pub fn unsuspend_wrapped_system_token(
-			origin: OriginFor<T>,
-			wrapped: SystemTokenId,
-		) -> DispatchResult {
-			ensure_root(origin)?;
-			Self::try_unsuspend(&wrapped, false)?;
-			Self::deposit_event(Event::<T>::WrappedSystemTokenUnsuspended { wrapped });
-
-			Ok(())
-		}
 	}
 }
 
@@ -572,10 +506,9 @@ where
 	}
 
 	fn system_token_metadata(
-		issuer: &Vec<u8>,
-		description: &Vec<u8>,
-		url: &Vec<u8>,
+		system_token_metdata: SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
 	) -> Result<SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>, DispatchError> {
+		let SystemTokenMetadata { issuer, description, url } = system_token_metdata;
 		let issuer = issuer.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 		let description = description.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 		let url = url.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
@@ -584,11 +517,10 @@ where
 	}
 
 	fn asset_metadata(
-		name: &Vec<u8>,
-		symbol: &Vec<u8>,
-		decimals: u8,
-		min_balance: T::Balance,
+		asset_metadata: AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, T::Balance>,
 	) -> Result<AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, T::Balance>, DispatchError> {
+		let AssetMetadata { name, symbol, decimals, min_balance } = asset_metadata;
+
 		let name = name.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 		let symbol = symbol.clone().try_into().map_err(|_| Error::<T>::BadMetadata)?;
 
@@ -630,20 +562,15 @@ where
 	fn try_register_original(
 		original: &SystemTokenId,
 		system_token_weight: SystemTokenWeight,
-		issuer: &Vec<u8>,
-		description: &Vec<u8>,
-		url: &Vec<u8>,
-		name: &Vec<u8>,
-		symbol: &Vec<u8>,
-		decimals: u8,
-		min_balance: T::Balance,
+		system_token_metadata: SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
+		asset_metadata: AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, T::Balance>,
 	) -> DispatchResult {
 		ensure!(
 			!OriginalSystemTokenMetadata::<T>::contains_key(&original),
 			Error::<T>::OriginalAlreadyRegistered
 		);
-		let system_token_metadata = Self::system_token_metadata(&issuer, &description, &url)?;
-		let asset_metadata = Self::asset_metadata(&name, &symbol, decimals, min_balance)?;
+		let system_token_metadata = Self::system_token_metadata(system_token_metadata)?;
+		let asset_metadata = Self::asset_metadata(asset_metadata)?;
 		let SystemTokenId { para_id, .. } = original.clone();
 		Self::try_push_sys_token_for_para_id(para_id, &original)?;
 		Self::try_push_para_id(para_id, &original)?;
@@ -1193,6 +1120,12 @@ pub mod types {
 		SystemTokenMetadata<BoundedVec<u8, StringLimitOf<T>>>,
 		AssetMetadata<BoundedVec<u8, StringLimitOf<T>>, <T as pallet_assets::Config>::Balance>,
 	);
+
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, TypeInfo)]
+	pub enum SystemTokenType {
+		Original(SystemTokenId),
+		Wrapped { original: SystemTokenId, wrapped: SystemTokenId },
+	}
 
 	#[derive(
 		Clone, Encode, Decode, Eq, PartialEq, RuntimeDebug, Default, TypeInfo, MaxEncodedLen,
